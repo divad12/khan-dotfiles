@@ -1,5 +1,6 @@
 [core]
-  excludesfile = ~/.gitignore_global  # Global .gitignore file
+  # Global .gitignore file
+  excludesfile = ~/.gitignore_global
 
 [user]
   # TODO
@@ -26,10 +27,13 @@
   df = diff
   dfs = diff --staged
   lp = log -p
-  bw = blame -w  # Ignore whitespace changes
+
+  # Ignore whitespace changes
+  bw = blame -w
 
 [merge]
-  stat = true  # Always show a diffstat at the end of a merge
+  # Always show a diffstat at the end of a merge
+  stat = true
 
 [diff]
   # Use mnemonic prefixes (index, work tree, commit, object) instead of the standard a and b notation

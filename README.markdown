@@ -5,7 +5,7 @@ A lot of what's here is Khan Academy-specific:
 - Vim filetype plugins conforming to Khan Academy's style guide
 - tell ack to skip crap that the deploy script litters (eg. combined/compressed CSS/JS files)
 - Kiln authentication stuff
-- a JS pre-commit linter (thanks to @benkomalo)
+- a [JS pre-commit linter](https://github.com/benkomalo/khan-linter)
 
 and the rest of it just contains generally useful things, such as
 
@@ -35,4 +35,4 @@ TODO(david): Automate all this in the Makefile.
 
 Hello
 -----
-It's 2 am and I need to sleep so I can wake up and help our four interns starting later this morning to get set up, so there's a lot of stuff missing. Pull requests are welcome!
+It's 3 am and I need to sleep so I can wake up and help our four interns starting later this morning to get set up, so there's a lot of stuff missing. Pull requests are welcome!
