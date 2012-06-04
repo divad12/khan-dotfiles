@@ -35,7 +35,7 @@ kilnauth = $HOME/khan/devtools/kilnauth.py
 
 [alias]
 # Takes a revision argument and shows the diff: hg show 1337
-show = log --color=always -pr
+show = log --stat --color=always -vpr
 
 # Push the current branch only (don't push any other named branches)
 nudge = push --rev .
