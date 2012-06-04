@@ -1,4 +1,4 @@
-Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/divad12/dotfiles), with commits and lines here and there stolen from @phleet, @dmnd, and others.
+Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/divad12/dotfiles), with commits and lines here and there stolen from [Jamie](http://github.com/phleet/dotfiles), [Desmond](https://github.com/dmnd), and others.
 
 A lot of what's here is Khan Academy-specific:
 
@@ -15,7 +15,8 @@ and the rest of it just contains generally useful things, such as
 
 This is meant to complement [the dev setup on the Khan Academy Forge](https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup).
 
-# Setup
+Setup
+-----
 Clone this repo and then run `make` in the cloned directory.
 
     git clone git://github.com/divad12/khan-dotfiles.git
@@ -32,5 +33,6 @@ Also, install [autojump](https://github.com/joelthelion/autojump) if you're a fr
 
 TODO(david): Automate all this in the Makefile.
 
-# Hello
+Hello
+-----
 It's 2 am and I need to sleep so I can wake up and help our four interns starting later this morning to get set up, so there's a lot of stuff missing. Pull requests are welcome!
