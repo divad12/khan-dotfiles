@@ -43,12 +43,12 @@ nudge = push --rev .
 # What did I do today?
 today = !hg log --template '{rev} {desc|firstline|strip}\n' -r "sort(user('$(hg showconfig ui.username | sed 's/.*<\(.*\)>/\1/')') and date(-1), -date)"
 
-slog = log --style=$HOME/dotfiles/mercurial-cli-templates/map-cmdline.slog
-nlog = log --style=$HOME/dotfiles/mercurial-cli-templates/map-cmdline.nlog
-sglog = glog --style=$HOME/dotfiles/mercurial-cli-templates/map-cmdline.sglog
+slog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.slog
+nlog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.nlog
+sglog = glog --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.sglog
 gslog = sglog
-dlog = log --style=$HOME/dotfiles/mercurial-cli-templates/map-cmdline.dlog
-lga = glog --style=$HOME/dotfiles/mercurial-cli-templates/map-cmdline.lg
+dlog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.dlog
+lga = glog --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.lg
 lg = lga --rev 'ancestors(.)'
 st = st -S
 df = diff
