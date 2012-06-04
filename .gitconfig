@@ -1,0 +1,39 @@
+[core]
+  excludesfile = ~/.gitignore_global  # Global .gitignore file
+
+[user]
+  # TODO
+  name = FIRST LAST
+  email = YOUR_EMAIL_ON_GITHUB
+
+[color]
+  status = auto
+  branch = auto
+  diff = auto
+  interactive = auto
+
+[branch]
+  # auto-adds the --track flag to git branch. Helps out arc (for Phabricator).
+  autosetupmerge = always
+
+[alias]
+  graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
+  ls-ignored = ls-files --exclude-standard --ignored --others
+  co = checkout
+  st = status
+  ci = commit
+  br = branch
+  df = diff
+  dfs = diff --staged
+  lp = log -p
+  bw = blame -w  # Ignore whitespace changes
+
+[merge]
+  stat = true  # Always show a diffstat at the end of a merge
+
+[diff]
+  # Use mnemonic prefixes (index, work tree, commit, object) instead of the standard a and b notation
+  mnemonicprefix = true
+
+  # Detect renames as well as copies
+  renames = copies
