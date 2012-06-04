@@ -17,8 +17,9 @@ This is meant to complement [the dev setup on the Khan Academy Forge](https://si
 
 Setup
 -----
-Clone this repo and then run `make` in the cloned directory.
+Clone this repo into your home directory and then run `make` in the cloned directory.
 
+    cd ~
     git clone git://github.com/divad12/khan-dotfiles.git
     cd khan-dotfiles
     make
