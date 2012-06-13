@@ -1,11 +1,11 @@
-Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/divad12/dotfiles), with commits and lines here and there stolen from [Jamie](http://github.com/phleet/dotfiles), [Desmond](https://github.com/dmnd), and others.
+Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/Khan/dotfiles), with commits and lines here and there stolen from [Jamie](http://github.com/phleet/dotfiles), [Desmond](https://github.com/dmnd), and others.
 
 A lot of what's here is Khan Academy-specific:
 
 - Vim filetype plugins conforming to Khan Academy's style guide
 - tell ack to skip crap that the deploy script litters (eg. combined/compressed CSS/JS files)
 - Kiln authentication stuff
-- a [JS pre-commit linter](https://github.com/benkomalo/khan-linter)
+- a [pre-commit linter](https://github.com/Khan/khan-linter)
 
 and the rest of it just contains generally useful things, such as
 
@@ -20,7 +20,7 @@ Setup
 Clone this repo into your home directory and then run `make` in the cloned directory.
 
     cd ~
-    git clone git://github.com/divad12/khan-dotfiles.git
+    git clone git://github.com/Khan/khan-dotfiles.git
     cd khan-dotfiles
     make
 
