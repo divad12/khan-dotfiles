@@ -1,4 +1,4 @@
-Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/Khan/dotfiles), with commits and lines here and there stolen from [Jamie](http://github.com/phleet/dotfiles), [Desmond](https://github.com/dmnd), and others.
+Dotfiles for Khan Academy website developers. Originally extracted from [David's dotfiles](http://github.com/divad12/dotfiles), with commits and lines here and there stolen from [Jamie](http://github.com/phleet/dotfiles), [Desmond](https://github.com/dmnd), and others.
 
 A lot of what's here is Khan Academy-specific:
 
