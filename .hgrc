@@ -65,6 +65,6 @@ stable = https://khanacademy.kilnhg.com/Code/Website/Group/stable
 # Add here any other shorthands for your kiln repo URLs
 
 [hooks]
-# JavaScript Google Closure linter
+# Code linter
 # TODO: Clone this from https://github.com/Khan/khan-linter
 pretxncommit.khanlint = $HOME/khan/devtools/khan-linter/hghook.py
