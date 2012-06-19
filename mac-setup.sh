@@ -153,10 +153,6 @@ open "https://github.com/settings/ssh"
 
 read
 
-echo "Cloning exercises (you will probably have to type your ssh key password)"
-# clone exercises
-git clone -q git@github.com:Khan/khan-exercises.git 2>/dev/null || (cd khan-exercises; git pull -q)
-
 echo "Getting development tools"
 # download a bunch of developer tools
 mkdir -p devtools 
