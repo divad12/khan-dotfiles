@@ -200,7 +200,7 @@ http {
 	server {
 		listen		127.0.0.1:80;
 		server_name     exercises.ka.local;
-		root		/Users/$USER/khan/khan-exercises;
+		root		/Users/$USER/khan/stable/khan-exercises;
 		
 		location / {
 			autoindex on;
