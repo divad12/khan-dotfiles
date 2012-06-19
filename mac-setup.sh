@@ -19,23 +19,25 @@ if [ -z "$name" -o -z "$gh_email" -o -z "$hg_email" ]; then
 	exit 1
 fi
 
-read
+read -p "Have you installed the command line tools? y/n [n] " clt_installed
 
-echo "Downloading Command Line Tools (log in to start the download)"
-# download the command line tools
-open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_for_xcode__june_2012/command_line_tools_for_xcode_june_2012.dmg"
+if [ "$clt_installed" != "y" ]; then
+	echo "Downloading Command Line Tools (log in to start the download)"
+	# download the command line tools
+	open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_for_xcode__june_2012/command_line_tools_for_xcode_june_2012.dmg"
 
-read
+	read
 
-echo "Running Command Line Tools Installer"
+	echo "Running Command Line Tools Installer"
 
-# attach the disk image
-hdiutil attach ~/Downloads/command_line_tools_for_xcode_june_2012.dmg > /dev/null
-echo "Type your password to install:"
-# install the command line tools
-sudo installer -package /Volumes/Command\ Line\ Tools/Command\ Line\ Tools.mpkg -target /
-# detach the disk image
-hdiutil detach /Volumes/Command\ Line\ Tools/ > /dev/null
+	# attach the disk image
+	hdiutil attach ~/Downloads/command_line_tools_for_xcode_june_2012.dmg > /dev/null
+	echo "Type your password to install:"
+	# install the command line tools
+	sudo installer -package /Volumes/Command\ Line\ Tools/Command\ Line\ Tools.mpkg -target /
+	# detach the disk image
+	hdiutil detach /Volumes/Command\ Line\ Tools/ > /dev/null
+fi
 
 echo "Opening Hipchat website (log in and click download to install)"
 # open the hipchat page
