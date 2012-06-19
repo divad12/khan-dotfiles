@@ -98,7 +98,10 @@ cd ~/khan/
 
 echo "Cloning stable"
 # get the stable branch
-rm -f ~/.hgrc
+if [ -e ~/.hgrc ]; then
+	echo "Moving old .hgrc to .hgrc.old"
+	mv ~/.hgrc ~/.hgrc.old
+fi
 hg clone -q https://khanacademy.kilnhg.com/Code/Website/Group/stable stable 2>/dev/null || (cd stable; hg pull -q -u)
 
 echo "Setting up your .hgrc"
