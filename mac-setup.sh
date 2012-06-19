@@ -10,8 +10,16 @@ echo "    the next step (including this one)"
 read
 
 # get user's name/email
-read -p "Enter your KA email for use in git/hg: " email
-read -p "Enter your full name for use on git/hg: " name
+read -p "Enter your full name: " name
+read -p "Enter your github email: " gh_email
+read -p "Enter your kiln email: " hg_email
+
+if [ -z "$name" -o -z "$gh_email" -o -z "$hg_email" ]; then
+	echo "You must enter names and emails"
+	exit 1
+fi
+
+read
 
 echo "Downloading Command Line Tools (log in to start the download)"
 # download the command line tools
@@ -53,17 +61,9 @@ echo "export PATH=/usr/local/sbin:/usr/local/bin:$$PATH" >> ~/.bash_profile
 # brew doctor
 brew doctor
 
-# if no email or name was provided, get it from git
-if [ -n "$email" ]; then
-	git config --global user.email $email
-else
-	email=`git config --global user.email`
-fi
-if [ -n "$name" ]; then
-	git config --global user.name "$name"
-else
-	name=`git config --global user.name`
-fi
+# setup git name/email
+git config --global user.name "$name"
+git config --global user.email "$gh_email"
 
 echo "Installing virtualenv"
 # install pip
@@ -108,7 +108,7 @@ sudo cp dummycert.pem /etc/hg-dummy-cert.pem
 rm dummycert.pem
 # setup the .hgrc
 echo "[ui]
-username = $name <$email>
+username = $name <$hg_email>
 
 [extensions]
 rdiff = $HOME/khan/devtools/mercurial-extensions-rdiff/rdiff.py
@@ -135,7 +135,7 @@ echo "Setting up ssh keys"
 
 # if there is no ssh key, make one
 if [ ! -e ~/.ssh/id_rsa ]; then
-	ssh-keygen -t rsa -C "$email" -f ~/.ssh/id_rsa
+	ssh-keygen -t rsa -C "$gh_email" -f ~/.ssh/id_rsa
 fi
 
 # copy the public key
