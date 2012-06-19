@@ -137,7 +137,7 @@ deactivate
 echo "Setting up ssh keys"
 
 # if there is no ssh key, make one
-if [ ! -e ~/.ssh/id_rsa ]; then
+if [ ! -e ~/.ssh/id_*sa ]; then
 	ssh-keygen -t rsa -C "$gh_email" -f ~/.ssh/id_rsa
 fi
 
