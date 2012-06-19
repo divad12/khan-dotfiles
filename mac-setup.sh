@@ -37,8 +37,7 @@ read
 
 echo "Installing Homebrew"
 # if homebrew is already installed, don't do it again
-if [ ! -d /usr/local/.git ]
-then
+if [ ! -d /usr/local/.git ]; then
 	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
 fi
 # update brew
@@ -55,14 +54,12 @@ echo "export PATH=/usr/local/sbin:/usr/local/bin:$$PATH" >> ~/.bash_profile
 brew doctor
 
 # if no email or name was provided, get it from git
-if [ -n "$email" ]
-then
+if [ -n "$email" ]; then
 	git config --global user.email $email
 else
 	email=`git config --global user.email`
 fi
-if [ -n "$name" ]
-then
+if [ -n "$name" ]; then
 	git config --global user.name "$name"
 else
 	name=`git config --global user.name`
@@ -137,8 +134,7 @@ deactivate
 echo "Setting up ssh keys"
 
 # if there is no ssh key, make one
-if [ ! -e ~/.ssh/id_rsa ]
-then
+if [ ! -e ~/.ssh/id_rsa ]; then
 	ssh-keygen -t rsa -C "$email" -f ~/.ssh/id_rsa
 fi
 
@@ -209,8 +205,7 @@ http {
 }" | sudo tee /usr/local/etc/nginx/nginx.conf >/dev/null
 
 # if not done before, add the new hosts to /etc/hosts
-if ! grep -q "ka.local" /etc/hosts
-then
+if ! grep -q "ka.local" /etc/hosts; then
 	echo "# KA local servers
 127.0.0.1       exercises.ka.local
 ::1             exercises.ka.local
