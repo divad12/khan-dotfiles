@@ -170,6 +170,10 @@ echo "Installing nginx"
 # install nginx
 brew install nginx
 
+echo "Backing up nginx.conf to nginx.conf.old"
+# make a backup of nginx config
+sudo cp /usr/local/etc/nginx/nginx.conf /usr/local/etc/nginx/nginx.conf.old
+
 echo "Setting up nginx"
 # setup the nginx configuration file
 echo "worker_processes 1;
