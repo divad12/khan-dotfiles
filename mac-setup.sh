@@ -84,9 +84,6 @@ virtenv() {
 	source ~/.virtualenv/khan27/bin/activate
 }
 
-echo "Installing mercurial"
-# install mercurial
-sudo pip -q install Mercurial
 echo "Installing mercurial in virtualenv"
 virtenv
 # install mercurial in virtualenv
