@@ -19,7 +19,8 @@ if [ -z "$name" -o -z "$gh_email" -o -z "$hg_email" ]; then
 	exit 1
 fi
 
-read -p "Have you installed the command line tools? y/n [n] " clt_installed
+echo "Have you installed the XCode Command Line Tools package,"
+read -p "  or do you have a working version of gcc? y/n [n] " clt_installed
 
 if [ "$clt_installed" != "y" ]; then
 	echo "Downloading Command Line Tools (log in to start the download)"
