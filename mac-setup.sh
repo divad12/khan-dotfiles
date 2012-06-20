@@ -98,13 +98,9 @@ cd ~/khan/
 
 echo "Cloning stable"
 # get the stable branch
-if [ -e ~/.hgrc ]; then
-	echo "Moving old .hgrc to .hgrc.old"
-	mv ~/.hgrc ~/.hgrc.old
-fi
 hg clone -q https://khanacademy.kilnhg.com/Code/Website/Group/stable stable 2>/dev/null || (cd stable; hg pull -q -u)
 
-echo "Setting up your .hgrc"
+echo "Setting up your .hgrc.local"
 # make the dummy certificate
 yes "" | openssl req -new -x509 -extensions v3_ca -keyout /dev/null -out dummycert.pem -days 3650 -passout pass:pass 2> /dev/null
 sudo cp dummycert.pem /etc/hg-dummy-cert.pem
@@ -113,20 +109,10 @@ rm dummycert.pem
 echo "[ui]
 username = $name <$hg_email>
 
-[extensions]
-rdiff = $HOME/khan/devtools/mercurial-extensions-rdiff/rdiff.py
-kilnauth = $HOME/khan/devtools/kilnauth.py
-hgext.bookmarks =
-color =
-
-[hooks]
-pretxncommit.khanlint = $HOME/khan/devtools/khan-linter/hghook.py
-
-[auth]
-kiln.prefix = https://khanacademy.kilnhg.com
-
 [web]
-cacerts = /etc/hg-dummy-cert.pem" > ~/.hgrc
+cacerts = /etc/hg-dummy-cert.pem" > ~/.hgrc.local
+
+echo "%include ~/.hgrc.local" >> ~/.hgrc
 
 echo "Installing requirements"
 virtenv
