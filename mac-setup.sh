@@ -160,7 +160,7 @@ sudo cp /usr/local/etc/nginx/nginx.conf /usr/local/etc/nginx/nginx.conf.old
 
 echo "Setting up nginx"
 # setup the nginx configuration file
-cat nginx.conf | sed 's/%USER/'"$USER"'/' > /usr/local/etc/nginx/nginx.conf
+cat nginx.conf | sed "s/%USER/$USER/" > /usr/local/etc/nginx/nginx.conf
 
 # if not done before, add the new hosts to /etc/hosts
 if ! grep -q "ka.local" /etc/hosts; then
