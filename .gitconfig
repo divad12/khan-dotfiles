@@ -27,6 +27,8 @@
   df = diff
   dfs = diff --staged
   lp = log -p
+  outgoing = log origin/master..HEAD
+  incoming = "!git fetch $1; git log HEAD..$1/master"
 
   # Ignore whitespace changes
   bw = blame -w
