@@ -8,6 +8,9 @@ attend = annotate, cat, diff, export, glog, log, qdiff, slog, dlog, gslog, sglog
 [ui]
 # TODO
 username = FIRST LAST <YOUR_EMAIL@khanacademy.org>
+# TODO: Clone this from https://github.com/Khan/khan-linter
+# TODO: make sure $EDITOR (or $VISUAL) points to your favorite text editor!
+editor = $HOME/khan/devtools/khan-linter/hgeditor "${VISUAL-$EDITOR}"
 
 # Global .hgignore file
 ignore = ~/.hgignore_global
@@ -66,5 +69,4 @@ stable = https://khanacademy.kilnhg.com/Code/Website/Group/stable
 
 [hooks]
 # Code linter
-# TODO: Clone this from https://github.com/Khan/khan-linter
 pretxncommit.khanlint = $HOME/khan/devtools/khan-linter/hghook.py
