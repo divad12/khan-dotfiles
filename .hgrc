@@ -9,8 +9,9 @@ attend = annotate, cat, diff, export, glog, log, qdiff, slog, dlog, gslog, sglog
 # TODO
 username = FIRST LAST <YOUR_EMAIL@khanacademy.org>
 # TODO: Clone this from https://github.com/Khan/khan-linter
-# TODO: make sure $EDITOR (or $VISUAL) points to your favorite text editor!
-editor = $HOME/khan/devtools/khan-linter/hgeditor "${VISUAL-$EDITOR}"
+# Make sure $EDITOR (or $VISUAL) points to your favorite text editor or this
+# will make 'hg commit' fail with a cryptic error.
+editor = $HOME/khan/devtools/khan-linter/hgeditor.sh "${VISUAL-$EDITOR}"
 
 # Global .hgignore file
 ignore = ~/.hgignore_global
