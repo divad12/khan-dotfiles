@@ -49,7 +49,7 @@ read
 echo "Installing Homebrew"
 # if homebrew is already installed, don't do it again
 if [ ! -d /usr/local/.git ]; then
-	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+	/usr/bin/ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
 fi
 # update brew
 brew update > /dev/null
@@ -57,9 +57,9 @@ brew update > /dev/null
 # make the cellar
 mkdir -p /usr/local/Cellar
 # export some useful directories
-export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+export PATH=/usr/local/sbin:$PATH
 # put these in .bash_profile too
-echo "export PATH=/usr/local/sbin:/usr/local/bin:$$PATH" >> ~/.bash_profile
+echo "export PATH=/usr/local/sbin:$$PATH" >> ~/.bash_profile
 
 # brew doctor
 brew doctor
@@ -96,7 +96,7 @@ echo "Making khan directory"
 mkdir -p ~/khan/
 cd ~/khan/
 
-echo "Cloning stable"
+echo "Cloning stable -- you'll need your Kiln password"
 # get the stable branch
 hg clone -q https://khanacademy.kilnhg.com/Code/Website/Group/stable stable 2>/dev/null || (cd stable; hg pull -q -u)
 
@@ -123,6 +123,7 @@ deactivate
 echo "Setting up ssh keys"
 
 # if there is no ssh key, make one
+mkdir -p ~/.ssh
 if [ ! -e ~/.ssh/id_*sa ]; then
 	ssh-keygen -t rsa -C "$gh_email" -f ~/.ssh/id_rsa
 fi
@@ -160,7 +161,7 @@ sudo cp /usr/local/etc/nginx/nginx.conf /usr/local/etc/nginx/nginx.conf.old
 
 echo "Setting up nginx"
 # setup the nginx configuration file
-cat nginx.conf | sed "s/%USER/$USER/" > /usr/local/etc/nginx/nginx.conf
+cat https://raw.github.com/Khan/khan-dotfiles/master/nginx.conf | sed "s/%USER/$USER/" > /usr/local/etc/nginx/nginx.conf
 
 # if not done before, add the new hosts to /etc/hosts
 if ! grep -q "ka.local" /etc/hosts; then
@@ -179,8 +180,8 @@ sudo /usr/libexec/PlistBuddy -c "Delete :UserName" /Library/LaunchDaemons/homebr
 sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
 
 echo "Setting up App Engine Launcher"
-curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.6.6.dmg > ~/Downloads/GoogleAppEngineLauncher-1.6.6.dmg
-hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.6.6.dmg
+curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.7.4.dmg -o ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
+hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
 cp -r /Volumes/GoogleAppEngineLauncher-*/GoogleAppEngineLauncher.app /Applications/
 hdiutil detach /Volumes/GoogleAppEngineLauncher-*
 
