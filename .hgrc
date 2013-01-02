@@ -11,7 +11,7 @@ username = FIRST LAST <YOUR_EMAIL@khanacademy.org>
 # TODO: Clone this from https://github.com/Khan/khan-linter
 # Make sure $EDITOR (or $VISUAL) points to your favorite text editor or this
 # will make 'hg commit' fail with a cryptic error.
-editor = $HOME/khan/devtools/khan-linter/hgeditor.sh "${VISUAL-$EDITOR}"
+editor = ~/khan/devtools/khan-linter/hgeditor.sh "${VISUAL-$EDITOR}"
 
 # Global .hgignore file
 ignore = ~/.hgignore_global
@@ -33,9 +33,9 @@ progress =
 hgext.purge =
 hgext.shelve = ~/.hgext/hgshelve.py
 hgext.collapse = ~/.hgext/collapse.py
-dummy = $HOME/khan/devtools/kiln-review/review.py
-rdiff = $HOME/khan/devtools/mercurial-extensions-rdiff/rdiff.py
-kilnauth = $HOME/khan/devtools/kiln_extensions/kilnauth.py
+dummy = ~/khan/devtools/kiln-review/review.py
+rdiff = ~/khan/devtools/mercurial-extensions-rdiff/rdiff.py
+kilnauth = ~/khan/devtools/kiln_extensions/kilnauth.py
 
 [alias]
 # Takes a revision argument and shows the diff: hg show 1337
@@ -47,12 +47,12 @@ nudge = push --rev .
 # What did I do today?
 today = !hg log --template '{rev} {desc|firstline|strip}\n' -r "sort(user('$(hg showconfig ui.username | sed 's/.*<\(.*\)>/\1/')') and date(-1), -date)"
 
-slog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.slog
-nlog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.nlog
-sglog = glog --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.sglog
+slog = log --style=~/khan-dotfiles/mercurial-cli-templates/map-cmdline.slog
+nlog = log --style=~/khan-dotfiles/mercurial-cli-templates/map-cmdline.nlog
+sglog = glog --style=~/khan-dotfiles/mercurial-cli-templates/map-cmdline.sglog
 gslog = sglog
-dlog = log --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.dlog
-lga = glog --style=$HOME/khan-dotfiles/mercurial-cli-templates/map-cmdline.lg
+dlog = log --style=~/khan-dotfiles/mercurial-cli-templates/map-cmdline.dlog
+lga = glog --style=~/khan-dotfiles/mercurial-cli-templates/map-cmdline.lg
 lg = lga --rev 'ancestors(.)'
 st = st -S
 df = diff
@@ -70,4 +70,4 @@ stable = https://khanacademy.kilnhg.com/Code/Website/Group/stable
 
 [hooks]
 # Code linter
-pretxncommit.khanlint = $HOME/khan/devtools/khan-linter/hghook.py
+pretxncommit.khanlint = ~/khan/devtools/khan-linter/hghook.py
