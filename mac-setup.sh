@@ -163,8 +163,8 @@ sudo cp /usr/local/etc/nginx/nginx.conf /usr/local/etc/nginx/nginx.conf.old
 
 # Copy some default SSL certificates.  If you want to make your own, follow
 # the instructions found here:  http://wiki.nginx.org/HttpSslModule
-sudo cat https://raw.github.com/Khan/khan-dotfiles/master/stable.ka.local.crt > /usr/local/etc/nginx/stable.ka.local.crt
-sudo cat https://raw.github.com/Khan/khan-dotfiles/master/stable.ka.local.key > /usr/local/etc/nginx/stable.ka.local.key
+curl -s https://raw.github.com/Khan/khan-dotfiles/master/stable.ka.local.crt > /usr/local/etc/nginx/stable.ka.local.crt
+curl -s https://raw.github.com/Khan/khan-dotfiles/master/stable.ka.local.key > /usr/local/etc/nginx/stable.ka.local.key
 
 echo "Setting up nginx"
 # setup the nginx configuration file
