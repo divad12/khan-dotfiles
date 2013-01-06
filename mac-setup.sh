@@ -168,7 +168,7 @@ sudo cat https://raw.github.com/Khan/khan-dotfiles/master/stable.ka.local.key > 
 
 echo "Setting up nginx"
 # setup the nginx configuration file
-cat https://raw.github.com/Khan/khan-dotfiles/master/nginx.conf | sed "s/%USER/$USER/" > /usr/local/etc/nginx/nginx.conf
+curl -s https://raw.github.com/Khan/khan-dotfiles/master/nginx.conf | sed "s/%USER/$USER/" > /usr/local/etc/nginx/nginx.conf
 
 # if not done before, add the new hosts to /etc/hosts
 if ! grep -q "ka.local" /etc/hosts; then
