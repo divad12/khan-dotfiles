@@ -28,10 +28,11 @@
 
 # Ignore files matching the following regex
 --invert-file-match
--G(hashed-\w+.(js|css)|combined\.(js|css)|compressed\.(js|css)|\.handlebars\.js$)
+-G((hashed-\w+|combined|compressed)\.(js|css)$|uri\.css$|\.handlebars\.js$|packages_compressed\.py$|mofile_..\.py$|javascript-packages-compressed\.json$)
 
 # Directories to ignore at any level
 --ignore-dir=third_party
+--ignore-dir=genfiles
 --ignore-dir=exercises-packed
 --ignore-dir=compiled_templates
 --ignore-dir=deploy/node_modules
