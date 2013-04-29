@@ -32,6 +32,7 @@
   lp = log -p
   outgoing = log origin/master..HEAD
   incoming = "!git fetch $1; git log HEAD..$1/master"
+  weekly = !sh -c 'git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`'
 
   # Ignore whitespace changes
   bw = blame -w
