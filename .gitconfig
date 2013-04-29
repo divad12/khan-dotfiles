@@ -14,8 +14,11 @@
   interactive = auto
 
 [branch]
-  # auto-adds the --track flag to git branch. Helps out arc (for Phabricator).
+  # autosetupmerge auto-adds the --track flag to each git branch,
+  # which is helpful for arc (part of Phabricator).  autosetuprebase
+  # means that instead of merging it will rebase.  Weird you need both!
   autosetupmerge = always
+  autosetuprebase = always
 
 [alias]
   graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
