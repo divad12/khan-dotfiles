@@ -16,3 +16,7 @@ for file in .*; do
     fi
     ln -sfvn "$source" "$dest"
 done
+
+# Also create the pre-commit hook git symlink.
+mkdir -p ~/.git_template/hooks
+ln -snf $HOME/khan/devtools/khan-linter/githook.py ~/.git_template/hooks/commit-msg

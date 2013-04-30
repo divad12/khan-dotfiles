@@ -47,3 +47,6 @@
 
   # Detect renames as well as copies
   renames = copies
+
+[init]
+	templatedir = ~/.git_template
