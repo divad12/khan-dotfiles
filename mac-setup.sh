@@ -72,11 +72,17 @@ install_homebrew() {
     # Update brew.
     brew update > /dev/null
 
-    # Make the cellar
+    # Make the cellar.
     mkdir -p /usr/local/Cellar
 
-    # brew doctor
-    brew doctor
+    # Make sure everything is ok.  We don't care if we're using an
+    # obsolete gcc, so instead of looking at the exit code for 'brew
+    # doctor', we look at its output.  The last '! grep .' fails if
+    # brew doctor has any output after we grep out the stuff we don't
+    # care about.
+    brew doctor 2>&1 \
+        | grep -v 'A newer Command Line Tools' \
+        | ! grep .
 }
 
 install_nginx() {
