@@ -244,7 +244,8 @@ echo "---------------------------------------------------------------------"
 
 if [ -n "$warnings" ]; then
     echo "-- WARNINGS:"
-    /bin/echo -e "$warnings"
+    # echo is very inconsistent about whether it supports -e. :-( 
+    echo "$warnings" | sed 's/\\n/\n/g'
 else
     echo "DONE!"
 fi
