@@ -64,12 +64,12 @@ install_hipchat() {
 }
 
 install_homebrew() {
-    echo "Installing Homebrew"
     # If homebrew is already installed, don't do it again.
     if [ ! -d /usr/local/.git ]; then
+        echo "Installing Homebrew"
 	/usr/bin/ruby -e "`curl -fsSkL raw.github.com/mxcl/homebrew/go`"
     fi
-    # Update brew.
+    echo "Updating Homebrew"
     brew update > /dev/null
 
     # Make the cellar.
@@ -89,33 +89,34 @@ install_homebrew() {
 
 install_nginx() {
     echo "Installing nginx"
-    brew install nginx
+    # brew returns 1 if nginx is already installed.
+    if brew install nginx >/dev/null 2>&1; then
+        if [ ! -e /usr/local/etc/nginx/nginx.conf.old ]; then
+            echo "Backing up nginx.conf to nginx.conf.old"
+            sudo cp /usr/local/etc/nginx/nginx.conf \
+                /usr/local/etc/nginx/nginx.conf.old
+        fi
 
-    if [ ! -e /usr/local/etc/nginx/nginx.conf.old ]; then
-        echo "Backing up nginx.conf to nginx.conf.old"
-        sudo cp /usr/local/etc/nginx/nginx.conf \
-            /usr/local/etc/nginx/nginx.conf.old
+        # Copy some default SSL certificates.  If you want to make your
+        # own, follow the instructions found here:
+        #     http://wiki.nginx.org/HttpSslModule
+        sudo cp -f stable.ka.local.crt /usr/local/etc/nginx/stable.ka.local.crt
+        sudo cp -f stable.ka.local.key /usr/local/etc/nginx/stable.ka.local.key
+
+        echo "Setting up nginx"
+        # setup the nginx configuration file
+        sudo sh -c \
+            "sed 's/%USER/$USER/' nginx.conf > /usr/local/etc/nginx/nginx.conf"
+
+        # Copy the launch plist.
+        sudo cp -f /usr/local/Cellar/nginx/*/homebrew.mxcl.nginx.plist \
+            /Library/LaunchDaemons
+        # Delete the username key so it is run as root
+        sudo /usr/libexec/PlistBuddy -c "Delete :UserName" \
+            /Library/LaunchDaemons/homebrew.mxcl.nginx.plist 2>/dev/null
+        # Load it.
+        sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
     fi
-
-    # Copy some default SSL certificates.  If you want to make your
-    # own, follow the instructions found here:
-    #     http://wiki.nginx.org/HttpSslModule
-    sudo cp -f stable.ka.local.crt /usr/local/etc/nginx/stable.ka.local.crt
-    sudo cp -f stable.ka.local.key /usr/local/etc/nginx/stable.ka.local.key
-
-    echo "Setting up nginx"
-    # setup the nginx configuration file
-    sudo sh -c \
-        "sed 's/%USER/$USER/' nginx.conf > /usr/local/etc/nginx/nginx.conf"
-
-    # Copy the launch plist.
-    sudo cp -f /usr/local/Cellar/nginx/*/homebrew.mxcl.nginx.plist \
-        /Library/LaunchDaemons
-    # Delete the username key so it is run as root
-    sudo /usr/libexec/PlistBuddy -c "Delete :UserName" \
-        /Library/LaunchDaemons/homebrew.mxcl.nginx.plist 2>/dev/null
-    # Load it.
-    sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
 }
 
 install_appengine_launcher() {
