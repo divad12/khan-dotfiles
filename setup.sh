@@ -18,6 +18,7 @@ mkdir -p "$ROOT"
 warnings=""
 
 add_warning() {
+    echo "WARNING: $*"
     warnings="$warnings\nWARNING: $*"
 }
 
@@ -182,7 +183,7 @@ install_python_and_npm() {
     # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
     sudo pip install -q virtualenv
     if [ ! -d "$ROOT/.virtualenv/khan27" ]; then
-        virtualenv -q --python=/usr/bin/python2.7 --no-site-packages \
+        virtualenv -q --python="`which python2.7`" --no-site-packages \
             "$ROOT/.virtualenv/khan27"
     fi
     # Activate the virtualenv
