@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Bail on any errors
+set -e
+
 update_path() {
     # Export some useful directories.
     export PATH=/usr/local/sbin:$PATH
@@ -108,20 +111,22 @@ install_nginx() {
 }
 
 install_appengine_launcher() {
-    echo "Setting up App Engine Launcher"
-    # TODO(csilvers): skip this step if it's already been done.
-    curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.7.4.dmg \
-        -o ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
-    hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
-    cp -fr /Volumes/GoogleAppEngineLauncher-*/GoogleAppEngineLauncher.app \
-        /Applications/
-    hdiutil detach /Volumes/GoogleAppEngineLauncher-*
+    if [ ! -d /Applications/GoogleAppEngineLauncher.app ]; then
+        echo "Setting up App Engine Launcher"
+        # TODO(csilvers): skip this step if it's already been done.
+        curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.7.4.dmg \
+            -o ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
+        hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
+        cp -fr /Volumes/GoogleAppEngineLauncher-*/GoogleAppEngineLauncher.app \
+            /Applications/
+        hdiutil detach /Volumes/GoogleAppEngineLauncher-*
 
-    echo "Set up the Google App Engine Launcher according to the website."
-    open "https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/launching-your-test-site"
-    open -a GoogleAppEngineLauncher
+        echo "Set up the Google App Engine Launcher according to the website."
+        open "https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/launching-your-test-site"
+        open -a GoogleAppEngineLauncher
 
-    read -p "Press enter to continue..."
+        read -p "Press enter to continue..."
+    fi
 }
 
 
