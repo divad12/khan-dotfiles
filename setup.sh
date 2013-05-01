@@ -22,9 +22,10 @@ add_warning() {
 }
 
 check_dependencies() {
-    # We need git >=1.8 for '[push] default=simple'.
-    # (Even without that, we'd need git >=1.7.10 or so for [include].)
-    if ! git --version | grep -q -e 'version 1.[89]' -e 'version 2'; then
+    # We need git >=1.7.11 for '[push] default=simple'.
+    if ! git --version | grep -q -e 'version 1.7.1[1-9]' \
+                                 -e 'version 1.[89]' \
+                                 -e 'version 2'; then
         echo "Must have git >= 1.8.  See http://git-scm.com/downloads"
         exit 1
     fi
@@ -79,7 +80,7 @@ edit_system_config() {
     # This will let you use a url like exercises.ka.local
     if ! grep -q "ka.local" /etc/hosts; then
         # This 'sudo tee' trick is the way to redirect stdin within sudo.
-	sudo tee -a /etc/hosts >/dev/null <<EOF 
+        sudo tee -a /etc/hosts >/dev/null <<EOF 
 
 # KA local servers
 127.0.0.1       exercises.ka.local
@@ -104,7 +105,7 @@ EOF
     # If there is no ssh key, make one.
     mkdir -p "$ROOT/.ssh"
     if [ ! -e "$ROOT/.ssh/id_rsa" -a ! -e "$ROOT/.ssh/id_dsa" ]; then
-	ssh-keygen -q -N "" -t rsa -f "$ROOT/.ssh/id_rsa"
+        ssh-keygen -q -N "" -t rsa -f "$ROOT/.ssh/id_rsa"
     fi
 }
 
