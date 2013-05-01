@@ -197,7 +197,14 @@ install_python_and_npm() {
 install_ruby() {
     echo "Installing ruby libraries"
     # These are used by khan-exercises to pack exercises.
-    sudo gem install --conservative -q json nokogiri uglifier therubyracer
+    # --conservative keeps gem from re-installing things that are
+    # already installed, but the older gem that defaults on OS X
+    # doesn't support it, so we do it manually.
+    for package in json nokogiri uglifier therubyracer; do
+        if ! gem list | grep -q "^$package"; then
+            sudo gem install -q "$package"
+        fi
+    done
 }
 
 update_credentials() {
