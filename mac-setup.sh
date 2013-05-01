@@ -89,8 +89,7 @@ install_homebrew() {
 
 install_nginx() {
     echo "Installing nginx"
-    # brew returns 1 if nginx is already installed.
-    if brew install nginx >/dev/null 2>&1; then
+    if ! brew install nginx 2>&1 | grep -q 'already installed'; then
         if [ ! -e /usr/local/etc/nginx/nginx.conf.old ]; then
             echo "Backing up nginx.conf to nginx.conf.old"
             sudo cp /usr/local/etc/nginx/nginx.conf \
