@@ -22,6 +22,7 @@ add_warning() {
 }
 
 check_dependencies() {
+    echo "Checking system dependencies"
     # We need git >=1.7.11 for '[push] default=simple'.
     if ! git --version | grep -q -e 'version 1.7.1[1-9]' \
                                  -e 'version 1.[89]' \
@@ -39,6 +40,7 @@ check_dependencies() {
 }
 
 install_dotfiles() {
+    echo "Installing and updating dotfiles (.bashrc, etc)"
     # Most dotfiles are installed as symlinks.
     # (But we ignore .git which is actually part of the khan-dotfiles repo!)
     for file in `find .[!.]* -name .git -prune -o -type f -print`; do
@@ -63,13 +65,14 @@ install_dotfiles() {
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
-            add_warning "$dest does not include $ka_version; may want to fix"
+            add_warning "$dest does not include $ka_version; see `pwd`/$file"
         fi
     done
 
 }
 
 edit_system_config() {
+    echo "Modifying system configs: /etc/hosts, etc"
     # This will let you visit the khan academy homepage by just typing
     # www (or www/) into your browser's address bar, rather than
     # having to type www.khanacademy.org.
@@ -114,7 +117,7 @@ clone_repo() {
     (
         mkdir -p "$ROOT/$2"
         cd "$ROOT/$2"
-        if git clone "$1"; then
+        if git clone "$1" 2>/dev/null; then
             cd `basename $1`
             git submodule update --init --recursive
         else
@@ -126,6 +129,7 @@ clone_repo() {
 }
 
 clone_repos() {
+    echo "Cloning repositories, including the main 'webapp' repo"
     clone_repo ssh://khanacademy@khanacademy.kilnhg.com/Website/Group/webapp \
         khan/
     clone_repo git://github.com/Khan/kiln-review khan/devtools/
@@ -148,12 +152,14 @@ clone_repos() {
 
 # Depends on khan-linter having been pulled first.
 install_git_hooks() {
+    echo "Installing git hooks"
     mkdir -p "$ROOT/.git_template/hooks"
     ln -snfv "$ROOT/khan/devtools/khan-linter/githook.py" \
              "$ROOT/.git_template/hooks/commit-msg"
 }
 
 install_mercurial_hooks() {
+    echo "Installing mercurial hooks"
     # Create a dummy certificate to quiet mercurial and kiln
     mkdir -p "$ROOT/khan/devtools"
     if [ ! -s "$ROOT/khan/devtools/hg-dummy-cert.pem" ]; then
@@ -165,6 +171,7 @@ install_mercurial_hooks() {
 
 # Must have cloned the repos first.
 install_python_and_npm() {
+    echo "Installing python and npm (javascript/node) libraries"
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
 
@@ -188,11 +195,13 @@ install_python_and_npm() {
 }
 
 install_ruby() {
+    echo "Installing ruby libraries"
     # These are used by khan-exercises to pack exercises.
     sudo gem install --conservative -q json nokogiri uglifier therubyracer
 }
 
 update_credentials() {
+    echo "Updating information in your git and hg configs"
     # sed -i means 'replace in-place'
     if grep -q '%NAME_FIRST_LAST%' "$ROOT/.gitconfig" "$ROOT/.hgrc"; then
         read -p "Enter your full name (First Last): " name
@@ -223,9 +232,12 @@ install_ruby
 update_credentials
 
 
+echo
+echo "---------------------------------------------------------------------"
+
 if [ -n "$warnings" ]; then
     echo "-- WARNINGS:"
-    echo -e "$warnings"
+    /bin/echo -e "$warnings"
 else
     echo "DONE!"
 fi

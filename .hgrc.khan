@@ -33,6 +33,7 @@ hgext.collapse = ~/.hgext/collapse.py
 dummy = ~/khan/devtools/kiln-review/review.py
 rdiff = ~/khan/devtools/mercurial-extensions-rdiff/rdiff.py
 kilnauth = ~/khan/devtools/kiln_extensions/kilnauth.py
+findreviewers = ~/khan/webapp/tools/findreviewers.py
 
 [alias]
 # Takes a revision argument and shows the diff: hg show 1337
