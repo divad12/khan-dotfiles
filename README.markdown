@@ -30,20 +30,16 @@ the cloned directory:
     cd khan-dotfiles
     make
 
-This will symlink all the dotfiles in the `khan-dotfiles` directory to
-your home directory.  It will not overwrite any of your existing
-dotfiles but will emit a warning if it failed to symlink a file.
-
-It will also install a lot of Python, Node.js, and other configuration files.
+This will install your system: installing executables, python
+libraries, dotfiles, etc.  It will not overwrite any of your existing
+dotfiles but will emit a warning if it sees something it doesn't
+understand.
 
 This script is idempotent, so it should be safe to run it multiple times.
 
-To benefit from the `.ackrc` here, install `ack`, which is basically a
-faster, more configurable `grep -r` that ignores directories like
-`.git` and displays the results nicely.
-
-Also, install [autojump](https://github.com/joelthelion/autojump) if
-you're a frequent user of the terminal to navigate the filesystem.
+You may wish to install
+[autojump](https://github.com/joelthelion/autojump) if you're a
+frequent user of the terminal to navigate the filesystem.
 
 Hello
 -----
