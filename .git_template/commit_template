@@ -1,0 +1,10 @@
+<one-line summary, followed by blank line and full summary>
+
+Test Plan:
+<see below>
+
+# --
+# For 'Test Plan:', list the commands you ran or process you
+#   followed to test this change.
+# If this commit is adding to an existing review, delete the
+# 'Test Plan:' lines and replace them with 'Review: Kxxx'.

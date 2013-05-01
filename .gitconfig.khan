@@ -32,6 +32,9 @@
   # Ignore whitespace changes
   bw = blame -w
 
+[commit]
+  template = ~/.git_template/commit_template
+
 [merge]
   # Always show a diffstat at the end of a merge
   stat = true

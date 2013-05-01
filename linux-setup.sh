@@ -68,10 +68,12 @@ install_packages() {
 
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
-    sudo service ntp stop
-    sudo ntpdate 0.ubuntu.pool.ntp.org 1.ubuntu.pool.ntp.org \
-        2.ubuntu.pool.ntp.org 3.ubuntu.pool.ntp.org
-    sudo service ntp start
+    if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
+        sudo service ntp stop
+        sudo ntpdate 0.ubuntu.pool.ntp.org 1.ubuntu.pool.ntp.org \
+            2.ubuntu.pool.ntp.org 3.ubuntu.pool.ntp.org
+        sudo service ntp start
+    fi
 }
 
 
