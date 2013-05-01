@@ -118,7 +118,9 @@ clone_repo() {
     (
         mkdir -p "$ROOT/$2"
         cd "$ROOT/$2"
-        if git clone "$1" 2>/dev/null; then
+        dirname=`basename "$1"`
+        if [ ! -d "$dirname" ]; then
+            git clone "$1"
             cd `basename $1`
             git submodule update --init --recursive
         else
