@@ -77,14 +77,16 @@ install_homebrew() {
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
-    # doctor', we look at its output.  The last 'grep .', combined
-    # with the ! at the beginning of this command, causes the overall
-    # command to fail -- and the script to exit -- if brew doctor has
-    # any output after we grep out the stuff we don't care about.
-    ! brew doctor 2>&1 \
-        | grep -v -e 'A newer Command Line Tools' \
-                  -e 'http://connect.apple.com' \
-        | grep .
+    # doctor', we look at its output.  The last 'grep', combined with
+    # the ! at the beginning of this command, causes the overall
+    # command to fail -- and thus the script to exit -- if brew doctor
+    # has any errors or warnings after we grep out the stuff we don't
+    # care about.
+    ## Commented out for now: too many legit setups have warnings (cf chris).
+    ## ! brew doctor 2>&1 \
+    ##     | grep -v -e 'A newer Command Line Tools' \
+    ##     | grep -v -e 'Your Homebrew is not installed to /usr/local' \
+    ##     | grep -C1000 -e ^Error -e ^Warning
 }
 
 install_nginx() {
