@@ -9,7 +9,7 @@ update_path() {
 
     # Put these in .bash_profile too.
     if ! grep -q "export PATH=/usr/local/sbin" ~/.bash_profile; then
-        echo "export PATH=/usr/local/sbin:$$PATH" >> ~/.bash_profile
+        echo "export PATH=/usr/local/sbin:$PATH" >> ~/.bash_profile
     fi
 }
 
