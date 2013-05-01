@@ -2,11 +2,6 @@
   # Global .gitignore file
   excludesfile = ~/.gitignore_global
 
-[user]
-  # TODO
-  name = FIRST LAST
-  email = YOUR_EMAIL_ON_GITHUB
-
 [color]
   status = auto
   branch = auto
