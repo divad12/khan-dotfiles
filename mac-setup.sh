@@ -65,7 +65,7 @@ install_hipchat() {
 
 install_homebrew() {
     # If homebrew is already installed, don't do it again.
-    if [ ! -d /usr/local/.git ]; then
+    if ! brew --help >/dev/null 2>&1; then
         echo "Installing Homebrew"
 	/usr/bin/ruby -e "`curl -fsSkL raw.github.com/mxcl/homebrew/go`"
     fi
@@ -119,7 +119,11 @@ install_nginx() {
 }
 
 install_appengine_launcher() {
-    if [ ! -d /Applications/GoogleAppEngineLauncher.app ]; then
+    # We check for the existence of appengine in two ways; it's
+    # possible to install appengine in ways that neither of these
+    # pass, but it should cover the vast majority of cases.
+    if [ ! -d /Applications/GoogleAppEngineLauncher.app ] && \
+       ! which dev_appserver.py >/dev/null; then
         echo "Setting up App Engine Launcher"
         # TODO(csilvers): skip this step if it's already been done.
         curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.7.4.dmg \
