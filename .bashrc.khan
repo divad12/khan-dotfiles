@@ -1,0 +1,23 @@
+################################################################################
+# Khan Academy specific bashrc
+
+# Add Phabricator bins to PATH
+export PATH="$HOME/khan/devtools/arcanist/khan-bin:$PATH"
+
+# Activate Python2.7 virtualenv
+source ~/.virtualenv/khan27/bin/activate
+
+# Figure out what directory we're *really* in (following symlinks).
+# We need this because *-completion.bash are siblings to this script.
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do   # follow symlinks
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"    # resolve relative symlink
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Enable autocompletion for git and hg
+source "$DIR/git-completion.bash"
+source "$DIR/hg-completion.bash"

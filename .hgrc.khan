@@ -6,9 +6,6 @@ pager = LESS='FSRX' less
 attend = annotate, cat, diff, export, glog, log, qdiff, slog, dlog, gslog, sglog, df, nlog, outgoing, lg, lga
 
 [ui]
-# TODO
-username = FIRST LAST <YOUR_EMAIL@khanacademy.org>
-# TODO: Clone this from https://github.com/Khan/khan-linter
 # Make sure $EDITOR (or $VISUAL) points to your favorite text editor or this
 # will make 'hg commit' fail with a cryptic error.
 editor = ~/khan/devtools/khan-linter/hgeditor.sh "${VISUAL-$EDITOR}"
@@ -17,8 +14,8 @@ editor = ~/khan/devtools/khan-linter/hgeditor.sh "${VISUAL-$EDITOR}"
 ignore = ~/.hgignore_global
 
 [web]
-# TODO: See http://kiln.stackexchange.com/questions/2816/mercurial-certificate-warning-certificate-not-verified-web-cacerts
-cacerts = ~/hg-dummy-cert.pem
+# See http://kiln.stackexchange.com/questions/2816/mercurial-certificate-warning-certificate-not-verified-web-cacerts
+cacerts = ~/khan/devtools/hg-dummy-cert.pem
 
 [extensions]
 hgext.extdiff =

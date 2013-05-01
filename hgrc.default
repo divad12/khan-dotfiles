@@ -1,0 +1,6 @@
+# Feel free to include whatever personal configs you'd like after the %include!
+
+%include .hgrc.khan
+
+[ui]
+username = %NAME_FIRST_LAST% <%EMAIL%@khanacademy.org>

@@ -1,9 +1,8 @@
-SHELL := /bin/bash
+install: os-install common-install ;
 
-all: link
+os-install:
+	if [ `uname -s` = Linux ]; then ./linux-setup.sh; fi
+	if [ `uname -s` = Darwin ]; then ./mac-setup.sh; fi
 
-link:
-	./symlink.sh
-
-# TODO(david): Automate other dev setup operations (install autojump, ack,
-#     pip install -r requirements.txt, etc.)
+common-install:
+	./setup.sh
