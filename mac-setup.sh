@@ -89,6 +89,15 @@ install_homebrew() {
     ##     | grep -C1000 -e ^Error -e ^Warning
 }
 
+install_node() {
+    if ! brew ls node >/dev/null 2>&1; then
+        brew install node 2>&1
+    fi
+    if ! npm --version >/dev/null; then
+        curl https://npmjs.org/install.sh | sh
+    fi
+}
+
 install_nginx() {
     echo "Installing nginx"
     if ! brew install nginx 2>&1 | grep -q 'already installed'; then
@@ -162,6 +171,7 @@ register_ssh_keys
 install_gcc
 install_hipchat
 install_homebrew
+install_node
 install_nginx
 install_appengine_launcher
 
