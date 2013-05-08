@@ -135,10 +135,10 @@ clone_repos() {
     echo "Cloning repositories, including the main 'webapp' repo"
     clone_repo ssh://khanacademy@khanacademy.kilnhg.com/Website/Group/webapp \
         khan/
-    clone_repo git://github.com/Khan/kiln-review khan/devtools/
-    clone_repo git://github.com/Khan/khan-linter khan/devtools/
-    clone_repo git://github.com/Khan/libphutil khan/devtools/
-    clone_repo git://github.com/Khan/arcanist khan/devtools/
+    clone_repo git@github.com:Khan/kiln-review khan/devtools/
+    clone_repo git@github.com:Khan/khan-linter khan/devtools/
+    clone_repo git@github.com:Khan/libphutil khan/devtools/
+    clone_repo git@github.com:Khan/arcanist khan/devtools/
     # For hg users
     (
         cd "$ROOT/khan/devtools"
