@@ -49,7 +49,7 @@ install_gcc() {
     if ! gcc --version >/dev/null 2>&1; then
 	echo "Downloading Command Line Tools (log in to start the download)"
 	# download the command line tools
-	open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_for_xcode__june_2012/command_line_tools_for_xcode_june_2012.dmg"
+	open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mountain_lion_for_xcode__april_2013/xcode462_cltools_10_86938259a.dmg"
 	# If this doesn't work for you, you can find the most recent
 	# version here: https://developer.apple.com/downloads
 	# Then plug that file into the commands below
@@ -57,7 +57,7 @@ install_gcc() {
 
 	echo "Running Command Line Tools Installer"
 	# Attach the disk image, install the tools, then detach the image.
-	hdiutil attach ~/Downloads/command_line_tools_for_xcode_june_2012.dmg \
+	hdiutil attach ~/Downloads/xcode462_cltools_10_86938259a.dmg \
             > /dev/null
 	sudo installer \
             -package "/Volumes/Command Line Tools/Command Line Tools.mpkg" \
