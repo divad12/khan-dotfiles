@@ -99,6 +99,29 @@ install_homebrew() {
     ##     | grep -C1000 -e ^Error -e ^Warning
 }
 
+update_git() {
+    if ! git --version | grep -q -e 'version 1.[89]' \
+                                 -e 'version 2'; then
+        echo "Installing an updated version of git using Homebrew"
+        echo "Current version is `git --version`"
+
+        if brew ls git >/dev/null 2>&1; then
+            # If git is already installed via brew, update it
+            brew upgrade git || true
+        else
+            # Otherwise, install via brew
+            brew install git || true
+        fi
+
+        # Check git version again
+        if ! git --version | grep -q -e 'version 1.[89]' \
+                                     -e 'version 2'; then
+            echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
+            read -p "Press enter to continue..."
+        fi
+    fi
+}
+
 install_node() {
     if ! brew ls node >/dev/null 2>&1; then
         brew install node 2>&1
@@ -181,8 +204,10 @@ register_ssh_keys
 install_gcc
 install_hipchat
 install_homebrew
+update_git
 install_node
 install_nginx
 install_appengine_launcher
 
-echo "You might be done!"
+echo "You might be done! \n\n \
+You should open a new shell to pick up any changes."
