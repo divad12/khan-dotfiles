@@ -7,9 +7,19 @@ update_path() {
     # Export some useful directories.
     export PATH=/usr/local/sbin:$PATH
 
-    # Put these in .bash_profile too.
-    if ! grep -q "export PATH=/usr/local/sbin" ~/.bash_profile; then
-        echo "export PATH=/usr/local/sbin:$PATH" >> ~/.bash_profile
+    # Put these in shell config file too.
+    # test whether it's already in a config file (sorry zsh users who aren't using .profile)
+    if ! grep -q "export PATH=.*/usr/local/sbin" ~/.bash_profile ~/.bash_login ~/.profile; then
+        # prefer .profile if no higher-preference files exist
+        PROFILE_FILE=".profile"
+
+        # use the same order bash does
+        if [ -f ~/.bash_profile ]; then
+            PROFILE_FILE=".bash_profile"
+        elif [ -f ~/.bash_login ]; then
+            PROFILE_FILE=".bash_login"
+        fi
+        echo 'export PATH=/usr/local/sbin:$PATH' >> "$HOME/$PROFILE_FILE"
     fi
 }
 
