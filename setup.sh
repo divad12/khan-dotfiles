@@ -22,6 +22,12 @@ add_warning() {
     warnings="$warnings\nWARNING: $*"
 }
 
+add_fatal_error() {
+    echo "FATAL ERROR: $*"
+    echo "FATAL ERROR: Fix this problem and then re-run $0"
+    exit 1
+}
+
 check_dependencies() {
     echo "Checking system dependencies"
     # We need git >=1.7.11 for '[push] default=simple'.
@@ -66,10 +72,10 @@ install_dotfiles() {
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
-            add_warning "$dest does not include $ka_version; see `pwd`/$file"
+            add_fatal_error "$dest does not 'include' $ka_version;" \
+                            "see `pwd`/$file and add equivalent logic to $dest"
         fi
     done
-
 }
 
 edit_system_config() {
