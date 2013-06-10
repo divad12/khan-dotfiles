@@ -4,23 +4,28 @@
 set -e
 
 update_path() {
-    # Export some useful directories.
-    export PATH=/usr/local/sbin:$PATH
+    # Export some useful directories.  /usr/local/bin is possibly
+    # already on PATH, but we need it to come *before* /usr/bin to
+    # pick up brew files we install.
+    export PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
     # Put these in shell config file too.
-    # test whether it's already in a config file (sorry zsh users who aren't using .profile)
-    if ! grep -q "export PATH=.*/usr/local/sbin" ~/.bash_profile ~/.bash_login ~/.profile; then
-        # prefer .profile if no higher-preference files exist
-        PROFILE_FILE=".profile"
-
-        # use the same order bash does
-        if [ -f ~/.bash_profile ]; then
-            PROFILE_FILE=".bash_profile"
-        elif [ -f ~/.bash_login ]; then
-            PROFILE_FILE=".bash_login"
-        fi
-        echo 'export PATH=/usr/local/sbin:$PATH' >> "$HOME/$PROFILE_FILE"
+    # Test whether it's already in a config file (sorry zsh users who
+    # aren't using .profile).  We follow the same order bash does:
+    if [ -f ~/.bash_profile ]; then
+        PROFILE_FILE="$HOME/.bash_profile"
+    elif [ -f ~/.bash_login ]; then
+        PROFILE_FILE="$HOME/.bash_login"
+    else
+        PROFILE_FILE="$HOME/.profile"
     fi
+    if ! grep -q "export PATH=.*/usr/local/sbin" \
+        ~/.bash_profile ~/.bash_login ~/.profile; then
+        echo 'export PATH=/usr/local/sbin:$PATH' >> "$PROFILE_FILE"
+    fi
+    # We need /usr/local/bin to come before /usr/bin on the PATH
+    # (so we pick up the brew version of files we install).
+    echo 'export PATH=/usr/local/bin:$PATH' >> "$PROFILE_FILE"
 }
 
 register_ssh_keys() {
