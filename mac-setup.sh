@@ -4,10 +4,24 @@
 set -e
 
 update_path() {
-    # Export some useful directories.  /usr/local/bin is possibly
-    # already on PATH, but we need it to come *before* /usr/bin to
-    # pick up brew files we install.
-    export PATH=/usr/local/sbin:/usr/local/bin:$PATH
+    # We need /usr/local/bin to come before /usr/bin on the path,
+    # to pick up brew files we install.
+    if ! echo "$PATH" | egrep -q '(:|^)/usr/local/bin/?:(.*:)?/usr/bin/?(:|$)'
+    then
+        # This replaces /usr/bin with /usr/local/bin:/usr/bin
+        PATH=`echo $PATH | sed 's,\(:/usr/bin/\?\(:\|$\)\),:/usr/local/bin\1,'`
+        # Make this path update work in the future too.
+        path_update=`cat<<'EOF'
+echo $PATH | sed 's,\(:/usr/bin/\?\(:\|$\)\),:/usr/local/bin\1,'
+EOF`
+    else
+        path_update=''
+    fi
+
+    # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
+    # there's so little in it -- probably only nginx -- we figure it's
+    # safe enough to just put it first.
+    export PATH=/usr/local/sbin:$PATH
 
     # Put these in shell config file too.
     # Test whether it's already in a config file (sorry zsh users who
@@ -23,9 +37,10 @@ update_path() {
         ~/.bash_profile ~/.bash_login ~/.profile; then
         echo 'export PATH=/usr/local/sbin:$PATH' >> "$PROFILE_FILE"
     fi
-    # We need /usr/local/bin to come before /usr/bin on the PATH
-    # (so we pick up the brew version of files we install).
-    echo 'export PATH=/usr/local/bin:$PATH' >> "$PROFILE_FILE"
+    if [ -n "$path_update" ]; then
+        echo "# Put /usr/local/bin right before /usr/bin" >> "$PROFILE_FILE"
+        echo 'PATH=`'"$path_update"'`' >> "$PROFILE_FILE"
+    fi
 }
 
 register_ssh_keys() {
