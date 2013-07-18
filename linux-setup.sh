@@ -41,7 +41,7 @@ install_packages() {
     # xslt and xml are needed by the nokogiri ruby package.
     sudo apt-get install -y git git-svn mercurial \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
-        ruby rubygems libxslt-dev libxml2-dev \
+        ruby ruby-dev rubygems libxslt-dev libxml2-dev \
         nodejs
 
     # Not technically needed to develop at Khan, but we assume you have it.
