@@ -111,6 +111,7 @@ EOF
     else
         sudo sh -c 'echo "$line" > /usr/local/etc/mime.types' 
     fi
+    sudo chmod a+r /usr/local/etc/mime.types
 
     # If there is no ssh key, make one.
     mkdir -p "$ROOT/.ssh"
