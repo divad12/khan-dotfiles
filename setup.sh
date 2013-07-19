@@ -180,8 +180,8 @@ install_mercurial_hooks() {
 }
 
 # Must have cloned the repos first.
-install_python_and_npm() {
-    echo "Installing python and npm (javascript/node) libraries"
+install_deps() {
+    echo "Installing python, ruby, node libraries"
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
 
@@ -198,24 +198,13 @@ install_python_and_npm() {
     # Activate the virtualenv
     . ~/.virtualenv/khan27/bin/activate
 
+    sudo gem install bundler
+
     # Install all the requirements for khan, khan-exercises, and khan-linter.
-    # This also installs npm deps.
+    # This also installs npm deps and some ruby gems.
     ( cd "$ROOT/khan/webapp" && make install_deps )
     ( cd "$ROOT/khan/webapp/khan-exercises" && pip install -r requirements.txt )
     ( cd "$ROOT/khan/devtools/khan-linter" && pip install -r requirements.txt )
-}
-
-install_ruby() {
-    echo "Installing ruby libraries"
-    # These are used by khan-exercises to pack exercises.
-    # --conservative keeps gem from re-installing things that are
-    # already installed, but the older gem that defaults on OS X
-    # doesn't support it, so we do it manually.
-    for package in json nokogiri uglifier therubyracer; do
-        if ! gem list | grep -q "^$package"; then
-            sudo gem install -q "$package"
-        fi
-    done
 }
 
 update_credentials() {
@@ -245,8 +234,7 @@ clone_repos
 # These need the repos to exist (e.g. khan-linter), so come after that.
 install_git_hooks
 install_mercurial_hooks
-install_python_and_npm
-install_ruby
+install_deps
 update_credentials
 
 
