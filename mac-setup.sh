@@ -9,10 +9,10 @@ update_path() {
     if ! echo "$PATH" | egrep -q '(:|^)/usr/local/bin/?:(.*:)?/usr/bin/?(:|$)'
     then
         # This replaces /usr/bin with /usr/local/bin:/usr/bin
-        PATH=`echo $PATH | sed 's,\(:/usr/bin/\?\(:\|$\)\),:/usr/local/bin\1,'`
+        PATH=`echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'`
         # Make this path update work in the future too.
         path_update=`cat<<'EOF'
-echo $PATH | sed 's,\(:/usr/bin/\?\(:\|$\)\),:/usr/local/bin\1,'
+echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'
 EOF`
     else
         path_update=''
