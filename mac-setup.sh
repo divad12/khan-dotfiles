@@ -190,9 +190,9 @@ install_appengine_launcher() {
        ! which dev_appserver.py >/dev/null; then
         echo "Setting up App Engine Launcher"
         # TODO(csilvers): skip this step if it's already been done.
-        curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.7.4.dmg \
-            -o ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
-        hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.7.4.dmg
+        curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.8.3.dmg \
+            -o ~/Downloads/GoogleAppEngineLauncher-1.8.3.dmg
+        hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.8.3.dmg
         cp -fr /Volumes/GoogleAppEngineLauncher-*/GoogleAppEngineLauncher.app \
             /Applications/
         hdiutil detach /Volumes/GoogleAppEngineLauncher-*
