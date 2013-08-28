@@ -103,10 +103,16 @@ install_gcc() {
 }
 
 install_hipchat() {
-    # TODO(csilvers): see if hipchat is already installed before doing this.
-    echo "Opening Hipchat website (log in and click download to install)"
-    open "http://www.hipchat.com/"
-    read -p "Press enter to continue..."
+    if ! open -R -g -a HipChat > /dev/null; then
+        echo "Installing HipChat to ~/Applications"
+        mkdir -p ~/Applications
+        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.3.zip"
+        curl -o ~/Downloads/Hipchat-2.3.zip $hipchat_app_url
+        unzip ~/Downloads/Hipchat-2.3.zip -d ~/Applications > /dev/null
+        open -a ~/Applications/HipChat.app
+    else
+        echo "HipChat already installed"
+    fi
 }
 
 install_homebrew() {
