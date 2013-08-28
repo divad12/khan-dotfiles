@@ -47,7 +47,7 @@ register_ssh_keys() {
     # Create a public key if need be.
     mkdir -p ~/.ssh
     if [ ! -e ~/.ssh/id_rsa ]; then
-	ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
+        ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
     fi
 
     # Copy the public key into the OS X clipboard.
@@ -67,22 +67,38 @@ register_ssh_keys() {
 
 install_gcc() {
     if ! gcc --version >/dev/null 2>&1; then
-	echo "Downloading Command Line Tools (log in to start the download)"
-	# download the command line tools
-	open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mountain_lion_for_xcode__april_2013/xcode462_cltools_10_86938259a.dmg"
-	# If this doesn't work for you, you can find the most recent
-	# version here: https://developer.apple.com/downloads
-	# Then plug that file into the commands below
-        read -p "Press enter to continue..."
+        # download the command line tools
+        if sw_vers | grep ProductVersion | grep -o 10.8; then
+            echo "Downloading Command Line Tools for OS 10.8 (login to start the download)"
+            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mountain_lion_for_xcode__april_2013/xcode462_cltools_10_86938259a.dmg"
+            dmg_name="xcode462_cltools_10_86938259a.dmg"
+            pkg_name="Command Line Tools (Mountain Lion)" fi
+        elif sw_vers | grep ProductVersion | grep -o 10.7; then
+            echo "Downloading Command Line Tools for MacOS 10.7 (login to start the download)"
+            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_lion_for_xcode__april_2013/xcode462_cltools_10_76938260a.dmg"
+            dmg_name="xcode462_cltools_10_76938260a.dmg"
+            pkg_name="Command Line Tools (Lion)"
+        elif sw_vers | grep ProductVersion | grep -o 10.9; then
+            echo "You fancy! Opening the ADC downloads site. You can take it from there"
+            open "http://developer.apple.com/downloads/"
+            exit 1
+        else
+            echo "Command line tools are unavailable for your Mac's OS"
+            echo "Kayla or Kamens will help you upgrade your OS if you need help."
+            exit 1
+        fi
+        # If this doesn't work for you, you can find the most recent
+        # version here: https://developer.apple.com/downloads
+        # Then plug that file into the commands below
+        read -p "Press enter to continue once the dmg has finished downloading..."
 
-	echo "Running Command Line Tools Installer"
-	# Attach the disk image, install the tools, then detach the image.
-	hdiutil attach ~/Downloads/xcode462_cltools_10_86938259a.dmg \
-            > /dev/null
-	sudo installer \
-            -package "/Volumes/Command Line Tools/Command Line Tools.mpkg" \
-            -target /
-	hdiutil detach "/Volumes/Command Line Tools/" > /dev/null
+        echo "Running Command Line Tools Installer"
+        # Attach the disk image, install the tools, then detach the image.
+        hdiutil attach ~/Downloads/"$dmg_name" > /dev/null
+        sudo installer \
+                -package "/Volumes/$pkg_name/$pkg_name.mpkg" \
+                -target /
+        hdiutil detach "/Volumes/$pkg_name/" > /dev/null
     fi
 }
 
@@ -97,7 +113,7 @@ install_homebrew() {
     # If homebrew is already installed, don't do it again.
     if ! brew --help >/dev/null 2>&1; then
         echo "Installing Homebrew"
-	/usr/bin/ruby -e "`curl -fsSkL raw.github.com/mxcl/homebrew/go`"
+        /usr/bin/ruby -e "`curl -fsSkL raw.github.com/mxcl/homebrew/go`"
     fi
     echo "Updating Homebrew"
     brew update > /dev/null
