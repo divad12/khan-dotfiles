@@ -21,3 +21,8 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # Enable autocompletion for git and hg
 source "$DIR/git-completion.bash"
 source "$DIR/hg-completion.bash"
+
+# Set a high limit for open file descriptors per shell.
+# The default on OS X is 256; we increase it to 1024--the default value of
+# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
+ulimit -S -n 1024
