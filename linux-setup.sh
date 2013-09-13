@@ -66,6 +66,23 @@ install_packages() {
     sudo apt-get install -y apparmor-utils xsane
 }
 
+install_phantomjs() {
+    if ! which phantomjs >/dev/null; then
+        (
+            cd /usr/local/share
+            case `uname -m` in
+                i?86) mach=i686;;
+                *) mach=x86_64;;
+            esac
+            sudo rm -rf phantomjs
+            wget "https://phantomjs.googlecode.com/files/phantomjs-1.9.2-linux-${mach}.tar.bz2" -O- | sudo tar xfj -
+
+            sudo ln -snf /usr/local/share/phantomjs-1.9.2-linux-${mach}/bin/phantomjs /usr/local/bin/phantomjs
+        )
+        which phantomjs >/dev/null
+    fi
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -82,4 +99,5 @@ echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
 install_packages
+install_phantomjs
 setup_clock

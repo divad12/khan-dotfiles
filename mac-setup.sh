@@ -227,6 +227,15 @@ install_appengine_launcher() {
     fi
 }
 
+install_phantomjs() {
+    if brew ls phantomjs >/dev/null 2>&1; then
+        # If phantomjs is already installed via brew, update it
+        brew upgrade phantomjs 2>&1
+    else
+        # Otherwise, install via brew
+        brew install phantomjs 2>&1
+    fi
+}
 
 echo "Running Khan Installation Script 1.0"
 echo "Warning: This is only tested on Mac OS 10.7 (Lion)"
@@ -250,6 +259,7 @@ update_git
 install_node
 install_nginx
 install_appengine_launcher
+install_phantomjs
 
 echo "You might be done! \n\n \
 You should open a new shell to pick up any changes."
