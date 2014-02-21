@@ -188,6 +188,10 @@ install_deps() {
     # Install non-khan-specific modules.
     sudo pip install -q Mercurial
 
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    sudo pip install pyprof2calltree
+
     # Install virtualenv.
     # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
     sudo pip install -q virtualenv

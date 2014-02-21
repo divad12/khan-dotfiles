@@ -49,15 +49,19 @@ install_packages() {
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y nginx unrar virtualbox ack-grep
 
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    sudo apt-cache install -y kcachegrind
+
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword curl diffstat expect gimp \
-        imagemagick mplayer netcat netpbm screen w3m vim 
+        imagemagick mplayer netcat netpbm screen w3m vim
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     sudo dpkg-divert --local --divert /usr/bin/ack --rename --add \
-        /usr/bin/ack-grep  
+        /usr/bin/ack-grep
 
-    # Native hipchat client (BETA, x86/x86_64 only).  
+    # Native hipchat client (BETA, x86/x86_64 only).
     sudo apt-get install -y hipchat
 
     # Needed for the AIR-based hipchat client on linux, not needed if

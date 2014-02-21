@@ -240,6 +240,15 @@ install_phantomjs() {
     fi
 }
 
+install_helpful_tools() {
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    if ! brew ls qcachegrind >/dev/null 2>&1; then
+        brew install qcachegrind 2>&1
+    fi
+}
+
+
 echo "Running Khan Installation Script 1.0"
 echo "Warning: This is only tested on Mac OS 10.7 (Lion)"
 echo "  After each statement, either something will open for you to"
@@ -263,6 +272,7 @@ install_node
 install_nginx
 install_appengine_launcher
 install_phantomjs
+install_helpful_tools
 
 echo "You might be done! \n\n \
 You should open a new shell to pick up any changes."
