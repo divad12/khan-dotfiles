@@ -11,10 +11,10 @@ set -e
 install_packages() {
     updated_apt_repo=""
 
-    # native hipchat client (BETA, x86/x86_64 only)
+    # To get the most recent native hipchat client, later.
     if ! grep -q 'downloads.hipchat.com' /etc/apt/sources.list; then
         sudo add-apt-repository -y \
-            "deb http://downloads.hipchat.com/linux/apt stable main" 
+            "deb http://downloads.hipchat.com/linux/apt stable main"
         wget -O- https://www.hipchat.com/keys/hipchat-linux.key \
             | sudo apt-key add -
         updated_apt_repo=yes
@@ -26,9 +26,18 @@ install_packages() {
         updated_apt_repo=yes
     fi
 
-    # To get the most recent git.
+    # To get the most recent git, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q git-core-ppa; then
         sudo add-apt-repository -y ppa:git-core/ppa
+        updated_apt_repo=yes
+    fi
+
+    # To get chrome, later.
+    if ! -s /etc/apt/sources.list.d/google-chrome.list; then
+        echo "deb http://dl.google.com/linux/chrome/deb/ stable main" \
+            | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub \
+            | sudo apt-key add -
         updated_apt_repo=yes
     fi
 
@@ -40,7 +49,8 @@ install_packages() {
     # Needed to develop at Khan: git and mercurial, python, ruby, node (js).
     # xslt and xml are needed by the nokogiri ruby package.
     # php is needed for phabricator
-    sudo apt-get install -y git git-svn mercurial \
+    sudo apt-get install -y git git-svn mercurial subversion \
+        python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         ruby ruby-dev rubygems libxslt-dev libxml2-dev \
         nodejs \
@@ -51,11 +61,12 @@ install_packages() {
 
     # This is useful for profiling
     # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
-    sudo apt-cache install -y kcachegrind
+    sudo apt-get install -y kcachegrind
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword curl diffstat expect gimp \
-        imagemagick mplayer netcat netpbm screen w3m vim
+        imagemagick mplayer netcat netpbm screen w3m vim emacs \
+        google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     sudo dpkg-divert --local --divert /usr/bin/ack --rename --add \
