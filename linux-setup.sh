@@ -57,7 +57,7 @@ install_packages() {
         php5-cli php5-curl
 
     # Not technically needed to develop at Khan, but we assume you have it.
-    sudo apt-get install -y nginx unrar virtualbox ack-grep
+    sudo apt-get install -y unrar virtualbox ack-grep
 
     # This is useful for profiling
     # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results

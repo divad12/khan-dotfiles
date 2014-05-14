@@ -19,8 +19,7 @@ EOF`
     fi
 
     # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
-    # there's so little in it -- probably only nginx -- we figure it's
-    # safe enough to just put it first.
+    # there's so little in it we figure it's ok to put it first.
     export PATH=/usr/local/sbin:$PATH
 
     # Put these in shell config file too.
@@ -173,37 +172,6 @@ install_node() {
     fi
 }
 
-install_nginx() {
-    echo "Installing nginx"
-    if ! brew install nginx 2>&1 | grep -q 'already installed'; then
-        if [ ! -e /usr/local/etc/nginx/nginx.conf.old ]; then
-            echo "Backing up nginx.conf to nginx.conf.old"
-            sudo cp /usr/local/etc/nginx/nginx.conf \
-                /usr/local/etc/nginx/nginx.conf.old
-        fi
-
-        # Copy some default SSL certificates.  If you want to make your
-        # own, follow the instructions found here:
-        #     http://wiki.nginx.org/HttpSslModule
-        sudo cp -f stable.ka.local.crt /usr/local/etc/nginx/stable.ka.local.crt
-        sudo cp -f stable.ka.local.key /usr/local/etc/nginx/stable.ka.local.key
-
-        echo "Setting up nginx"
-        # setup the nginx configuration file
-        sudo sh -c \
-            "sed 's/%USER/$USER/' nginx.conf > /usr/local/etc/nginx/nginx.conf"
-
-        # Copy the launch plist.
-        sudo cp -f /usr/local/Cellar/nginx/*/homebrew.mxcl.nginx.plist \
-            /Library/LaunchDaemons
-        # Delete the username key so it is run as root
-        sudo /usr/libexec/PlistBuddy -c "Delete :UserName" \
-            /Library/LaunchDaemons/homebrew.mxcl.nginx.plist 2>/dev/null
-        # Load it.
-        sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
-    fi
-}
-
 install_appengine_launcher() {
     # We check for the existence of appengine in two ways; it's
     # possible to install appengine in ways that neither of these
@@ -269,7 +237,6 @@ install_hipchat
 install_homebrew
 update_git
 install_node
-install_nginx
 install_appengine_launcher
 install_phantomjs
 install_helpful_tools
