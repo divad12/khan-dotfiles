@@ -87,19 +87,6 @@ edit_system_config() {
         sudo sh -c 'echo "search khanacademy.org" >> /etc/resolv.conf'
     fi
 
-    # This will let you use a url like exercises.ka.local
-    if ! grep -q "ka.local" /etc/hosts; then
-        # This 'sudo tee' trick is the way to redirect stdin within sudo.
-        sudo tee -a /etc/hosts >/dev/null <<EOF 
-
-# KA local servers
-127.0.0.1       exercises.ka.local
-::1             exercises.ka.local
-127.0.0.1       stable.ka.local
-::1             stable.ka.local
-EOF
-    fi
-
     # This command avoids the spew when you deploy the Khan Academy
     # appengine app:
     #   Cannot guess mime-type for XXX.  Using application/octet-stream
@@ -109,7 +96,7 @@ EOF
         grep -v 'less eot' /usr/local/etc/mime.types | \
             sudo sh -c "cat; echo '$line' > /usr/local/etc/mime.types"
     else
-        sudo sh -c 'echo "$line" > /usr/local/etc/mime.types' 
+        sudo sh -c 'echo "$line" > /usr/local/etc/mime.types'
     fi
     sudo chmod a+r /usr/local/etc/mime.types
 
@@ -188,6 +175,10 @@ install_deps() {
     # Install non-khan-specific modules.
     sudo pip install -q Mercurial
 
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    sudo pip install pyprof2calltree
+
     # Install virtualenv.
     # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
     sudo pip install -q virtualenv
@@ -243,7 +234,7 @@ echo "---------------------------------------------------------------------"
 
 if [ -n "$warnings" ]; then
     echo "-- WARNINGS:"
-    # echo is very inconsistent about whether it supports -e. :-( 
+    # echo is very inconsistent about whether it supports -e. :-(
     echo "$warnings" | sed 's/\\n/\n/g'
 else
     echo "DONE!"

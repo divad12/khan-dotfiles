@@ -3,6 +3,41 @@
 # Bail on any errors
 set -e
 
+tty_bold=`tput bold`
+tty_normal=`tput sgr0`
+
+# for printing standard echoish messages
+notice () {
+    printf "         $1\n"
+}
+
+# for printing logging messages that *may* be replaced by
+# a success/warn/error message
+info () {
+    printf "  [ \033[00;34m..\033[0m ] $1"
+}
+
+# for printing prompts that expect user input and will be
+# replaced by a success/warn/error message
+user () {
+    printf "\r  [ \033[0;33m??\033[0m ] $1 "
+}
+
+# for replacing previous input prompts with success messages
+success () {
+    printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+}
+
+# for replacing previous input prompts with warnings
+warn () {
+    printf "\r\033[2K  [\033[0;33mWARN\033[0m] $1\n"
+}
+
+# for replacing previous prompts with errors
+error () {
+    printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+}
+
 update_path() {
     # We need /usr/local/bin to come before /usr/bin on the path,
     # to pick up brew files we install.
@@ -19,8 +54,7 @@ EOF`
     fi
 
     # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
-    # there's so little in it -- probably only nginx -- we figure it's
-    # safe enough to just put it first.
+    # there's so little in it we figure it's ok to put it first.
     export PATH=/usr/local/sbin:$PATH
 
     # Put these in shell config file too.
@@ -43,75 +77,163 @@ EOF`
     fi
 }
 
+maybe_generate_ssh_keys () {
+  # Create a public key if need be.
+  info "Checking for ssh keys"
+  mkdir -p ~/.ssh
+  if [ -e ~/.ssh/id_[rd]sa ]
+  then
+    success "Found existing ssh keys"
+  else
+    ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
+    success "Generated an rsa ssh key at ~/.ssh/id_rsa"
+  fi
+  return 0
+}
+
+copy_ssh_key () {
+  if [ -e ~/.ssh/id_rsa ]
+  then
+    pbcopy < ~/.ssh/id_rsa.pub
+  elif [ -e ~/.ssh/id_dsa ]
+  then
+    pbcopy < ~/.ssh/id_dsa.pub
+  else
+    error "no ssh public keys found"
+    exit
+  fi
+}
+
 register_ssh_keys() {
-    # Create a public key if need be.
-    mkdir -p ~/.ssh
-    if [ ! -e ~/.ssh/id_rsa ]; then
-        ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-    fi
-
-    # Copy the public key into the OS X clipboard.
-    cat ~/.ssh/id_rsa.pub | pbcopy
-
     # Have the user copy it into kiln and github.
-    echo "Opening kiln and github for you to register your ssh key."
-    echo "We've already copied the key into the OS clipboard for you."
-    echo "Click 'Add SSH Key', paste into the box, and hit 'Add key'"
-    open "https://github.com/settings/ssh"
-    read -p "Press enter to continue..."
+    success "Registering your ssh keys with kiln and github"
 
-    echo "Click 'Add a New Key', paste into the box, and hit 'Save key'"
-    open "https://khanacademy.kilnhg.com/Keys"
-    read -p "Press enter to continue..."
+    success "Registering with github\n"
+    verify_ssh_auth "Github"
+
+    success "Registering with kiln\n"
+    verify_ssh_auth "Kiln"
+}
+
+# checks to see that ssh keys are registered with kiln
+# $1 service name $2 "true"|"false" to end the auth cycle
+verify_ssh_auth () {
+    ssh_host=false
+    case "$1" in
+        Github )
+            ssh_host="git@github.com"
+            service_name="Github"
+            webpage_url="https://github.com/settings/ssh"
+            instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
+            ;;
+        Kiln )
+            ssh_host="khanacademy@khanacademy.kilnhg.com"
+            service_name="Kiln"
+            webpage_url="https://khanacademy.kilnhg.com/Keys"
+            instruction="Click 'Add a New Key', paste into the box, and hit 'Save key'"
+            ;;
+        * )
+            error "Tried to register ssh keys with unknown service: ${1}"
+            exit 1
+            ;;
+    esac
+
+    info "Checking for $service_name ssh auth"
+    if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
+        -q -e "Authentication succeeded (publickey)"
+    then
+        if [ "$2" == "false" ]  # error if auth fails twice in a row
+        then
+            error "Still no luck with $service_name ssh auth. Ask a dev!"
+            ssh_auth_loop $service_name $webpage_url "false"
+        else
+            # otherwise prompt to upload keys
+            success "${service_name}'s ssh auth didn't seem to work\n"
+            notice "Let's add your public key to ${service_name}'s webpage"
+            info "${tty_bold}${instruction}${tty_normal}\n"
+            ssh_auth_loop $service_name $webpage_url "true"
+        fi
+    else
+        success "${service_name} ssh auth succeeded!"
+    fi
+}
+
+ssh_auth_loop() {
+    # a convenience function which lets you copy your public key to your clipboard
+    # open the webpage for the site you're pasting the key into or just bailing
+    # $1 = service_name
+    # $2 = ssh key registration url
+    service_name=$1
+    service_url=$2
+    first_run=$3
+    if [ "$first_run" == "true" ]
+    then
+        notice "1. hit ${tty_bold}o${tty_normal} to open ${service_name} on the web"
+        notice "2. hit ${tty_bold}c${tty_normal} to copy your public key to your clipboard"
+        notice "3. hit ${tty_bold}t${tty_normal} to test ssh auth for ${service_name}"
+        notice "☢. hit ${tty_bold}s${tty_normal} to skip ssh setup for ${service_name}"
+        ssh_auth_loop $1 $2 "false"
+    else
+        user "o|c|t|s) "
+        read -n1 ssh_option
+        case $ssh_option in
+            o|O )
+                success "opening ${service_name}'s webpage to register your key!"
+                open $service_url
+                ssh_auth_loop $service_name $service_url "false"
+                ;;
+            c|C )
+                success "copying your ssh key to your clipboard"
+                copy_ssh_key
+                ssh_auth_loop $service_name $service_url "false"
+                ;;
+            t|T )
+                printf "\r"
+                verify_ssh_auth $service_name "false"
+                ;;
+            s|S )
+                warn "skipping ${service_name} ssh registration"
+                ;;
+        esac
+    fi
 }
 
 install_gcc() {
+    info "\nChecking for apple command line developer tools..."
     if ! gcc --version >/dev/null 2>&1; then
-        # download the command line tools
-        if sw_vers | grep ProductVersion | grep -o 10.8; then
-            echo "Downloading Command Line Tools for OS 10.8 (login to start the download)"
-            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mountain_lion_for_xcode__april_2013/xcode462_cltools_10_86938259a.dmg"
-            dmg_name="xcode462_cltools_10_86938259a.dmg"
-            pkg_name="Command Line Tools (Mountain Lion)" fi
-        elif sw_vers | grep ProductVersion | grep -o 10.7; then
-            echo "Downloading Command Line Tools for MacOS 10.7 (login to start the download)"
-            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_lion_for_xcode__april_2013/xcode462_cltools_10_76938260a.dmg"
-            dmg_name="xcode462_cltools_10_76938260a.dmg"
-            pkg_name="Command Line Tools (Lion)"
-        elif sw_vers | grep ProductVersion | grep -o 10.9; then
-            echo "You fancy! Opening the ADC downloads site. You can take it from there"
-            open "http://developer.apple.com/downloads/"
+        if sw_vers | grep ProductVersion | grep -o 10.9; then
+            success "Installing command line developer tools"
+            # Also, how did you get this dotfiles repo in 10.9 without
+            # git auto-triggering the command line tools install process??
+            xcode-select --install
+            warn "The dotfile setup is stopping now."
+            warn "When the install finishes, rerun ${tty_bold}make${tty_normal} to continue. (sorry)"
             exit 1
         else
-            echo "Command line tools are unavailable for your Mac's OS"
-            echo "Kayla or Kamens will help you upgrade your OS if you need help."
+            warn "Command line tools are *probably available* for your Mac's OS, but..."
+            info "Kayla or Kamens or your mentor will gladly upgrade your OS right now\n"
+            info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
             exit 1
         fi
         # If this doesn't work for you, you can find the most recent
         # version here: https://developer.apple.com/downloads
-        # Then plug that file into the commands below
-        read -p "Press enter to continue once the dmg has finished downloading..."
-
-        echo "Running Command Line Tools Installer"
-        # Attach the disk image, install the tools, then detach the image.
-        hdiutil attach ~/Downloads/"$dmg_name" > /dev/null
-        sudo installer \
-                -package "/Volumes/$pkg_name/$pkg_name.mpkg" \
-                -target /
-        hdiutil detach "/Volumes/$pkg_name/" > /dev/null
+    else
+        success "Great, found gcc! (assuming we also have other recent devtools)"
     fi
 }
 
 install_hipchat() {
+    info "Checking for HipChat..."
     if ! open -R -g -a HipChat > /dev/null; then
-        echo "Installing HipChat to ~/Applications"
+        success "Didn't find HipChat installed"
+        info "Installing HipChat to ~/Applications and opening"
         mkdir -p ~/Applications
-        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.3.zip"
-        curl -o ~/Downloads/Hipchat-2.3.zip $hipchat_app_url
-        unzip ~/Downloads/Hipchat-2.3.zip -d ~/Applications > /dev/null
+        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.5.6-87.zip"
+        curl -o ~/Downloads/HipChat-2.5.6-87.zip $hipchat_app_url
+        unzip ~/Downloads/HipChat-2.5.6-87.zip -d ~/Applications > /dev/null
         open -a ~/Applications/HipChat.app
     else
-        echo "HipChat already installed"
+        success "Great! HipChat already installed!"
     fi
 }
 
@@ -119,7 +241,7 @@ install_homebrew() {
     # If homebrew is already installed, don't do it again.
     if ! brew --help >/dev/null 2>&1; then
         echo "Installing Homebrew"
-        /usr/bin/ruby -e "`curl -fsSkL raw.github.com/mxcl/homebrew/go`"
+        ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     fi
     echo "Updating Homebrew"
     brew update > /dev/null
@@ -173,37 +295,6 @@ install_node() {
     fi
 }
 
-install_nginx() {
-    echo "Installing nginx"
-    if ! brew install nginx 2>&1 | grep -q 'already installed'; then
-        if [ ! -e /usr/local/etc/nginx/nginx.conf.old ]; then
-            echo "Backing up nginx.conf to nginx.conf.old"
-            sudo cp /usr/local/etc/nginx/nginx.conf \
-                /usr/local/etc/nginx/nginx.conf.old
-        fi
-
-        # Copy some default SSL certificates.  If you want to make your
-        # own, follow the instructions found here:
-        #     http://wiki.nginx.org/HttpSslModule
-        sudo cp -f stable.ka.local.crt /usr/local/etc/nginx/stable.ka.local.crt
-        sudo cp -f stable.ka.local.key /usr/local/etc/nginx/stable.ka.local.key
-
-        echo "Setting up nginx"
-        # setup the nginx configuration file
-        sudo sh -c \
-            "sed 's/%USER/$USER/' nginx.conf > /usr/local/etc/nginx/nginx.conf"
-
-        # Copy the launch plist.
-        sudo cp -f /usr/local/Cellar/nginx/*/homebrew.mxcl.nginx.plist \
-            /Library/LaunchDaemons
-        # Delete the username key so it is run as root
-        sudo /usr/libexec/PlistBuddy -c "Delete :UserName" \
-            /Library/LaunchDaemons/homebrew.mxcl.nginx.plist 2>/dev/null
-        # Load it.
-        sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
-    fi
-}
-
 install_appengine_launcher() {
     # We check for the existence of appengine in two ways; it's
     # possible to install appengine in ways that neither of these
@@ -240,29 +331,40 @@ install_phantomjs() {
     fi
 }
 
-echo "Running Khan Installation Script 1.0"
-echo "Warning: This is only tested on Mac OS 10.7 (Lion)"
-echo "  After each statement, either something will open for you to"
-echo "    interact with, or a script will run for you to use"
-echo "  Press enter when a download/install is completed to go to"
-echo "    the next step (including this one)"
+install_helpful_tools() {
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    if ! brew ls qcachegrind >/dev/null 2>&1; then
+        brew install qcachegrind 2>&1
+    fi
+}
+
+
+echo "\n"
+success "Running Khan Installation Script 1.1\n"
+warn "Warning: This is only tested on Mac OS 10.9 (Lion)\n"
+notice "After each statement, either something will open for you to"
+notice "interact with, or a script will run for you to use\n"
+notice "Press enter when a download/install is completed to go to"
+notice "the next step (including this one)"
 
 read -p "Press enter to continue..."
 
 # Run sudo once at the beginning to get the necessary permissions.
-echo "This setup script needs your password to install things as root."
+notice "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
 update_path
+maybe_generate_ssh_keys
 register_ssh_keys
 install_gcc
 install_hipchat
 install_homebrew
 update_git
 install_node
-install_nginx
 install_appengine_launcher
 install_phantomjs
+install_helpful_tools
 
-echo "You might be done! \n\n \
+notice "You might be done! \n\n \
 You should open a new shell to pick up any changes."

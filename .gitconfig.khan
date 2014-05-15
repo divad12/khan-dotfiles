@@ -28,6 +28,7 @@
   lp = log -p
   outgoing = log origin/master..HEAD
   incoming = "!git fetch $1; git log HEAD..$1/master"
+  update-submodule = !bash -c 'git co master && git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate -m Test\\ plan: -m None && git push && git co -' --
   weekly = !sh -c 'git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`'
   findreviewers = !~/khan/webapp/tools/findreviewers.py $*
 
