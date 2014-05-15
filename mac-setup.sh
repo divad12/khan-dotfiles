@@ -223,15 +223,17 @@ install_gcc() {
 }
 
 install_hipchat() {
+    info "Checking for HipChat..."
     if ! open -R -g -a HipChat > /dev/null; then
-        echo "Installing HipChat to ~/Applications"
+        success "Didn't find HipChat installed"
+        info "Installing HipChat to ~/Applications and opening"
         mkdir -p ~/Applications
-        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.3.zip"
-        curl -o ~/Downloads/Hipchat-2.3.zip $hipchat_app_url
-        unzip ~/Downloads/Hipchat-2.3.zip -d ~/Applications > /dev/null
+        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.5.6-87.zip"
+        curl -o ~/Downloads/HipChat-2.5.6-87.zip $hipchat_app_url
+        unzip ~/Downloads/HipChat-2.5.6-87.zip -d ~/Applications > /dev/null
         open -a ~/Applications/HipChat.app
     else
-        echo "HipChat already installed"
+        success "Great! HipChat already installed!"
     fi
 }
 
