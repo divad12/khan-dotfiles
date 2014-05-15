@@ -28,6 +28,12 @@
 # Khan Academy specific
 
 # Ignore files matching the following regex
+#
+# Use these two lines for versions < ack 2:
+# --invert-file-match
+# -G((hashed-\w+|combined|compressed)\.(js|css)$|uri\.css$|\.handlebars\.js$|packages_compressed\.py$|mofile_..\.py$|javascript-packages-compressed\.json$)
+#
+# Use this (default) for >= ack 2:
 --ignore-file=match:((hashed-\w+|combined|compressed)\.(js|css)$|uri\.css$|\.handlebars\.js$|packages_compressed\.py$|mofile_..\.py$|javascript-packages-compressed\.json$)
 
 # Directories to ignore at any level
