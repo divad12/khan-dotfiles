@@ -28,8 +28,7 @@
 # Khan Academy specific
 
 # Ignore files matching the following regex
---invert-file-match
--G((hashed-\w+|combined|compressed)\.(js|css)$|uri\.css$|\.handlebars\.js$|packages_compressed\.py$|mofile_..\.py$|javascript-packages-compressed\.json$)
+--ignore-file=match:((hashed-\w+|combined|compressed)\.(js|css)$|uri\.css$|\.handlebars\.js$|packages_compressed\.py$|mofile_..\.py$|javascript-packages-compressed\.json$)
 
 # Directories to ignore at any level
 --ignore-dir=third_party
