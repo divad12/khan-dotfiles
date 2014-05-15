@@ -199,39 +199,26 @@ ssh_auth_loop() {
 }
 
 install_gcc() {
+    info "\nChecking for apple command line developer tools..."
     if ! gcc --version >/dev/null 2>&1; then
-        # download the command line tools
-        if sw_vers | grep ProductVersion | grep -o 10.8; then
-            echo "Downloading Command Line Tools for OS 10.8 (login to start the download)"
-            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_mountain_lion_for_xcode__april_2013/xcode462_cltools_10_86938259a.dmg"
-            dmg_name="xcode462_cltools_10_86938259a.dmg"
-            pkg_name="Command Line Tools (Mountain Lion)" fi
-        elif sw_vers | grep ProductVersion | grep -o 10.7; then
-            echo "Downloading Command Line Tools for MacOS 10.7 (login to start the download)"
-            open "http://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_os_x_lion_for_xcode__april_2013/xcode462_cltools_10_76938260a.dmg"
-            dmg_name="xcode462_cltools_10_76938260a.dmg"
-            pkg_name="Command Line Tools (Lion)"
-        elif sw_vers | grep ProductVersion | grep -o 10.9; then
-            echo "You fancy! Opening the ADC downloads site. You can take it from there"
-            open "http://developer.apple.com/downloads/"
+        if sw_vers | grep ProductVersion | grep -o 10.9; then
+            success "Installing command line developer tools"
+            # Also, how did you get this dotfiles repo in 10.9 without
+            # git auto-triggering the command line tools install process??
+            xcode-select --install
+            warn "The dotfile setup is stopping now."
+            warn "When the install finishes, rerun ${tty_bold}make${tty_normal} to continue. (sorry)"
             exit 1
         else
-            echo "Command line tools are unavailable for your Mac's OS"
-            echo "Kayla or Kamens will help you upgrade your OS if you need help."
+            warn "Command line tools are *probably available* for your Mac's OS, but..."
+            info "Kayla or Kamens or your mentor will gladly upgrade your OS right now\n"
+            info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
             exit 1
         fi
         # If this doesn't work for you, you can find the most recent
         # version here: https://developer.apple.com/downloads
-        # Then plug that file into the commands below
-        read -p "Press enter to continue once the dmg has finished downloading..."
-
-        echo "Running Command Line Tools Installer"
-        # Attach the disk image, install the tools, then detach the image.
-        hdiutil attach ~/Downloads/"$dmg_name" > /dev/null
-        sudo installer \
-                -package "/Volumes/$pkg_name/$pkg_name.mpkg" \
-                -target /
-        hdiutil detach "/Volumes/$pkg_name/" > /dev/null
+    else
+        success "Great, found gcc! (assuming we also have other recent devtools)"
     fi
 }
 
