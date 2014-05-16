@@ -225,8 +225,8 @@ install_gcc() {
 install_hipchat() {
     info "Checking for HipChat..."
     if ! open -R -g -a HipChat > /dev/null; then
-        success "Didn't find HipChat installed"
-        info "Installing HipChat to ~/Applications and opening"
+        success "Didn't find HipChat."
+        info "Installing HipChat to ~/Applications and opening\n"
         mkdir -p ~/Applications
         hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.5.6-87.zip"
         curl -o ~/Downloads/HipChat-2.5.6-87.zip $hipchat_app_url
@@ -238,12 +238,15 @@ install_hipchat() {
 }
 
 install_homebrew() {
+    info "Checking for mac homebrew"
     # If homebrew is already installed, don't do it again.
     if ! brew --help >/dev/null 2>&1; then
-        echo "Installing Homebrew"
+        success "Brew not found. Installing!"
         ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    else
+        success "Great! Mac homebrew already installed!"
     fi
-    echo "Updating Homebrew"
+    success "Updating (but not upgrading) Homebrew"
     brew update > /dev/null
 
     # Make the cellar.
@@ -296,53 +299,81 @@ install_node() {
 }
 
 install_appengine_launcher() {
-    # We check for the existence of appengine in two ways; it's
-    # possible to install appengine in ways that neither of these
-    # pass, but it should cover the vast majority of cases.
-    if [ ! -d /Applications/GoogleAppEngineLauncher.app ] && \
-       ! which dev_appserver.py >/dev/null; then
-        echo "Setting up App Engine Launcher"
-        # TODO(csilvers): skip this step if it's already been done.
-        curl -s http://googleappengine.googlecode.com/files/GoogleAppEngineLauncher-1.8.3.dmg \
-            -o ~/Downloads/GoogleAppEngineLauncher-1.8.3.dmg
-        hdiutil attach ~/Downloads/GoogleAppEngineLauncher-1.8.3.dmg
-        cp -fr /Volumes/GoogleAppEngineLauncher-*/GoogleAppEngineLauncher.app \
-            /Applications/
-        hdiutil detach /Volumes/GoogleAppEngineLauncher-*
-
-        echo "Set up the Google App Engine Launcher according to the website."
-        open "https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/launching-your-test-site"
-        open -a GoogleAppEngineLauncher
-
-        read -p "Press enter to continue..."
+    info "Checking for google appengine"
+    # First check for the gui appbundle or dev_appserver, if neither are around
+    # then install dylan's gae sdk via brew
+    if [ ! -d /Applications/GoogleAppEngineLauncher.app ] && ! which dev_appserver.py >/dev/null 2>&1;
+    then
+        success "Couldn't find App Engine Launcher, installing via homebrew!\n"
+        # does not install mac fs events
+        brew tap dylanvee/gae_sdk
+        brew install gae-sdk
+        info "You'll also need to ${tty_bold}pip install pyobjc-framework-FSEvents${tty_normal}\n"
+        notice "but ${tty_bold}make deps${tty_normal} in webapp will do this too."
+    elif brew ls gae-sdk >/dev/null 2>&1;
+    then
+        # if dylan's fork is already installed, then update it
+        success "Found dylan's frankenserver!"
+        if brew outdated | grep -q -e 'gae-sdk'
+        then
+            success "Upgrading outdated gae-sdk"
+            brew upgrade gae-sdk
+        fi
+    elif [ -d /Applications/GoogleAppEngineLauncher.app ] ||
+        which dev_appserver.py >/dev/null 2>&1;
+    then
+        # if either of these pass, then you have a slower version of dev_appserver
+        success "Found vanilla dev_appserver.py"
+        warn "You should probably uninstall this and instead install dylan's"
+        notice "frankenserver which makes good use of mac-fsevents"
+        notice "c.f. ${tty_bold}https://github.com/dylanvee/homebrew-gae_sdk${tty_normal}"
     fi
 }
 
 install_phantomjs() {
+    info "Checking for phantomjs..."
     if brew ls phantomjs >/dev/null 2>&1; then
         # If phantomjs is already installed via brew, check if it is outdated
         if brew outdated | grep -q -e 'phantomjs'; then
             # If phantomjs is outdated, update it
+            success "phantomjs is being upgraded!"
             brew upgrade phantomjs 2>&1
+        else
+            success "phantomjs already installed and up to date!"
         fi
     else
         # Otherwise, install via brew
+        success "phantomjs not found, installing!"
         brew install phantomjs 2>&1
     fi
 }
 
 install_helpful_tools() {
     # This is useful for profiling
-    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
-    if ! brew ls qcachegrind >/dev/null 2>&1; then
-        brew install qcachegrind 2>&1
-    fi
+    # cf. http://www.khanacademy.org/r/fun-with-miniprofiler
+    info "Would you like to install qcachegrind to profile performance woes?"
+    notice "c.f. ${tty_bold}http://www.khanacademy.org/r/fun-with-miniprofiler${tty_normal}"
+    user "y | N) "
+    read -n1 yepnope
+    case $yepnope in
+        y|Y )
+            success "Great, installing qcachegrind!"
+            if ! brew ls qcachegrind >/dev/null 2>&1; then
+                brew install qcachegrind 2>&1
+            else
+                info "qcachegrind already installed!\n"
+            fi
+            ;;
+        * )
+            success "Not installing qcachegrind (you can always do it later!)"
+        ;;
+    esac
 }
 
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
-warn "Warning: This is only tested on Mac OS 10.9 (Lion)\n"
+warn "Warning: This is only tested on Mac OS 10.9 (Mavericks)\n"
 notice "After each statement, either something will open for you to"
 notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
