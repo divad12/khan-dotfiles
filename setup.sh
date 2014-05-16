@@ -129,22 +129,9 @@ clone_repos() {
     echo "Cloning repositories, including the main 'webapp' repo"
     clone_repo ssh://khanacademy@khanacademy.kilnhg.com/Website/Group/webapp \
         khan/
-    clone_repo git@github.com:Khan/kiln-review khan/devtools/
     clone_repo git@github.com:Khan/khan-linter khan/devtools/
     clone_repo git@github.com:Khan/libphutil khan/devtools/
     clone_repo git@github.com:Khan/arcanist khan/devtools/
-    # For hg users
-    (
-        cd "$ROOT/khan/devtools"
-        hg clone https://bitbucket.org/brendan/mercurial-extensions-rdiff || true
-
-        mkdir -p kiln_extensions
-        if [ ! -e kiln_extensions/kilnauth.py ]; then
-            curl -s https://khanacademy.kilnhg.com/Tools/Downloads/Extensions \
-                > /tmp/extensions.zip \
-                && unzip -qo /tmp/extensions.zip kiln_extensions/kilnauth.py
-        fi
-    )
 }
 
 # Depends on khan-linter having been pulled first.
@@ -155,25 +142,11 @@ install_git_hooks() {
              "$ROOT/.git_template/hooks/commit-msg"
 }
 
-install_mercurial_hooks() {
-    echo "Installing mercurial hooks"
-    # Create a dummy certificate to quiet mercurial and kiln
-    mkdir -p "$ROOT/khan/devtools"
-    if [ ! -s "$ROOT/khan/devtools/hg-dummy-cert.pem" ]; then
-        yes "" | openssl req -new -x509 -extensions v3_ca -keyout /dev/null \
-            -out "$ROOT/khan/devtools/hg-dummy-cert.pem" -days 3650 \
-            -passout pass:pass >/dev/null 2>&1
-    fi
-}
-
 # Must have cloned the repos first.
 install_deps() {
     echo "Installing python, ruby, node libraries"
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
-
-    # Install non-khan-specific modules.
-    sudo pip install -q Mercurial
 
     # This is useful for profiling
     # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
@@ -199,16 +172,16 @@ install_deps() {
 }
 
 update_credentials() {
-    echo "Updating information in your git and hg configs"
+    echo "Updating information in your git config"
     # sed -i means 'replace in-place'
-    if grep -q '%NAME_FIRST_LAST%' "$ROOT/.gitconfig" "$ROOT/.hgrc"; then
+    if grep -q '%NAME_FIRST_LAST%' "$ROOT/.gitconfig"; then
         read -p "Enter your full name (First Last): " name
-        perl -pli -e "s/%NAME_FIRST_LAST%/$name/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
+        perl -pli -e "s/%NAME_FIRST_LAST%/$name/g" "$ROOT/.gitconfig"
     fi
 
-    if grep -q '%EMAIL%' "$ROOT/.gitconfig" "$ROOT/.hgrc"; then
+    if grep -q '%EMAIL%' "$ROOT/.gitconfig"; then
         read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " email
-        perl -pli -e "s/%EMAIL%/$email/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
+        perl -pli -e "s/%EMAIL%/$email/g" "$ROOT/.gitconfig"
     fi
 }
 
@@ -224,7 +197,6 @@ edit_system_config
 clone_repos
 # These need the repos to exist (e.g. khan-linter), so come after that.
 install_git_hooks
-install_mercurial_hooks
 install_deps
 update_credentials
 
