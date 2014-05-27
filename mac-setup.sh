@@ -259,6 +259,11 @@ install_homebrew() {
 
     # Make the cellar.
     mkdir -p /usr/local/Cellar
+    
+    # TODO(marcos) check for other versions of osx perhaps and do some
+    # sanity checking and other goodness here. SO VERY SORRY EVERYONE.
+    brew tap homebrew/dupes
+    brew install apple-gcc42
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
