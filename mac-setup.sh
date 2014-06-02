@@ -76,8 +76,8 @@ EOF`
     if expr "`sw_vers -productVersion`" : 10.9 >/dev/null && \
        ! grep -q "-Qunused-arguments" \
         ~/.bash_profile ~/.bash_login ~/.profile; then
-        echo 'export CPPFLAGS="-Qunused-arguments $CPPFLAGS" >> "$PROFILE_FILE"
-        echo 'export CFLAGS="-Qunused-arguments $CFLAGS" >> "$PROFILE_FILE"
+        echo 'export CPPFLAGS="-Qunused-arguments $CPPFLAGS"' >> "$PROFILE_FILE"
+        echo 'export CFLAGS="-Qunused-arguments $CFLAGS"' >> "$PROFILE_FILE"
     fi
     if [ -n "$path_update" ]; then
         echo "# Put /usr/local/bin right before /usr/bin" >> "$PROFILE_FILE"
