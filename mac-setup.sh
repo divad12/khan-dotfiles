@@ -259,7 +259,7 @@ install_homebrew() {
 
     # Make the cellar.
     mkdir -p /usr/local/Cellar
-    
+
     # TODO(marcos) check for other versions of osx perhaps and do some
     # sanity checking and other goodness here. SO VERY SORRY EVERYONE.
     brew tap homebrew/dupes
@@ -308,38 +308,6 @@ install_node() {
     fi
     if ! npm --version >/dev/null; then
         curl https://npmjs.org/install.sh | sh
-    fi
-}
-
-install_appengine_launcher() {
-    info "Checking for google appengine"
-    # First check for the gui appbundle or dev_appserver, if neither are around
-    # then install dylan's gae sdk via brew
-    if [ ! -d /Applications/GoogleAppEngineLauncher.app ] && ! which dev_appserver.py >/dev/null 2>&1;
-    then
-        success "Couldn't find App Engine Launcher, installing via homebrew!\n"
-        # does not install mac fs events
-        brew tap dylanvee/gae_sdk
-        brew install gae-sdk
-        info "You'll also need to ${tty_bold}pip install pyobjc-framework-FSEvents${tty_normal}\n"
-        notice "but ${tty_bold}make deps${tty_normal} in webapp will do this too."
-    elif brew ls gae-sdk >/dev/null 2>&1;
-    then
-        # if dylan's fork is already installed, then update it
-        success "Found dylan's frankenserver!"
-        if brew outdated | grep -q -e 'gae-sdk'
-        then
-            success "Upgrading outdated gae-sdk"
-            brew upgrade gae-sdk
-        fi
-    elif [ -d /Applications/GoogleAppEngineLauncher.app ] ||
-        which dev_appserver.py >/dev/null 2>&1;
-    then
-        # if either of these pass, then you have a slower version of dev_appserver
-        success "Found vanilla dev_appserver.py"
-        warn "You should probably uninstall this and instead install dylan's"
-        notice "frankenserver which makes good use of mac-fsevents"
-        notice "c.f. ${tty_bold}https://github.com/dylanvee/homebrew-gae_sdk${tty_normal}"
     fi
 }
 
@@ -406,7 +374,6 @@ install_hipchat
 install_homebrew
 update_git
 install_node
-install_appengine_launcher
 install_phantomjs
 install_helpful_tools
 
