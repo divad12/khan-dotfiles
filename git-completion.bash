@@ -2741,3 +2741,8 @@ else
 		shopt "$@"
 	}
 fi
+
+
+# Added for Khan Academy.
+_git_p() { _git_pull; }
+_git_co() { _git_checkout; }
