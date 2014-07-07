@@ -4,13 +4,11 @@ developers.  A lot of what's here is Khan Academy-specific:
 - Vim filetype plugins conforming to Khan Academy's style guide
 - tell ack to skip crap that the deploy script litters
   (eg. combined/compressed CSS/JS files)
-- Kiln authentication stuff
 - a [pre-commit linter](https://github.com/Khan/khan-linter)
 
 and the rest of it just contains generally useful things, such as
 
 - handy `git` aliases such as `git graph`
-- having `hg` pipe commands with large output to `less`
 - useful Mercurial aliases and extensions such as `shelve` (similar to
   `git stash`) and `record` (similar to `git add -p && git commit`)
 

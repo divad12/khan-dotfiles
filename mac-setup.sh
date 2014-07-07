@@ -113,94 +113,70 @@ copy_ssh_key () {
 }
 
 register_ssh_keys() {
-    # Have the user copy it into kiln and github.
-    success "Registering your ssh keys with kiln and github"
-
-    success "Registering with github\n"
-    verify_ssh_auth "Github"
-
-    success "Registering with kiln\n"
-    verify_ssh_auth "Kiln"
+    success "Registering your ssh keys with github\n"
+    verify_ssh_auth
 }
 
-# checks to see that ssh keys are registered with kiln
-# $1 service name $2 "true"|"false" to end the auth cycle
+# checks to see that ssh keys are registered with github
+# $1: "true"|"false" to end the auth cycle
 verify_ssh_auth () {
-    ssh_host=false
-    case "$1" in
-        Github )
-            ssh_host="git@github.com"
-            service_name="Github"
-            webpage_url="https://github.com/settings/ssh"
-            instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
-            ;;
-        Kiln )
-            ssh_host="khanacademy@khanacademy.kilnhg.com"
-            service_name="Kiln"
-            webpage_url="https://khanacademy.kilnhg.com/Keys"
-            instruction="Click 'Add a New Key', paste into the box, and hit 'Save key'"
-            ;;
-        * )
-            error "Tried to register ssh keys with unknown service: ${1}"
-            exit 1
-            ;;
-    esac
+    ssh_host="git@github.com"
+    webpage_url="https://github.com/settings/ssh"
+    instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
 
-    info "Checking for $service_name ssh auth"
+    info "Checking for GitHub ssh auth"
     if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
         -q -e "Authentication succeeded (publickey)"
     then
         if [ "$2" == "false" ]  # error if auth fails twice in a row
         then
-            error "Still no luck with $service_name ssh auth. Ask a dev!"
-            ssh_auth_loop $service_name $webpage_url "false"
+            error "Still no luck with GitHub ssh auth. Ask a dev!"
+            ssh_auth_loop $webpage_url "false"
         else
             # otherwise prompt to upload keys
-            success "${service_name}'s ssh auth didn't seem to work\n"
-            notice "Let's add your public key to ${service_name}'s webpage"
+            success "GitHub's ssh auth didn't seem to work\n"
+            notice "Let's add your public key to GitHub"
             info "${tty_bold}${instruction}${tty_normal}\n"
-            ssh_auth_loop $service_name $webpage_url "true"
+            ssh_auth_loop $webpage_url "true"
         fi
     else
-        success "${service_name} ssh auth succeeded!"
+        success "GitHub ssh auth succeeded!"
     fi
 }
 
 ssh_auth_loop() {
     # a convenience function which lets you copy your public key to your clipboard
     # open the webpage for the site you're pasting the key into or just bailing
-    # $1 = service_name
-    # $2 = ssh key registration url
-    service_name=$1
-    service_url=$2
-    first_run=$3
+    # $1 = ssh key registration url
+    service_url=$1
+    first_run=$2
     if [ "$first_run" == "true" ]
     then
-        notice "1. hit ${tty_bold}o${tty_normal} to open ${service_name} on the web"
+        notice "1. hit ${tty_bold}o${tty_normal} to open GitHub on the web"
         notice "2. hit ${tty_bold}c${tty_normal} to copy your public key to your clipboard"
-        notice "3. hit ${tty_bold}t${tty_normal} to test ssh auth for ${service_name}"
-        notice "☢. hit ${tty_bold}s${tty_normal} to skip ssh setup for ${service_name}"
+        notice "3. hit ${tty_bold}t${tty_normal} to test ssh auth for GitHub"
+        notice "☢. hit ${tty_bold}s${tty_normal} to skip ssh setup for GitHub"
         ssh_auth_loop $1 $2 "false"
     else
         user "o|c|t|s) "
         read -n1 ssh_option
         case $ssh_option in
             o|O )
-                success "opening ${service_name}'s webpage to register your key!"
+                success "opening GitHub's webpage to register your key!"
                 open $service_url
-                ssh_auth_loop $service_name $service_url "false"
+                ssh_auth_loop $service_url "false"
                 ;;
             c|C )
                 success "copying your ssh key to your clipboard"
                 copy_ssh_key
-                ssh_auth_loop $service_name $service_url "false"
+                ssh_auth_loop $service_url "false"
                 ;;
             t|T )
                 printf "\r"
-                verify_ssh_auth $service_name "false"
+                verify_ssh_auth "false"
                 ;;
             s|S )
-                warn "skipping ${service_name} ssh registration"
+                warn "skipping GitHub ssh registration"
                 ;;
         esac
     fi

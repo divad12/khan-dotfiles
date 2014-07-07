@@ -21,9 +21,8 @@ while [ -h "$SOURCE" ]; do   # follow symlinks
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-# Enable autocompletion for git and hg
+# Enable autocompletion for git
 source "$DIR/git-completion.bash"
-source "$DIR/hg-completion.bash"
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}
