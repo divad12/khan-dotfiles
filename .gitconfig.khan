@@ -16,24 +16,39 @@
   autosetuprebase = always
 
 [alias]
-  graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
-  ls-ignored = ls-files --exclude-standard --ignored --others
-  co = !sh -c 'git checkout $* && git submodule update --init --recursive' --
-  p = !sh -c 'git pull $* && git submodule update --init --recursive' --
+  # Abbreviations.
   st = status
   ci = commit
   br = branch
   df = diff
   dfs = diff --staged
   lp = log -p
-  outgoing = log origin/master..HEAD
-  incoming = "!git fetch $1; git log HEAD..$1/master"
-  update-submodule = !bash -c 'git co master && git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate -m Test\\ plan: -m None && git push && git co -' --
-  weekly = !sh -c 'git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`'
-  findreviewers = !~/khan/webapp/tools/findreviewers.py $*
+  bw = blame -w            ; ignore whitespace changes
 
-  # Ignore whitespace changes
-  bw = blame -w
+  # Versions of commands with useful options specified.
+  graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
+  ls-ignored = ls-files --exclude-standard --ignored --others
+
+  # Versions of commands that handle submodules properly.
+  co = "!f() { git checkout \"$@\" && git submodule update --init --recursive; }; f"
+  p = "!f() { git pull \"$@\" && git submodule update --init --recursive; }; f"
+
+  # Branch management for dealing with phabricator and github-style deploys.
+  ## git deploy-branch <branchname>
+  deploy-branch = "!f() { git fetch origin; if git show-ref -q --verify refs/remotes/origin/$1; then git co -t origin/$1; echo \"WARNING: using already existing branch origin/$1\"; else git branch --no-track $1 ${2-master} && git co $1 && git push -u origin $1; fi; }; f"
+  ## git review-branch <branchname> [parent -- defaults to current branch]
+  review-branch = "!f() { if [ -n \"$2\" ]; then git co $2; fi && if grep refs/heads/master$ .git/HEAD; then echo \"Review branches must not be based off master\"; false; fi && git co --track -b $1; }; f"
+  phabricator-branch = !git review-branch
+  db = !git deploy-branch
+  rb = !git review-branch
+  pb = !git review-branch       ; short for 'phabricator branch'
+
+  # Other useful commands.
+  outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
+  incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
+  update-submodule = !bash -c 'git co master && git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate -m Test\\ plan: -m None && git push && git co -' --
+  weekly = "!git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`"
+  findreviewers = "!~/khan/webapp/tools/findreviewers.py \"$@\""
 
 [commit]
   template = ~/.git_template/commit_template
