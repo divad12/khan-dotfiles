@@ -16,6 +16,9 @@
   autosetuprebase = always
 
 [alias]
+  # Note that some aliases are actually scripts in ./bin
+  # e.g. deploy-branch, review-branch
+
   # Abbreviations.
   st = status
   ci = commit
@@ -30,14 +33,12 @@
   ls-ignored = ls-files --exclude-standard --ignored --others
 
   # Versions of commands that handle submodules properly.
+  # TODO(dmnd): Move to ./bin
   co = "!f() { git checkout \"$@\" && git submodule update --init --recursive; }; f"
   p = "!f() { git pull \"$@\" && git submodule update --init --recursive; }; f"
 
   # Branch management for dealing with phabricator and github-style deploys.
-  ## git deploy-branch <branchname>
-  deploy-branch = "!f() { git fetch origin; if git show-ref -q --verify refs/remotes/origin/$1; then git co -t origin/$1; echo \"WARNING: using already existing branch origin/$1\"; else git branch --no-track $1 ${2-master} && git co $1 && git push -u origin $1; fi; }; f"
-  ## git review-branch <branchname> [parent -- defaults to current branch]
-  review-branch = "!f() { if [ -n \"$2\" ]; then git co $2; fi && if grep refs/heads/master$ .git/HEAD; then echo \"Review branches must not be based off master\"; false; fi && git co --track -b $1; }; f"
+  # See also ./bin/git-{deploy,review}-branch
   phabricator-branch = !git review-branch
   db = !git deploy-branch
   rb = !git review-branch

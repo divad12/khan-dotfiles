@@ -1,0 +1,35 @@
+#!/bin/sh
+
+USAGE=`cat<<EOF
+USAGE: git review-branch <branchname> [parent -- defaults to current branch]
+
+       Creates a new local branch ensuring that it's not based off master.
+       This is useful as part of GitHub-style deploys. Such a branch is called
+       a 'review branch'.
+
+       All review branches should be based off a deploy branch.
+       See git deploy-branch.
+
+       See also Git workflow at KA:
+       https://sites.google.com/a/khanacademy.org/forge/for-developers/working-with-git-and-mercurial/git-at-ka
+EOF`
+
+[ -n "$1" ] || {
+    echo "$USAGE"
+    exit 1
+}
+
+
+# If the second argument is provided, switch to it
+if [ -n "$2" ]; then
+    git co $2
+fi
+
+# Stop people from landing directly to master
+if [ "`git rev-parse --abbrev-ref HEAD`" = "master" ]; then
+    echo "Review branches must not be based off master";
+    exit 1
+fi
+
+# Apart from that check, this command just creates a local branch
+git co --track -b $1
