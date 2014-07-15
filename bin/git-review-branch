@@ -1,7 +1,7 @@
 #!/bin/sh
 
 USAGE=`cat<<EOF
-USAGE: git review-branch <branchname> [parent -- defaults to current branch]
+USAGE: git review-branch <branchname> [parent -- defaults to branch.review-parent-default]
 
        Creates a new local branch ensuring that it's not based off master.
        This is useful as part of GitHub-style deploys. Such a branch is called
@@ -9,6 +9,11 @@ USAGE: git review-branch <branchname> [parent -- defaults to current branch]
 
        All review branches should be based off a deploy branch.
        See git deploy-branch.
+
+       If you've run 'git config --add branch.review-parent-default XXX',
+       then when you run 'git review-branch foo' it will base foo off of
+       the XXX branch.  You can override this behavior via
+          git review-branch foo other-deploy-branch
 
        See also Git workflow at KA:
        https://sites.google.com/a/khanacademy.org/forge/for-developers/working-with-git-and-mercurial/git-at-ka
@@ -23,6 +28,9 @@ EOF`
 # If the second argument is provided, switch to it
 if [ -n "$2" ]; then
     git co $2
+elif [ -n "`git config --get branch.review-parent-default`" ]; then
+    # If they have a default parent branch, switch to *that*
+    git co "`git config --get branch.review-parent-default`"
 fi
 
 # Stop people from landing directly to master
