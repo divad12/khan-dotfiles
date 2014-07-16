@@ -141,6 +141,8 @@ install_git_hooks() {
              "$ROOT/.git_template/hooks/commit-msg"
     ln -snfv "$ROOT/khan/devtools/khan-dotfiles/no-commit-to-master" \
              "$ROOT/.git_template/hooks/pre-commit"
+    ln -snfv "$ROOT/khan/devtools/khan-dotfiles/no-push-to-master" \
+             "$ROOT/.git_template/hooks/pre-push"
 }
 
 # Must have cloned the repos first.
