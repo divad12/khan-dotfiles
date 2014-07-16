@@ -7,6 +7,8 @@
 # For emergencies, you can override this hook by using 'git commit -n'.
 
 
+# IF YOU UPDATE THESE VARS, be sure to update no-push-to-master as well.
+
 # If you want to restrict other repos, just add another "-e <name>".
 REPOS="-e Khan/webapp"
 
@@ -25,6 +27,6 @@ fi
 if [ "`git rev-parse --abbrev-ref HEAD`" = "master" ]; then
    echo "FATAL ERROR: You cannot commit directly to the master branch."
    echo "Commit to a deploy branch instead:"
-   echo "https://sites.google.com/a/khanacademy.org/forge/for-developers/working-with-git-and-mercurial/git-at-ka"
+   echo "    https://sites.google.com/a/khanacademy.org/forge/for-developers/working-with-git-and-mercurial/git-at-ka"
    exit 1
 fi
