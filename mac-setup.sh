@@ -74,7 +74,7 @@ EOF`
     # Numpy/etc use flags clang doesn't know about.  This is only
     # needed for mavericks.
     if expr "`sw_vers -productVersion`" : 10.9 >/dev/null && \
-       ! grep -q "-Qunused-arguments" \
+       ! grep -q -e "-Qunused-arguments" \
         ~/.bash_profile ~/.bash_login ~/.profile; then
         echo 'export CPPFLAGS="-Qunused-arguments $CPPFLAGS"' >> "$PROFILE_FILE"
         echo 'export CFLAGS="-Qunused-arguments $CFLAGS"' >> "$PROFILE_FILE"
@@ -283,7 +283,7 @@ install_node() {
         brew install node 2>&1
     fi
     if ! npm --version >/dev/null; then
-        curl https://npmjs.org/install.sh | sh
+        curl -L https://npmjs.org/install.sh | sh
     fi
 }
 
