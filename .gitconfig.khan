@@ -48,8 +48,10 @@
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
   update-submodule = !bash -c 'git co master && git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate -m Test\\ plan: -m None && git push && git co -' --
+  # For after a commit fails with lint, and it says 'commit message saved...'
+  recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
   weekly = "!git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`"
-  findreviewers = "!~/khan/webapp/tools/findreviewers.py \"$@\""
+  findreviewers = "!~/khan/webapp/tools/findreviewers.py"
 
 [commit]
   template = ~/.git_template/commit_template
