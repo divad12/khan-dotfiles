@@ -165,7 +165,7 @@ install_deps() {
     # Activate the virtualenv
     . ~/.virtualenv/khan27/bin/activate
 
-    sudo gem install bundler
+    which bundle >/dev/null || sudo gem install bundler
 
     # Install all the requirements for khan, khan-exercises, and khan-linter.
     # This also installs npm deps and some ruby gems.

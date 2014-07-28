@@ -1,4 +1,6 @@
-install: os-install common-install ;
+install:
+	$(MAKE) os-install
+	$(MAKE) common-install
 
 os-install:
 	if [ `uname -s` = Linux ]; then ./linux-setup.sh; fi

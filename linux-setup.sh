@@ -33,7 +33,7 @@ install_packages() {
     fi
 
     # To get chrome, later.
-    if ! -s /etc/apt/sources.list.d/google-chrome.list; then
+    if [ ! -s /etc/apt/sources.list.d/google-chrome.list ]; then
         echo "deb http://dl.google.com/linux/chrome/deb/ stable main" \
             | sudo tee /etc/apt/sources.list.d/google-chrome.list
         wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub \
@@ -52,9 +52,14 @@ install_packages() {
     sudo apt-get install -y git git-svn mercurial subversion \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
-        ruby ruby-dev rubygems libxslt-dev libxml2-dev \
+        libncurses-dev \
+        ruby ruby-dev libxslt-dev libxml2-dev \
         nodejs \
         php5-cli php5-curl
+
+    # On newer ubuntu's, rubygems has been incorporated into ruby, so
+    # don't complain if it fails.
+    sudo apt-get install -y rubygems || true
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
