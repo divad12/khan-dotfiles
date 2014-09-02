@@ -156,7 +156,7 @@ ssh_auth_loop() {
         notice "2. hit ${tty_bold}c${tty_normal} to copy your public key to your clipboard"
         notice "3. hit ${tty_bold}t${tty_normal} to test ssh auth for GitHub"
         notice "☢. hit ${tty_bold}s${tty_normal} to skip ssh setup for GitHub"
-        ssh_auth_loop $1 $2 "false"
+        ssh_auth_loop $1 "false"
     else
         user "o|c|t|s) "
         read -n1 ssh_option
