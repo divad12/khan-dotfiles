@@ -1,7 +1,7 @@
 #!/bin/sh
 
 USAGE=`cat<<EOF
-USAGE: git deploy-branch <branchname> [parent -- defaults to master]
+USAGE: git deploy-branch <branchname> [parent -- defaults to origin/master]
 
        Creates a remote deploy branch for use with GitHub-style deploys.
 
@@ -26,7 +26,7 @@ if git show-ref --quiet --verify refs/remotes/origin/$1; then
     echo "WARNING: using already existing branch origin/$1"
 else
     # Create a new branch tracking the remote one
-    git branch --no-track $1 ${2-master} && \
+    git branch --no-track $1 ${2-origin/master} && \
         git co $1 && \
         git push --set-upstream origin $1
 fi
