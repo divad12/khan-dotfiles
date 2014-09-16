@@ -1,0 +1,7 @@
+################################################################################
+# Local .profile.
+# Feel free to add whatever you like after the profile.khan' line.
+
+if [ -s ~/.profile.khan ]; then
+    . ~/.profile.khan
+fi

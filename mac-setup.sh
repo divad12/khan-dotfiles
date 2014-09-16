@@ -38,51 +38,14 @@ error () {
     printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
 }
 
+
 update_path() {
-    # We need /usr/local/bin to come before /usr/bin on the path,
-    # to pick up brew files we install.
-    if ! echo "$PATH" | egrep -q '(:|^)/usr/local/bin/?:(.*:)?/usr/bin/?(:|$)'
-    then
-        # This replaces /usr/bin with /usr/local/bin:/usr/bin
-        PATH=`echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'`
-        # Make this path update work in the future too.
-        path_update=`cat<<'EOF'
-echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'
-EOF`
-    else
-        path_update=''
-    fi
-
-    # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
-    # there's so little in it we figure it's ok to put it first.
-    export PATH=/usr/local/sbin:$PATH
-
-    # Put these in shell config file too.
-    # Test whether it's already in a config file (sorry zsh users who
-    # aren't using .profile).  We follow the same order bash does:
-    if [ -f ~/.bash_profile ]; then
-        PROFILE_FILE="$HOME/.bash_profile"
-    elif [ -f ~/.bash_login ]; then
-        PROFILE_FILE="$HOME/.bash_login"
-    else
-        PROFILE_FILE="$HOME/.profile"
-    fi
-    if ! grep -q "export PATH=.*/usr/local/sbin" \
-        ~/.bash_profile ~/.bash_login ~/.profile; then
-        echo 'export PATH=/usr/local/sbin:$PATH' >> "$PROFILE_FILE"
-    fi
-    # Numpy/etc use flags clang doesn't know about.  This is only
-    # needed for mavericks.
-    if expr "`sw_vers -productVersion`" : 10.9 >/dev/null && \
-       ! grep -q -e "-Qunused-arguments" \
-        ~/.bash_profile ~/.bash_login ~/.profile; then
-        echo 'export CPPFLAGS="-Qunused-arguments $CPPFLAGS"' >> "$PROFILE_FILE"
-        echo 'export CFLAGS="-Qunused-arguments $CFLAGS"' >> "$PROFILE_FILE"
-    fi
-    if [ -n "$path_update" ]; then
-        echo "# Put /usr/local/bin right before /usr/bin" >> "$PROFILE_FILE"
-        echo 'PATH=`'"$path_update"'`' >> "$PROFILE_FILE"
-    fi
+    # We need /usr/local/bin to come before /usr/bin on the path, to
+    # pick up brew files we install.  To do this, we just source
+    # .profile.khan, which does this for us (and the new user).
+    # (This assumes you're running mac-setup.sh from the khan-dotfiles
+    # directory.)
+    . .profile.khan
 }
 
 maybe_generate_ssh_keys () {

@@ -1,36 +1,14 @@
 ################################################################################
 # Khan Academy specific bashrc
+#
+# We actually store all our rc-code in .profile and .bash_profile.
+# The difference between .*profile and .bashrc is that the former
+# are loaded for login shells and the latter for non-login shells.
+# (For more info, see http://hacktux.com/bash/bashrc/bash_profile.)
+#
+# We want our code to run for both types of shells, so we just include
+# .bash_profile from here.  We source only .bash_profile.khan in case
+# you have code in your .bashrc_profile that you *don't* want executed
+# for non-login shells.
 
-# Add Phabricator bins to PATH
-export PATH="$HOME/khan/devtools/arcanist/khan-bin:$PATH"
-
-# Add frankenserver bins to PATH
-export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
-
-# Add dotfiles scripts to PATH
-export PATH="$HOME/khan/devtools/khan-dotfiles/bin:$PATH"
-
-# Activate Python2.7 virtualenv
-source ~/.virtualenv/khan27/bin/activate
-
-# Figure out what directory we're *really* in (following symlinks).
-# We need this because *-completion.bash are siblings to this script.
-# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do   # follow symlinks
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"    # resolve relative symlink
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
-# Enable autocompletion for git
-source "$DIR/git-completion.bash"
-
-# Make sure git (and other apps) prefer 'vim' to 'vi'.
-: ${EDITOR:=vim}
-
-# Set a high limit for open file descriptors per shell.
-# The default on OS X is 256; we increase it to 1024--the default value of
-# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
-ulimit -S -n 1024
+source ~/.bash_profile.khan

@@ -1,0 +1,39 @@
+################################################################################
+# Khan Academy specific .bash_profile
+#
+# The difference between .bash_profile and .profile is that the latter
+# is called for all sh-compatible shells.  So we put bashisms here
+# and non-bashisms in .profile.
+#
+# According to the bash manpage, if both .bash_profile and .profile
+# exist, bash only reads the first one.  So we have to source .profile
+# manually.
+
+if [ -s ~/.profile ]; then
+    source ~/.profile
+fi
+
+# Activate Python2.7 virtualenv
+source ~/.virtualenv/khan27/bin/activate
+
+# Figure out what directory we're *really* in (following symlinks).
+# We need this because *-completion.bash are siblings to this script.
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do   # follow symlinks
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"    # resolve relative symlink
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Enable autocompletion for git
+source "$DIR/git-completion.bash"
+
+# Make sure git (and other apps) prefer 'vim' to 'vi'.
+: ${EDITOR:=vim}
+
+# Set a high limit for open file descriptors per shell.
+# The default on OS X is 256; we increase it to 1024--the default value of
+# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
+ulimit -S -n 1024

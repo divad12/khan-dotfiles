@@ -68,7 +68,7 @@ install_dotfiles() {
     # They all have the property they 'include' khan-specific code.
     for file in *.default; do
         dest="$ROOT/.`echo "$file" | sed s/.default$//`"  # foo.default -> .foo
-        ka_version=.`echo "$file" | sed s/default/khan/`  # .bashrc.khan
+        ka_version=.`echo "$file" | sed s/default/khan/`  # .bashrc.khan, etc.
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then

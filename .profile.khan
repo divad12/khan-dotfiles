@@ -1,0 +1,51 @@
+################################################################################
+# Khan Academy specific .profile
+#
+# The difference between .bash_profile and .profile is that the latter
+# is called for all sh-compatible shells.  So we put non-bashisms here
+# and bashisms in .bash_profile.
+
+# Add Phabricator bins to PATH
+export PATH="$HOME/khan/devtools/arcanist/khan-bin:$PATH"
+
+# Add frankenserver bins to PATH
+export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
+
+# Add dotfiles scripts to PATH
+export PATH="$HOME/khan/devtools/khan-dotfiles/bin:$PATH"
+
+# Make sure git (and other apps) prefer 'vim' to 'vi'.
+: ${EDITOR:=vim}
+
+# Set a high limit for open file descriptors per shell.
+# The default on OS X is 256; we increase it to 1024--the default value of
+# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
+ulimit -S -n 1024
+
+
+# Mac-specific stuff.
+if [ `uname -s` = Darwin ]; then
+    # We need /usr/local/bin to come before /usr/bin on the path,
+    # to pick up brew files we install.
+    if ! echo "$PATH" | egrep -q '(:|^)/usr/local/bin/?:(.*:)?/usr/bin/?(:|$)'
+    then
+        # This replaces /usr/bin with /usr/local/bin:/usr/bin
+        PATH=`echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'`
+    fi
+
+    # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
+    # there's so little in it we figure it's ok to put it first.
+    PATH=/usr/local/sbin:$PATH
+    export PATH
+
+    # Numpy/etc use flags clang doesn't know about.  This is only
+    # needed for mavericks.
+    if expr "`sw_vers -productVersion`" : 10.9 >/dev/null; then
+        CPPFLAGS="-Qunused-arguments $CPPFLAGS"
+        CFLAGS="-Qunused-arguments $CFLAGS"
+        # This ARCHFLAGS is needed until we have pyobjc 3.0, according to
+        #    https://bitbucket.org/ronaldoussoren/pyobjc/issue/66/cannot-locate-a-working-compiler-error
+        ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future $ARCHFLAGS"
+        export CPPFLAGS CFLAGS ARCHFLAGS
+    fi
+fi
