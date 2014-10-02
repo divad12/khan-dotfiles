@@ -31,6 +31,7 @@
   # Versions of commands with useful options specified.
   graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
   ls-ignored = ls-files --exclude-standard --ignored --others
+  conflicts = diff --name-only --diff-filter=U
 
   # Versions of commands that handle submodules properly.
   # TODO(dmnd): Move to ./bin
