@@ -1,0 +1,19 @@
+#!/bin/bash
+
+USAGE=`cat<<EOF
+USAGE: git recursive-grep <pattern>
+
+    Runs git grep recursively through submodules, showing full file paths.
+EOF`
+
+[ -n "$1" ] || {
+    echo "$USAGE"
+    exit 1
+}
+
+{
+    git rev-parse --show-toplevel
+    git submodule -q foreach --recursive "pwd"
+} | while read p; do
+    cd "$p" && git grep --full-name "$@" | sed "s,^,$p/,"
+done

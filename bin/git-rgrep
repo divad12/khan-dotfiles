@@ -1,0 +1,16 @@
+#!/bin/bash
+
+USAGE=`cat<<EOF
+USAGE: git rgrep <pattern>
+
+    Runs git grep recursively through submodules, showing file paths relative to
+    cwd.
+EOF`
+
+[ -n "$1" ] || {
+    echo "$USAGE"
+    exit 1
+}
+
+cwd=`pwd`
+git-recursive-grep "$@" | sed "s,^$cwd/,,"
