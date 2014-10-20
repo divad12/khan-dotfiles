@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 USAGE=`cat<<EOF
 USAGE: git review-branch <branchname> [parent -- defaults to branch.review-parent-default]

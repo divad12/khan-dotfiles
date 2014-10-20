@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 USAGE=`cat<<EOF
 USAGE: git deploy-branch <branchname> [parent -- defaults to origin/master]
@@ -26,7 +26,7 @@ if git show-ref --quiet --verify refs/remotes/origin/$1; then
     echo "WARNING: using already existing branch origin/$1"
 else
     # Create a new branch tracking the remote one
-    git branch --no-track $1 ${2-origin/master} && \
-        git co $1 && \
-        git push --set-upstream origin $1
+    git branch --no-track $1 ${2-origin/master}
+    git co $1
+    git push --set-upstream origin $1
 fi
