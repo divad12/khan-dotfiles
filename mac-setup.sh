@@ -147,7 +147,7 @@ ssh_auth_loop() {
 
 install_gcc() {
     info "\nChecking for apple command line developer tools..."
-    if ! gcc --version >/dev/null 2>&1; then
+    if ! gcc --version >/dev/null 2>&1 || [ ! -s /usr/include/stdio.h ]; then
         if sw_vers | grep ProductVersion | grep -o 10.9; then
             success "Installing command line developer tools"
             # Also, how did you get this dotfiles repo in 10.9 without
