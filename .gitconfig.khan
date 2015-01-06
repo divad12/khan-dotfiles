@@ -22,7 +22,7 @@
   # Abbreviations.
   st = status
   ci = commit
-  br = branch
+  br = for-each-ref --sort=-committerdate --format='%(HEAD) %(refname:short)' refs/heads/
   df = diff
   dfs = diff --staged
   lp = log -p
