@@ -22,7 +22,9 @@
   # Abbreviations.
   st = status
   ci = commit
+  # Show branches (and tags) ordered by last-modified.
   br = for-each-ref --sort=-committerdate --format='%(HEAD) %(refname:short)' refs/heads/
+  tg = for-each-ref --sort=taggerdate --format='%(refname:short)' refs/tags/
   df = diff
   dfs = diff --staged
   lp = log -p
