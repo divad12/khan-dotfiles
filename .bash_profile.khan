@@ -9,9 +9,16 @@
 # exist, bash only reads the first one.  So we have to source .profile
 # manually.
 
-if [ -s ~/.profile ]; then
-    source ~/.profile
+if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
+   # We check and then set this environment variable to ensure that we source
+   # .profile only once.  Depending on a user's dotfile configuration, it
+   # might otherwise be possible to create an infinite loop of sourcing.
+   export KA_DOTFILES_PROFILE_SOURCED=1
+   if [ -s ~/.profile ]; then
+      source ~/.profile
+   fi
 fi
+unset KA_DOTFILES_PROFILE_SOURCED
 
 # Activate Python2.7 virtualenv
 source ~/.virtualenv/khan27/bin/activate
