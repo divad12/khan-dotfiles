@@ -39,8 +39,9 @@ if [ `uname -s` = Darwin ]; then
     export PATH
 
     # Numpy/etc use flags clang doesn't know about.  This is only
-    # needed for mavericks.
-    if expr "`sw_vers -productVersion`" : 10.9 >/dev/null; then
+    # needed for mavericks and above.
+    if ! expr "`sw_vers -productVersion`" : '10\.[0-8]$' >/dev/null -a \
+       ! expr "`sw_vers -productVersion`" : '10\.[0-8]\.' >/dev/null; then
         CPPFLAGS="-Qunused-arguments $CPPFLAGS"
         CFLAGS="-Qunused-arguments $CFLAGS"
         # This ARCHFLAGS is needed until we have pyobjc 3.0, according to
