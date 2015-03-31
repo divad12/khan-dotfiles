@@ -204,6 +204,11 @@ install_homebrew() {
     brew tap homebrew/dupes
     brew install apple-gcc42
 
+    # We need a particular version of phantomjs to run the end-to-end tests.
+    brew tap homebrew/versions
+    brew uninstall --force phantomjs
+    brew install phantomjs198
+
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
     # doctor', we look at its output.  The last 'grep', combined with
