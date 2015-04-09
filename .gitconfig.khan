@@ -77,3 +77,16 @@
 
 [push]
   default = simple
+
+# These next three sections allow us to use the 'git-bigfile' extension.
+[filter "bigfile"]
+  clean = git-bigfile filter-clean
+  smudge = git-bigfile filter-smudge
+
+[git-bigfile]
+  transport = s3
+
+[git-bigfile "s3"]
+  access-key = AKIAINDGZSNJIWXDPTSA
+  secret-key-path = ~/git-bigfile-storage.secret
+  bucket-name = git-bigfile-storage

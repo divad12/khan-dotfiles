@@ -131,6 +131,7 @@ clone_repos() {
     clone_repo git@github.com:Khan/khan-linter khan/devtools/
     clone_repo git@github.com:Khan/libphutil khan/devtools/
     clone_repo git@github.com:Khan/arcanist khan/devtools/
+    clone_repo git@github.com:Khan/git-bigfile khan/devtools/
 }
 
 # Depends on khan-linter having been pulled first.
@@ -151,10 +152,6 @@ install_deps() {
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
 
-    # This is useful for profiling
-    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
-    sudo pip install pyprof2calltree
-
     # Install virtualenv.
     # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
     sudo pip install -q virtualenv
@@ -162,10 +159,17 @@ install_deps() {
         virtualenv -q --python="`which python2.7`" --no-site-packages \
             "$ROOT/.virtualenv/khan27"
     fi
-    # Activate the virtualenv
+    # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
 
     which bundle >/dev/null || sudo gem install bundler
+
+    # This is useful for profiling
+    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
+    pip install pyprof2calltree
+
+    # This is needed by git-bigfile.
+    pip install boto
 
     # Install all the requirements for khan, khan-exercises, and khan-linter.
     # This also installs npm deps and some ruby gems.
@@ -185,6 +189,14 @@ update_credentials() {
     if grep -q '%EMAIL%' "$ROOT/.gitconfig"; then
         read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " email
         perl -pli -e "s/%EMAIL%/$email/g" "$ROOT/.gitconfig"
+    fi
+
+    if [ ! -s "$HOME/git-bigfile-storage.secret" ]; then
+        echo "You must update your S3 credentials for use with git-bigfile."
+        echo "Visit https://phabricator.khanacademy.org/K65 and click"
+        echo "'show secret' and copy the contents into a file called"
+        echo "   $HOME/git-bigfile-storage.secret"
+        read -p "Hit enter when this is done: " prompt
     fi
 }
 

@@ -8,6 +8,9 @@
 # Add Phabricator bins to PATH
 export PATH="$HOME/khan/devtools/arcanist/khan-bin:$PATH"
 
+# Add git-bigfiles to PATH
+export PATH="$HOME/khan/devtools/git-bigfile/bin:$PATH"
+
 # Add frankenserver bins to PATH
 export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
 
