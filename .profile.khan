@@ -43,7 +43,7 @@ if [ `uname -s` = Darwin ]; then
 
     # Numpy/etc use flags clang doesn't know about.  This is only
     # needed for mavericks and above.
-    if ! expr "`sw_vers -productVersion`" : '10\.[0-8]$' >/dev/null -a \
+    if ! expr "`sw_vers -productVersion`" : '10\.[0-8]$' >/dev/null && \
        ! expr "`sw_vers -productVersion`" : '10\.[0-8]\.' >/dev/null; then
         CPPFLAGS="-Qunused-arguments $CPPFLAGS"
         CFLAGS="-Qunused-arguments $CFLAGS"
