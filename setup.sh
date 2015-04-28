@@ -73,7 +73,7 @@ install_dotfiles() {
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
             add_fatal_error "$dest does not 'include' $ka_version;" \
-                            "see `pwd`/$file and add equivalent logic to $dest"
+                            "see `pwd`/$file and add the contents to $dest"
         fi
     done
 }
