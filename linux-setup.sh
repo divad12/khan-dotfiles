@@ -46,20 +46,14 @@ install_packages() {
         sudo apt-get update -qq -y || true
     fi
 
-    # Needed to develop at Khan: git and mercurial, python, ruby, node (js).
-    # xslt and xml are needed by the nokogiri ruby package.
+    # Needed to develop at Khan: git and mercurial, python, node (js).
     # php is needed for phabricator
     sudo apt-get install -y git git-svn mercurial subversion \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libncurses-dev \
-        ruby ruby-dev libxslt-dev libxml2-dev \
         nodejs \
         php5-cli php5-curl
-
-    # On newer ubuntu's, rubygems has been incorporated into ruby, so
-    # don't complain if it fails.
-    sudo apt-get install -y rubygems || true
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep

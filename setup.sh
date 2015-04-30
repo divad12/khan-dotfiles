@@ -148,7 +148,7 @@ install_git_hooks() {
 
 # Must have cloned the repos first.
 install_deps() {
-    echo "Installing python, ruby, node libraries"
+    echo "Installing python, node libraries"
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
 
@@ -162,8 +162,6 @@ install_deps() {
     # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
 
-    which bundle >/dev/null || sudo gem install bundler
-
     # This is useful for profiling
     # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
     pip install pyprof2calltree
@@ -172,7 +170,7 @@ install_deps() {
     pip install boto
 
     # Install all the requirements for khan, khan-exercises, and khan-linter.
-    # This also installs npm deps and some ruby gems.
+    # This also installs npm deps.
     ( cd "$ROOT/khan/webapp" && make install_deps )
     ( cd "$ROOT/khan/webapp/khan-exercises" && pip install -r requirements.txt )
     ( cd "$ROOT/khan/devtools/khan-linter" && pip install -r requirements.txt )
