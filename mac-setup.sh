@@ -148,7 +148,7 @@ ssh_auth_loop() {
 install_gcc() {
     info "\nChecking for apple command line developer tools..."
     if ! gcc --version >/dev/null 2>&1 || [ ! -s /usr/include/stdio.h ]; then
-        if sw_vers -productVersion | grep -e '10\.[0-8]$' -e '10\.[0-8]\.'; then
+        if sw_vers -productVersion | grep -e '^10\.[0-8]$' -e '^10\.[0-8]\.'; then
             warn "Command line tools are *probably available* for your Mac's OS, but..."
             info "Kayla or Kamens or your mentor will gladly upgrade your OS right now\n"
             info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
