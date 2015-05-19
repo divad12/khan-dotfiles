@@ -169,11 +169,10 @@ install_deps() {
     # This is needed by git-bigfile.
     pip install boto
 
-    # Install all the requirements for khan, khan-exercises, and khan-linter.
+    # Install all the requirements for khan, khan-exercises.
     # This also installs npm deps.
     ( cd "$ROOT/khan/webapp" && make install_deps )
     ( cd "$ROOT/khan/webapp/khan-exercises" && pip install -r requirements.txt )
-    ( cd "$ROOT/khan/devtools/khan-linter" && pip install -r requirements.txt )
 }
 
 update_credentials() {
