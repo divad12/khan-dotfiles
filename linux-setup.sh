@@ -46,9 +46,9 @@ install_packages() {
         sudo apt-get update -qq -y || true
     fi
 
-    # Needed to develop at Khan: git and mercurial, python, node (js).
+    # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
-    sudo apt-get install -y git git-svn mercurial subversion \
+    sudo apt-get install -y git git-svn subversion \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libncurses-dev \

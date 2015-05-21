@@ -9,8 +9,6 @@ developers.  A lot of what's here is Khan Academy-specific:
 and the rest of it just contains generally useful things, such as
 
 - handy `git` aliases such as `git graph`
-- useful Mercurial aliases and extensions such as `shelve` (similar to
-  `git stash`) and `record` (similar to `git add -p && git commit`)
 
 This is meant to complement [the dev setup on the Khan Academy Forge](https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup).
 The setup scripts here assume you have done the initial setup on that
