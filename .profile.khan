@@ -26,19 +26,6 @@ ulimit -S -n 1024
 
 # Mac-specific stuff.
 if [ `uname -s` = Darwin ]; then
-    # We need /usr/local/bin to come before /usr/bin on the path,
-    # to pick up brew files we install.
-    if ! echo "$PATH" | egrep -q '(:|^)/usr/local/bin/?:(.*:)?/usr/bin/?(:|$)'
-    then
-        # This replaces /usr/bin with /usr/local/bin:/usr/bin
-        PATH=`echo $PATH | sed -E 's,(^|:)(/usr/bin/?(:|$)),\1/usr/local/bin:\2,'`
-    fi
-
-    # Ideally we'd put /usr/local/sbin right before /usr/sbin, but
-    # there's so little in it we figure it's ok to put it first.
-    PATH=/usr/local/sbin:$PATH
-    export PATH
-
     # Numpy/etc use flags clang doesn't know about.  This is only
     # needed for mavericks and above.
     if ! expr "`sw_vers -productVersion`" : '10\.[0-8]$' >/dev/null && \
