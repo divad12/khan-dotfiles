@@ -16,9 +16,6 @@
   autosetuprebase = always
 
 [alias]
-  # Note that some aliases are actually scripts in ./bin
-  # e.g. deploy-branch, review-branch
-
   # Abbreviations.
   st = status
   ci = commit
@@ -43,12 +40,15 @@
   gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive; }; f"
 
   # Branch management for dealing with phabricator and github-style deploys.
-  # See also ./bin/git-{deploy,review}-branch
+  # e.g. deploy-branch, review-branch, find-reviewers
+  # Note that these reference scripts from Khan/git-workflow
+  # Those scripts should be installed and part of the default path.
   phabricator-branch = !git review-branch
   db = !git deploy-branch
   rb = !git review-branch
   pb = !git review-branch       ; short for 'phabricator branch'
   rgrep = !git recursive-grep
+  findreviewers = !git find-reviewers ; old-style had no dash in name
 
   # Other useful commands.
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
@@ -57,7 +57,6 @@
   # For after a commit fails with lint, and it says 'commit message saved...'
   recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
   weekly = "!git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`"
-  findreviewers = "!~/khan/webapp/tools/findreviewers.py"
 
 [commit]
   template = ~/.git_template/commit_template

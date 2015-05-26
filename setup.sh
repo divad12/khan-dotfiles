@@ -14,6 +14,8 @@ set -e
 ROOT=${1-$HOME}
 mkdir -p "$ROOT"
 
+# the directory all repositories will be cloned to, located under $ROOT
+REPOS_DIR="khan"
 
 warnings=""
 
@@ -127,11 +129,20 @@ clone_repo() {
 
 clone_repos() {
     echo "Cloning repositories, including the main 'webapp' repo"
-    clone_repo git@github.com:Khan/webapp khan/
-    clone_repo git@github.com:Khan/khan-linter khan/devtools/
-    clone_repo git@github.com:Khan/libphutil khan/devtools/
-    clone_repo git@github.com:Khan/arcanist khan/devtools/
-    clone_repo git@github.com:Khan/git-bigfile khan/devtools/
+    clone_webapp
+    clone_devtools
+}
+
+clone_webapp() {
+    clone_repo git@github.com:Khan/webapp       "$REPOS_DIR/"
+}
+
+clone_devtools() {
+    clone_repo git@github.com:Khan/khan-linter  "$REPOS_DIR/devtools/"
+    clone_repo git@github.com:Khan/libphutil    "$REPOS_DIR/devtools/"
+    clone_repo git@github.com:Khan/arcanist     "$REPOS_DIR/devtools/"
+    clone_repo git@github.com:Khan/git-bigfile  "$REPOS_DIR/devtools/"
+    clone_repo git@github.com:Khan/git-workflow "$REPOS_DIR/devtools/"
 }
 
 # Depends on khan-linter having been pulled first.
@@ -171,8 +182,8 @@ install_deps() {
 
     # Install all the requirements for khan, khan-exercises.
     # This also installs npm deps.
-    ( cd "$ROOT/khan/webapp" && make install_deps )
-    ( cd "$ROOT/khan/webapp/khan-exercises" && pip install -r requirements.txt )
+    ( cd "$ROOT/$REPOS_DIR/webapp" && make install_deps )
+    ( cd "$ROOT/$REPOS_DIR/webapp/khan-exercises" && pip install -r requirements.txt )
 }
 
 update_credentials() {

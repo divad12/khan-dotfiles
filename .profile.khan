@@ -12,7 +12,7 @@ export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
 KA_DEVROOT="$HOME/khan/devtools"
 export PATH="$KA_DEVROOT/arcanist/khan-bin:$PATH"
 export PATH="$KA_DEVROOT/git-bigfile/bin:$PATH"
-export PATH="$KA_DEVROOT/khan-dotfiles/bin:$PATH"
+export PATH="$KA_DEVROOT/git-workflow/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
