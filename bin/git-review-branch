@@ -16,7 +16,7 @@ USAGE: git review-branch <branchname> [parent -- defaults to branch.review-paren
           git review-branch foo other-deploy-branch
 
        See also Git workflow at KA:
-       https://sites.google.com/a/khanacademy.org/forge/for-developers/working-with-git-and-mercurial/git-at-ka
+       https://khanacademy.org/r/git-at-ka
 EOF`
 
 [ -n "$1" ] || {
