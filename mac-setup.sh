@@ -249,9 +249,6 @@ install_node() {
     if ! brew ls node >/dev/null 2>&1; then
         brew install node 2>&1
     fi
-    if ! npm --version >/dev/null; then
-        curl -L https://npmjs.org/install.sh | sh
-    fi
 }
 
 install_phantomjs() {
