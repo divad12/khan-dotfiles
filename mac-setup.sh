@@ -173,12 +173,8 @@ install_hipchat() {
     info "Checking for HipChat..."
     if ! open -R -g -a HipChat > /dev/null; then
         success "Didn't find HipChat."
-        info "Installing HipChat to ~/Applications and opening\n"
-        mkdir -p ~/Applications
-        hipchat_app_url="http://downloads.hipchat.com.s3.amazonaws.com/osx/HipChat-2.5.6-87.zip"
-        curl -o ~/Downloads/HipChat-2.5.6-87.zip $hipchat_app_url
-        unzip ~/Downloads/HipChat-2.5.6-87.zip -d ~/Applications > /dev/null
-        open -a ~/Applications/HipChat.app
+        info "Installing HipChat to ~/Applications\n"
+        brew cask install hipchat
     else
         success "Great! HipChat already installed!"
     fi
@@ -207,6 +203,9 @@ install_homebrew() {
     # We need a particular version of phantomjs to run the end-to-end tests.
     # This command will let us access those.
     brew tap homebrew/versions
+
+    # Install homebrew-cask, so we can use it manage installing binary/GUI apps
+    brew install caskroom/cask/brew-cask
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
@@ -303,8 +302,8 @@ update_path
 maybe_generate_ssh_keys
 register_ssh_keys
 install_gcc
-install_hipchat
 install_homebrew
+install_hipchat
 update_git
 install_node
 install_phantomjs
