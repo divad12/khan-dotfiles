@@ -167,8 +167,20 @@ install_deps() {
     # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
     sudo pip install -q virtualenv
     if [ ! -d "$ROOT/.virtualenv/khan27" ]; then
-        virtualenv -q --python="`which python2.7`" --no-site-packages \
-            "$ROOT/.virtualenv/khan27"
+        # With recent versions of MacOSX XCode CLI Tools, it is no longer
+        # possible to compile PyObjC without a full Xcode install. Since PyObjC
+        # is typically preinstalled with the MacOSX version of Python, use
+        # system packages for our virtualenv so we won't need to compile it.
+        #
+        # Note to future maintainers: the PyObjC dependency is part of webapp,
+        # and gets installed later via requirements.darwin.txt in that repo.
+        if [ `uname -s` = Darwin ]; then
+            virtualenv -q --python="`which python2.7`" --system-site-packages \
+                "$ROOT/.virtualenv/khan27"
+        else
+            virtualenv -q --python="`which python2.7`" --no-site-packages \
+                "$ROOT/.virtualenv/khan27"
+        fi
     fi
     # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
