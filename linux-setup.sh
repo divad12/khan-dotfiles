@@ -11,8 +11,17 @@ set -e
 install_packages() {
     updated_apt_repo=""
 
+    # We always want to search in sources.list,
+    # but on some systems add-apt-repository will modify some other file.
+    # Check these files as well to ensure idempotence.
+    sources_to_grep="/etc/apt/sources.list"
+    maybe_extra_sources="/etc/apt/sources.list.d/"
+    if [ -d $maybe_extra_sources ]; then
+        sources_to_grep="$sources_to_grep $maybe_extra_sources"
+    fi
+
     # To get the most recent native hipchat client, later.
-    if ! grep -q 'downloads.hipchat.com' /etc/apt/sources.list; then
+    if ! grep -q -r 'downloads.hipchat.com' $sources_to_grep; then
         sudo add-apt-repository -y \
             "deb http://downloads.hipchat.com/linux/apt stable main"
         wget -O- https://www.hipchat.com/keys/hipchat-linux.key \
