@@ -1,8 +1,0 @@
-# Feel free to include whatever personal configs you'd like after the [include]
-
-[include]
-  path = .gitconfig.khan
-
-[user]
-  name = %NAME_FIRST_LAST%
-  email = %EMAIL%@khanacademy.org

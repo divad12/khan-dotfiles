@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This has files that are used by Khan Academy developers.  This setup
 # script is OS-agnostic; it installs things like dotfiles, python
@@ -14,8 +14,23 @@ set -e
 ROOT=${1-$HOME}
 mkdir -p "$ROOT"
 
-# the directory all repositories will be cloned to, located under $ROOT
-REPOS_DIR="khan"
+# the directory all repositories will be cloned to
+REPOS_DIR="$ROOT/khan"
+
+# derived path location constants
+DEVTOOLS_DIR="$REPOS_DIR/devtools"
+KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
+
+# the directory this script exists in, regardless of where it is called from
+#
+# TODO(mroth): some of the historical parts of this script assume the user is
+# running this from within the directory (and they are in fact instructed to do
+# so), but it may be worth auditing and removing all CWD requirements in the
+# future.
+DIR=$(dirname "$0")
+
+# should we install webapp? (disable for mobile devs or to make testing faster)
+WEBAPP="${WEBAPP:-true}"
 
 warnings=""
 
@@ -52,11 +67,11 @@ install_dotfiles() {
     echo "Installing and updating dotfiles (.bashrc, etc)"
     # Most dotfiles are installed as symlinks.
     # (But we ignore .git which is actually part of the khan-dotfiles repo!)
-    for file in `find .[!.]* -name .git -prune -o -type f -print`; do
-        mkdir -p "$ROOT"/`dirname "$file"`
-        source=`pwd`/"$file"
+    for file in $(find .[!.]* -name .git -prune -o -type f -print); do
+        mkdir -p "$ROOT/$(dirname "$file")"
+        source=$(pwd)/"$file"
         dest="$ROOT/$file"
-        if [ -h "$dest" -a "`readlink $dest`" = "$source" ]; then
+        if [ -h "$dest" -a "$(readlink "$dest")" = "$source" ]; then
             :
         elif [ -e "$dest" ]; then
             add_warning "Not symlinking to $dest because it already exists."
@@ -69,13 +84,13 @@ install_dotfiles() {
     # have names like bashrc.default, which is installed as .bashrc.
     # They all have the property they 'include' khan-specific code.
     for file in *.default; do
-        dest="$ROOT/.`echo "$file" | sed s/.default$//`"  # foo.default -> .foo
-        ka_version=.`echo "$file" | sed s/default/khan/`  # .bashrc.khan, etc.
+        dest="$ROOT/.$(echo "$file" | sed s/.default$//)"  # foo.default -> .foo
+        ka_version=.$(echo "$file" | sed s/default/khan/)  # .bashrc.khan, etc.
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
             add_fatal_error "$dest does not 'include' $ka_version;" \
-                            "see `pwd`/$file and add the contents to $dest"
+                            "see $(pwd)/$file and add the contents to $dest"
         fi
     done
 }
@@ -109,57 +124,93 @@ edit_system_config() {
     fi
 }
 
-# $1: url of the repository to clone.  $2: directory to put repo, under $ROOT
+# clone a repository without any special sauce. should only be used in order to
+# bootstrap ka-clone, or if you are certain you don't want a khanified repo.
+# $1: url of the repository to clone.  $2: directory to put repo
 clone_repo() {
     (
-        mkdir -p "$ROOT/$2"
-        cd "$ROOT/$2"
-        dirname=`basename "$1"`
+        mkdir -p "$2"
+        cd "$2"
+        dirname=$(basename "$1")
         if [ ! -d "$dirname" ]; then
             git clone "$1"
-            cd `basename $1`
+            cd "$dirname"
             git submodule update --init --recursive
-        else
-            cd `basename $1`
-            # This 'git init' installs any new hooks we may have created.
-            git init -q
         fi
     )
 }
 
-clone_repos() {
-    echo "Cloning repositories, including the main 'webapp' repo"
-    clone_webapp
-    clone_devtools
+# replacement for clone_repo() function using ka-clone tool for local config
+# if run on an existing repository, will *update* and do --repair
+# $1: url of the repository to clone.  $2: directory to put repo
+# $3 onwards: any arguments to pass along to kaclone
+kaclone_repo() {
+    local src="$1"
+    shift
+    local dst="$1"
+    shift
+
+    (
+        mkdir -p "$dst"
+        cd "$dst"
+        dirname=$(basename "$src")
+        if [ ! -d "$dirname" ]; then
+            "$KACLONE_BIN" "$src" "$dirname" "$@"
+            cd "$dirname"
+            git submodule update --init --recursive
+        else
+            cd "$dirname"
+            git pull --quiet --ff-only
+            # This 'ka-clone --repair' installs any new settings
+            "$KACLONE_BIN" --repair --quiet "$@"
+        fi
+    )
+}
+
+clone_kaclone() {
+    echo "Installing ka-clone tool"
+    clone_repo git@github.com:Khan/ka-clone "$DEVTOOLS_DIR"
 }
 
 clone_webapp() {
-    clone_repo git@github.com:Khan/webapp       "$REPOS_DIR/"
+    echo "Cloning main webapp repository"
+    kaclone_repo git@github.com:Khan/webapp "$REPOS_DIR/" -p --email="$gitmail"
 }
 
+# clones a specific devtool
+clone_devtool() {
+    kaclone_repo "$1" "$DEVTOOLS_DIR" --email="$gitmail"
+}
+
+# clones all devtools
 clone_devtools() {
-    clone_repo git@github.com:Khan/khan-linter  "$REPOS_DIR/devtools/"
-    clone_repo git@github.com:Khan/libphutil    "$REPOS_DIR/devtools/"
-    clone_repo git@github.com:Khan/arcanist     "$REPOS_DIR/devtools/"
-    clone_repo git@github.com:Khan/git-bigfile  "$REPOS_DIR/devtools/"
-    clone_repo git@github.com:Khan/git-workflow "$REPOS_DIR/devtools/"
+    echo "Installing devtools"
+    clone_devtool git@github.com:Khan/ka-clone    # already cloned, so will --repair the first time
+    clone_devtool git@github.com:Khan/khan-linter
+    clone_devtool git@github.com:Khan/libphutil
+    clone_devtool git@github.com:Khan/arcanist
+    clone_devtool git@github.com:Khan/git-bigfile
+    clone_devtool git@github.com:Khan/git-workflow
 }
 
-# Depends on khan-linter having been pulled first.
-install_git_hooks() {
-    echo "Installing git hooks"
-    mkdir -p "$ROOT/.git_template/hooks"
-    ln -snfv "$ROOT/khan/devtools/khan-linter/githook.py" \
-             "$ROOT/.git_template/hooks/commit-msg"
-    ln -snfv "$ROOT/khan/devtools/khan-dotfiles/no-commit-to-master" \
-             "$ROOT/.git_template/hooks/pre-commit"
-    ln -snfv "$ROOT/khan/devtools/khan-dotfiles/no-push-to-master" \
-             "$ROOT/.git_template/hooks/pre-push"
+# khan-dotfiles is also a KA repository...
+# thus, use kaclone --repair on current dir to khanify it as well!
+kaclone_repair_self() {
+    (cd "$DIR" && "$KACLONE_BIN" --repair --quiet)
+}
+
+clone_repos() {
+    clone_kaclone
+    clone_devtools
+    if [ "$WEBAPP" = true ]; then
+        clone_webapp
+    fi
+    kaclone_repair_self
 }
 
 # Must have cloned the repos first.
 install_deps() {
-    echo "Installing python, node libraries"
+    echo "Installing virtualenv and any global dependencies"
     # pip is a nicer installer/package manager than easy-install.
     sudo easy_install --quiet pip
 
@@ -174,11 +225,11 @@ install_deps() {
         #
         # Note to future maintainers: the PyObjC dependency is part of webapp,
         # and gets installed later via requirements.darwin.txt in that repo.
-        if [ `uname -s` = Darwin ]; then
-            virtualenv -q --python="`which python2.7`" --system-site-packages \
+        if [ "$(uname -s)" = Darwin ]; then
+            virtualenv -q --python="$(which python2.7)" --system-site-packages \
                 "$ROOT/.virtualenv/khan27"
         else
-            virtualenv -q --python="`which python2.7`" --no-site-packages \
+            virtualenv -q --python="$(which python2.7)" --no-site-packages \
                 "$ROOT/.virtualenv/khan27"
         fi
     fi
@@ -194,30 +245,49 @@ install_deps() {
 
     # Install all the requirements for khan, khan-exercises.
     # This also installs npm deps.
-    ( cd "$ROOT/$REPOS_DIR/webapp" && make install_deps )
-    ( cd "$ROOT/$REPOS_DIR/webapp/khan-exercises" && pip install -r requirements.txt )
+    if [ "$WEBAPP" = true ]; then
+        echo "Installing webapp dependencies"
+        ( cd "$REPOS_DIR/webapp" && make install_deps )
+        ( cd "$REPOS_DIR/webapp/khan-exercises" && pip install -r requirements.txt )
+    fi
+}
+
+# Make sure we store userinfo so we can pass appropriately when ka-cloning.
+update_userinfo() {
+    echo "Updating your git user info"
+
+    # check if git user.name exists anywhere, if not, set that globally
+    set +e
+    gitname=$(git config user.name)
+    set -e
+    if [ -z "$gitname" ]; then
+        read -p "Enter your full name (First Last): " name
+        git config --global user.name "$name"
+        gitname=$(git config user.name)
+    fi
+
+    # Set a "sticky" KA email address in the global kaclone.email gitconfig
+    # ka-clone will check for this as the default to use when cloning
+    # (we still pass --email to ka-clone in this script for redundancy, but
+    #  this setting will apply to any future CLI usage of ka-clone.)
+    set +e
+    gitmail=$(git config kaclone.email)
+    set -e
+    if [ -z "$gitmail" ]; then
+        read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " emailuser
+        git config --global kaclone.email "$emailuser"@khanacademy.org
+        gitmail=$(git config kaclone.email)
+    fi
 }
 
 update_credentials() {
-    echo "Updating information in your git config"
-    # sed -i means 'replace in-place'
-    if grep -q '%NAME_FIRST_LAST%' "$ROOT/.gitconfig"; then
-        read -p "Enter your full name (First Last): " name
-        perl -pli -e "s/%NAME_FIRST_LAST%/$name/g" "$ROOT/.gitconfig"
-    fi
-
-    if grep -q '%EMAIL%' "$ROOT/.gitconfig"; then
-        read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " email
-        perl -pli -e "s/%EMAIL%/$email/g" "$ROOT/.gitconfig"
-    fi
-
-    if [ ! -s "$HOME/git-bigfile-storage.secret" ]; then
-        echo "You must update your S3 credentials for use with git-bigfile."
-        echo "Visit https://phabricator.khanacademy.org/K65 and click"
-        echo "'show secret' and copy the contents into a file called"
-        echo "   $HOME/git-bigfile-storage.secret"
-        read -p "Hit enter when this is done: " prompt
-    fi
+      if [ ! -s "$HOME/git-bigfile-storage.secret" ]; then
+          echo "You must update your S3 credentials for use with git-bigfile."
+          echo "Visit https://phabricator.khanacademy.org/K65 and click"
+          echo "'show secret' and copy the contents into a file called"
+          echo "   $HOME/git-bigfile-storage.secret"
+          read -p "Hit enter when this is done: " prompt
+      fi
 }
 
 
@@ -227,12 +297,13 @@ check_dependencies
 echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
+# the order of these individually doesn't matter but they should come first
+update_userinfo
 install_dotfiles
 edit_system_config
+# the order for these is (mostly!) important, beware
 clone_repos
-# These need the repos to exist (e.g. khan-linter), so come after that.
-install_git_hooks
-install_deps
+install_deps        # pre-req: clone_repos
 update_credentials
 
 
