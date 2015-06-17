@@ -240,9 +240,6 @@ install_deps() {
     # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
     pip install pyprof2calltree
 
-    # This is needed by git-bigfile.
-    pip install boto
-
     # Install all the requirements for khan, khan-exercises.
     # This also installs npm deps.
     if [ "$WEBAPP" = true ]; then
