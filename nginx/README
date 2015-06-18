@@ -1,0 +1,25 @@
+as of web 14 may 2014, this is purely optional and probably only
+necessary if you are you testing ssl connections or want to use a
+vhost like stable.ka.local
+
+see http://wiki.nginx.org/HttpSslModule and copy the local.crt/key
+files to the path below in ssl_certificate and ssl_certificate_key
+
+you'll need to update /etc/hosts to have the following lines
+
+    KA local servers
+    127.0.0.1       exercises.ka.local
+    ::1             exercises.ka.local
+    127.0.0.1       stable.ka.local
+    ::1             stable.ka.local
+
+on a mac, you need to update the launchd script to run nginx as root
+
+        #Copy the launch plist.
+    sudo cp -f /usr/local/Cellar/nginx/*/homebrew.mxcl.nginx.plist \
+        /Library/LaunchDaemons
+    # Delete the username key so it is run as root
+    sudo /usr/libexec/PlistBuddy -c "Delete :UserName" \
+        /Library/LaunchDaemons/homebrew.mxcl.nginx.plist 2>/dev/null
+    # Load it.
+    sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
