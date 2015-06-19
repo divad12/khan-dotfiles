@@ -1,12 +1,6 @@
 [core]
-  # Global .gitignore file
-  excludesfile = ~/.gitignore_global
-
-[color]
-  status = auto
-  branch = auto
-  diff = auto
-  interactive = auto
+  # KA specific global .gitignore file
+  excludesfile = ~/.gitignore.khan
 
 [branch]
   # autosetupmerge auto-adds the --track flag to each git branch,
@@ -15,25 +9,7 @@
   autosetupmerge = always
   autosetuprebase = always
 
-[alias]
-  # Abbreviations.
-  st = status
-  ci = commit
-  # Show branches (and tags) ordered by last-modified.
-  br = for-each-ref --sort=-committerdate --format='%(HEAD) %(refname:short)' refs/heads/
-  tg = for-each-ref --sort=taggerdate --format='%(refname:short)' refs/tags/
-  df = diff
-  dfs = diff --staged
-  lp = log -p
-  bw = blame -w            ; ignore whitespace changes
-
-  # Versions of commands with useful options specified.
-  graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
-  ls-ignored = ls-files --exclude-standard --ignored --others
-  conflicts = diff --name-only --diff-filter=U
-
   # Versions of commands that handle submodules properly.
-  # TODO(dmnd): Move to ./bin
   co = "!f() { git checkout \"$@\" && git submodule update --init --recursive; }; f"
   p = "!f() { git pull \"$@\" && git submodule update --init --recursive; }; f"
   m = "!f() { git merge \"$@\" && git submodule update --init --recursive; }; f"
@@ -44,33 +20,30 @@
   # Note that these reference scripts from Khan/git-workflow
   # Those scripts should be installed and part of the default path.
   phabricator-branch = !git review-branch
+  rgrep = !git recursive-grep
+  findreviewers = !git find-reviewers ; old-style had no dash in name
+
+  # Abbreviations for KA specific tools
   db = !git deploy-branch
   rb = !git review-branch
   pb = !git review-branch       ; short for 'phabricator branch'
-  rgrep = !git recursive-grep
-  findreviewers = !git find-reviewers ; old-style had no dash in name
 
   # Other useful commands.
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
   update-submodule = !bash -c 'git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate\\ for\\ ${1%/} -m Test\\ plan: -m None && git push' --
+
   # For after a commit fails with lint, and it says 'commit message saved...'
   recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
   weekly = "!git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`"
 
+  # Versions of commands with useful options specified.
+  graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
+  ls-ignored = ls-files --exclude-standard --ignored --others
+  conflicts = diff --name-only --diff-filter=U
+
 [commit]
   template = ~/.git_template/commit_template
-
-[merge]
-  # Always show a diffstat at the end of a merge
-  stat = true
-
-[diff]
-  # Use mnemonic prefixes (index, work tree, commit, object) instead of the standard a and b notation
-  mnemonicprefix = true
-
-  # Detect renames as well as copies
-  renames = copies
 
 [init]
   templatedir = ~/.git_template

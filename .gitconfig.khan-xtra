@@ -1,0 +1,38 @@
+# These configuration directives used to be part of the global .gitconfig.khan,
+# but actually represent global *preferences* rather than anything specific to
+# the KA workflow.
+#
+# They are installed to your filesystem but are not "included" by default.
+# If you wish to use them, you can either:
+#
+#  1. Copy and paste the ones you want into your global ~/.gitconfig, and modify
+#     as you see fit!
+#  2. If you want all of these everywhere (not just in KA directories), you can
+#     include them in your global gitconfig via :
+#       `git config --global include.path ~/.gitconfig.khan-xtra`
+#  3. If you want these active but only in KA repositories, add a similar
+#     include.path directive to the ~/.gitconfig.khan file.  You can modify the
+#     file directory or do it from the command line with:
+#       `git config -f ~/.gitconfig.khan include.path ~/.gitconfig.khan-xtra`
+[alias]
+  # Abbreviations.
+  st = status
+  ci = commit
+  # Show branches (and tags) ordered by last-modified.
+  br = for-each-ref --sort=-committerdate --format='%(HEAD) %(refname:short)' refs/heads/
+  tg = for-each-ref --sort=taggerdate --format='%(refname:short)' refs/tags/
+  df = diff
+  dfs = diff --staged
+  lp = log -p
+  bw = blame -w            ; ignore whitespace changes
+
+[merge]
+  # Always show a diffstat at the end of a merge
+  stat = true
+
+[diff]
+  # Use mnemonic prefixes (index, work tree, commit, object) instead of the standard a and b notation
+  mnemonicprefix = true
+
+  # Detect renames as well as copies
+  renames = copies
