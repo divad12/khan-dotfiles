@@ -46,9 +46,6 @@
 [commit]
   template = ~/.git_template/commit_template
 
-[init]
-  templatedir = ~/.git_template
-
 [push]
   default = simple
 
