@@ -160,7 +160,6 @@ kaclone_repo() {
             git submodule update --init --recursive
         else
             cd "$dirname"
-            git pull --quiet --ff-only
             # This 'ka-clone --repair' installs any new settings
             "$KACLONE_BIN" --repair --quiet "$@"
         fi
@@ -180,6 +179,9 @@ clone_webapp() {
 # clones a specific devtool
 clone_devtool() {
     kaclone_repo "$1" "$DEVTOOLS_DIR" --email="$gitmail"
+    # TODO(mroth): for devtools only, we should try to do:
+    #   git pull --quiet --ff-only
+    # but need to make sure we do it in master only!
 }
 
 # clones all devtools
