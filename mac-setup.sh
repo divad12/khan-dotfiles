@@ -188,12 +188,11 @@ install_homebrew() {
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     else
         success "Great! Mac homebrew already installed!"
+        info "Verifying homebrew is in a good state... "
+        brew doctor
     fi
     success "Updating (but not upgrading) Homebrew"
     brew update > /dev/null
-
-    # Make the cellar.
-    mkdir -p /usr/local/Cellar
 
     # TODO(marcos) check for other versions of osx perhaps and do some
     # sanity checking and other goodness here. SO VERY SORRY EVERYONE.
