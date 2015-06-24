@@ -66,15 +66,22 @@ check_dependencies() {
 install_dotfiles() {
     echo "Installing and updating dotfiles (.bashrc, etc)"
     # Most dotfiles are installed as symlinks.
-    # (But we ignore .git which is actually part of the khan-dotfiles repo!)
-    for file in $(find .[!.]* -name .git -prune -o -type f -print); do
+    # (But we ignore .git/.arc*/etc which are actually part of the repo!)
+    #
+    # TODO(mroth): for organization, we should keep all dotfiles in a
+    # subdirectory, but to make that change will require repairing old symlinks
+    # so they don't break when the target moves.
+    for file in .*.khan .*.khan-xtra .git_template/commit_template .vim/ftplugin/*.vim; do
         mkdir -p "$ROOT/$(dirname "$file")"
         source=$(pwd)/"$file"
         dest="$ROOT/$file"
+        # if dest is already a symlink pointing to correct source, skip it
         if [ -h "$dest" -a "$(readlink "$dest")" = "$source" ]; then
             :
+        # else if dest already exists, warn user and skip dotfile
         elif [ -e "$dest" ]; then
             add_warning "Not symlinking to $dest because it already exists."
+        # otherwise, verbosely symlink the file (with --force)
         else
             ln -sfvn "$source" "$dest"
         fi
