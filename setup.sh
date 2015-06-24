@@ -238,10 +238,6 @@ install_deps() {
     # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
 
-    # This is useful for profiling
-    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
-    pip install pyprof2calltree
-
     # Install all the requirements for khan, khan-exercises.
     # This also installs npm deps.
     if [ "$WEBAPP" = true ]; then
