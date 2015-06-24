@@ -19,6 +19,9 @@ install_packages() {
     if [ -d $maybe_extra_sources ]; then
         sources_to_grep="$sources_to_grep $maybe_extra_sources"
     fi
+    
+    # This is needed to get the add-apt-repository command.
+    sudo apt-get install -y software-properties-common
 
     # To get the most recent native hipchat client, later.
     if ! grep -q -r 'downloads.hipchat.com' $sources_to_grep; then
