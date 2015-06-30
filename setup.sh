@@ -103,13 +103,7 @@ install_dotfiles() {
 }
 
 edit_system_config() {
-    echo "Modifying system configs: /etc/hosts, etc"
-    # This will let you visit the khan academy homepage by just typing
-    # www (or www/) into your browser's address bar, rather than
-    # having to type www.khanacademy.org.
-    if ! grep -q "search khanacademy.org" /etc/resolv.conf; then
-        sudo sh -c 'echo "search khanacademy.org" >> /etc/resolv.conf'
-    fi
+    echo "Modifying system configs"
 
     # This command avoids the spew when you deploy the Khan Academy
     # appengine app:
