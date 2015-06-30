@@ -100,6 +100,20 @@ install_dotfiles() {
                             "see $(pwd)/$file and add the contents to $dest"
         fi
     done
+
+    # *.template files are also copied so the user can change them.  Unlike the
+    # "default" files above, these do not include KA code, they are merely
+    # useful defaults we want to install if the user doesnt have anything
+    # already.
+    #
+    # We should avoid installing anything absolutely not necessary in this
+    # category, so for now, this is just a global .gitignore
+    for file in *.template; do
+        dest="$ROOT/.$(echo "$file" | sed s/.template$//)"  # foo.default -> .foo
+        if [ ! -e "$dest" ]; then
+            cp -f "$file" "$dest"
+        fi
+    done
 }
 
 edit_system_config() {
@@ -123,6 +137,14 @@ edit_system_config() {
     if [ ! -e "$ROOT/.ssh/id_rsa" -a ! -e "$ROOT/.ssh/id_dsa" ]; then
         ssh-keygen -q -N "" -t rsa -f "$ROOT/.ssh/id_rsa"
     fi
+
+    # if the user does not have a global gitignore file configured, reference
+    # ours (or whatever is in the default location
+    if ! git config --global core.excludesfile > /dev/null; then
+      git config --global core.excludesfile ~/.gitignore
+    fi
+    # cleanup from previous versions: remove ~/.gitignore.khan symlink if exists
+    rm -f ~/.gitignore.khan
 }
 
 # clone a repository without any special sauce. should only be used in order to

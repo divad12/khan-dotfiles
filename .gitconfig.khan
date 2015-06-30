@@ -1,7 +1,3 @@
-[core]
-  # KA specific global .gitignore file
-  excludesfile = ~/.gitignore.khan
-
 [branch]
   # autosetupmerge auto-adds the --track flag to each git branch,
   # which is helpful for arc (part of Phabricator).  autosetuprebase
