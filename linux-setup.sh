@@ -60,9 +60,11 @@ install_packages() {
 
     # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
+    # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     sudo apt-get install -y git git-svn subversion \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
+        libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         libncurses-dev \
         nodejs \
         php5-cli php5-curl
