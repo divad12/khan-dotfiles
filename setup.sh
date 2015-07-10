@@ -292,9 +292,12 @@ update_userinfo() {
     gitmail=$(git config kaclone.email)
     set -e
     if [ -z "$gitmail" ]; then
-        read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " emailuser
-        git config --global kaclone.email "$emailuser"@khanacademy.org
+        read -p "Enter your KA email, without the @khanacademy.org ($USER): " emailuser
+        emailuser=${emailuser:-$USER}
+        defaultemail="$emailuser@khanacademy.org"
+        git config --global kaclone.email "$defaultemail"
         gitmail=$(git config kaclone.email)
+        echo "Setting kaclone default email to $defaultemail"
     fi
 }
 
