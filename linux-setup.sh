@@ -61,13 +61,28 @@ install_packages() {
     # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
+    # lib{xml2,xslt}-dev are needed for lxml
     sudo apt-get install -y git git-svn subversion \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
+        libxslt1-dev \
         libncurses-dev \
         nodejs \
         php5-cli php5-curl
+
+    # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
+    # it to be `node`.
+    if ! [ -f /usr/bin/node ] && [ -f /usr/bin/nodejs ]; then
+        sudo ln -s /usr/bin/nodejs /usr/bin/node
+    fi
+
+    # Ubuntu's nodejs doesn't install npm, but if you get it from the PPA,
+    # it does (and conflicts with the separate npm package).  So install it
+    # if and only if it hasn't been installed already.
+    if ! which npm >/dev/null 2>&1 ; then
+        sudo apt-get install -y npm
+    fi
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
@@ -82,8 +97,9 @@ install_packages() {
         google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
+    # This might fail if you already have ack installed, so let it fail silently.
     sudo dpkg-divert --local --divert /usr/bin/ack --rename --add \
-        /usr/bin/ack-grep
+        /usr/bin/ack-grep || echo "Using installed ack"
 
     # Native hipchat client (BETA, x86/x86_64 only).
     sudo apt-get install -y hipchat
