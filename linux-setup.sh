@@ -10,27 +10,9 @@ set -e
 
 install_packages() {
     updated_apt_repo=""
-
-    # We always want to search in sources.list,
-    # but on some systems add-apt-repository will modify some other file.
-    # Check these files as well to ensure idempotence.
-    sources_to_grep="/etc/apt/sources.list"
-    maybe_extra_sources="/etc/apt/sources.list.d/"
-    if [ -d $maybe_extra_sources ]; then
-        sources_to_grep="$sources_to_grep $maybe_extra_sources"
-    fi
     
     # This is needed to get the add-apt-repository command.
     sudo apt-get install -y software-properties-common
-
-    # To get the most recent native hipchat client, later.
-    if ! grep -q -r 'downloads.hipchat.com' $sources_to_grep; then
-        sudo add-apt-repository -y \
-            "deb http://downloads.hipchat.com/linux/apt stable main"
-        wget -O- https://www.hipchat.com/keys/hipchat-linux.key \
-            | sudo apt-key add -
-        updated_apt_repo=yes
-    fi
 
     # To get the most recent nodejs, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
@@ -84,6 +66,25 @@ install_packages() {
         sudo apt-get install -y npm
     fi
 
+    # TODO(william, mroth): replace this with the native Linux Slack client
+    # once that's been released
+    npm install -g plaidchat || sudo npm install -g plaidchat
+
+    # For Ubuntu/Mint-like distros, add a desktop entry.
+    if [ -d "$HOME/.local/share/applications" ]; then
+        plaidchat="$(which plaidchat)"
+        plaidchat_dir="$(dirname "$(readlink -f "$plaidchat")")"
+        cat > "$HOME/.local/share/applications/plaidchat.desktop" <<EOF
+[Desktop Entry]
+Comment=Unofficial Slack client
+Terminal=false
+Name=PlaidChat
+Exec=$plaidchat
+Type=Application
+Icon=$plaidchat_dir/app/images/app-256.png
+EOF
+    fi
+
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
 
@@ -100,13 +101,6 @@ install_packages() {
     # This might fail if you already have ack installed, so let it fail silently.
     sudo dpkg-divert --local --divert /usr/bin/ack --rename --add \
         /usr/bin/ack-grep || echo "Using installed ack"
-
-    # Native hipchat client (BETA, x86/x86_64 only).
-    sudo apt-get install -y hipchat
-
-    # Needed for the AIR-based hipchat client on linux, not needed if
-    # you use the native client.
-    # sudo apt-get install -y adobeair
 
     # Needed to install printer drivers, and to use the printer scanner
     sudo apt-get install -y apparmor-utils xsane
