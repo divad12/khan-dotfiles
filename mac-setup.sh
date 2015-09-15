@@ -169,14 +169,14 @@ install_gcc() {
     fi
 }
 
-install_hipchat() {
-    info "Checking for HipChat..."
-    if ! open -R -g -a HipChat > /dev/null; then
-        success "Didn't find HipChat."
-        info "Installing HipChat to ~/Applications\n"
-        brew cask install hipchat
+install_slack() {
+    info "Checking for Slack..."
+    if ! open -R -g -a Slack > /dev/null; then
+        success "Didn't find Slack."
+        info "Installing Slack to ~/Applications\n"
+        brew cask install slack
     else
-        success "Great! HipChat already installed!"
+        success "Great! Slack already installed!"
     fi
 }
 
@@ -302,7 +302,7 @@ maybe_generate_ssh_keys
 register_ssh_keys
 install_gcc
 install_homebrew
-install_hipchat
+install_slack
 update_git
 install_node
 install_phantomjs
