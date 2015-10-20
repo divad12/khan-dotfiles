@@ -10,13 +10,21 @@ set -e
 
 install_packages() {
     updated_apt_repo=""
-    
+
     # This is needed to get the add-apt-repository command.
     sudo apt-get install -y software-properties-common
 
     # To get the most recent nodejs, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
-        sudo add-apt-repository -y ppa:chris-lea/node.js
+        # We used to use the (obsolete) chris-lea repo, remove that if needed
+        sudo add-apt-repository -y -r ppa:chris-lea/node.js
+        # This is a simplified version of https://deb.nodesource.com/setup_4.x
+        wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+        cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
+deb https://deb.nodesource.com/node_4.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_4.x `lsb_release -c -s` main
+EOF
+        sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
         updated_apt_repo=yes
     fi
 
