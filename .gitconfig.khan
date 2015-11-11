@@ -30,6 +30,15 @@
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
   update-submodule = !bash -c 'git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate\\ for\\ ${1%/} -m Test\\ plan: -m None && git push' --
 
+  # Commands for manipulating deploy tags.
+  # which-deploy: in which deploy did this commit first go out?
+  # prev-deploy and next-deploy: what deploys came before and after this one?
+  # when-deploy: when was this deploy completed?
+  which-deploy = "!f() { git tag --contains \"$@\" | grep '^gae-' | grep -v bad | head -n 1 | sed 's/gae-//'; }; f"
+  prev-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -B 1 gae-\"$1\" | head -n 1 | sed 's/gae-//'; }; f"
+  next-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -A 1 gae-\"$1\" | tail -n 1 | sed 's/gae-//'; }; f"
+  when-deploy = "!f() { git cat-file -p gae-\"$1\" | perl -nle 'print scalar localtime $1 if /^tagger .* (\\d+) \\S+$/'; }; f"
+
   # For after a commit fails with lint, and it says 'commit message saved...'
   recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
   weekly = "!git log --author=$USER --since=`date -d last\\ monday +%Y/%m/%d`"
