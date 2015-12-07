@@ -199,10 +199,6 @@ install_homebrew() {
     brew tap homebrew/dupes
     brew install apple-gcc42
 
-    # We need a particular version of phantomjs to run the end-to-end tests.
-    # This command will let us access those.
-    brew tap homebrew/versions
-
     # Install homebrew-cask, so we can use it manage installing binary/GUI apps
     brew install caskroom/cask/brew-cask
 
@@ -251,12 +247,11 @@ install_node() {
 
 install_phantomjs() {
     info "Checking for phantomjs\n"
-    if ! type phantomjs >/dev/null 2>&1 || [ `phantomjs --version` != 1.9.8 ]; then
-        info "Installing phantomjs 1.9.8...\n"
+    if ! type phantomjs >/dev/null 2>&1 || ! expr `phantomjs --version` : 2 >/dev/null; then
         brew uninstall --force phantomjs
-        brew install phantomjs198
+        brew install phantomjs
     else
-        success "phantomjs 1.9.8 already installed"
+        success "phantomjs 2.x already installed"
     fi
 }
 

@@ -115,19 +115,32 @@ EOF
 }
 
 install_phantomjs() {
-    if ! which phantomjs >/dev/null; then
+    # TODO(jlfwong): When phantomjs2 becomes available as a binary package,
+    # switch to using that. See http://phantomjs.org/download.html
+    if ! which phantomjs >/dev/null || ! expr `phantomjs --version` : 2 >/dev/null; then
         (
-            cd /usr/local/share
-            case `uname -m` in
-                i?86) mach=i686;;
-                *) mach=x86_64;;
-            esac
-            sudo rm -rf phantomjs
-            wget "https://phantomjs.googlecode.com/files/phantomjs-1.9.2-linux-${mach}.tar.bz2" -O- | sudo tar xfj -
+            echo "Installing phantomjs2. This may take about an hour."
+            sudo apt-get install -y build-essential g++ flex bison gperf ruby perl \
+                libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev \
+                libpng-dev libjpeg-dev python libx11-dev libxext-dev
 
-            sudo ln -snf /usr/local/share/phantomjs-1.9.2-linux-${mach}/bin/phantomjs /usr/local/bin/phantomjs
+            cd /tmp/
+            rm -rf phantomjs
+
+            git clone git://github.com/ariya/phantomjs.git
+            cd phantomjs
+            git checkout f7ad5e1649f38abec82eb64521f630aba02eed9d
+            git submodule update --init --recursive
+            ./build.py --confirm
+
+            sudo rm -rf /usr/local/share/phantomjs
+            sudo mv /tmp/phantomjs /usr/local/share/
+            sudo chmod -R a+rX /usr/local/share/phantomjs
+            sudo ln -snf /usr/local/share/phantomjs/bin/phantomjs /usr/local/bin/phantomjs
         )
         which phantomjs >/dev/null
+    else
+        echo "phantomjs 2 already installed"
     fi
 }
 
