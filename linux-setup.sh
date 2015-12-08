@@ -74,23 +74,18 @@ EOF
         sudo apt-get install -y npm
     fi
 
-    # TODO(william, mroth): replace this with the native Linux Slack client
-    # once that's been released
-    npm install -g plaidchat || sudo npm install -g plaidchat
-
-    # For Ubuntu/Mint-like distros, add a desktop entry.
-    if [ -d "$HOME/.local/share/applications" ]; then
-        plaidchat="$(which plaidchat)"
-        plaidchat_dir="$(dirname "$(readlink -f "$plaidchat")")"
-        cat > "$HOME/.local/share/applications/plaidchat.desktop" <<EOF
-[Desktop Entry]
-Comment=Unofficial Slack client
-Terminal=false
-Name=PlaidChat
-Exec=$plaidchat
-Type=Application
-Icon=$plaidchat_dir/app/images/app-256.png
-EOF
+    # Get the latest slack deb file and install it.
+    if ! which slack >/dev/null 2>&1 ; then
+        case `uname -m` in
+            *86) arch=i386;;
+            x86_64) arch=amd64;;
+            *) echo "WARNING: Cannot install slack: no client for `uname -m`";;
+        esac
+        if [ -n "$arch"]; then
+            rm -rf /tmp/slack.deb
+            wget -O- https://slack.com/downloads | grep -o "http.*$arch.deb" | head -n1 | xargs wget -O/tmp/slack.deb
+            sudo dpkg -i /tmp/slack.deb
+        fi
     fi
 
     # Not technically needed to develop at Khan, but we assume you have it.
