@@ -113,28 +113,9 @@ install_phantomjs() {
     # TODO(jlfwong): When phantomjs2 becomes available as a binary package,
     # switch to using that. See http://phantomjs.org/download.html
     if ! which phantomjs >/dev/null || ! expr `phantomjs --version` : 2 >/dev/null; then
-        rm -rf /tmp/phantomjs /tmp/phantomjs2.*
-        if grep -q "Ubuntu 12" /etc/issue; then
-            sudo apt-get install -y libfontconfig1 libfreetype6 libicu48
-            sudo apt-get install -y libexpat1 libjpeg8 libpng12-0
-            wget -O/tmp/phantomjs2.tbz https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-            tar xf /tmp/phantomjs2.tbz -C/tmp phantomjs
-        elif grep -q "Ubuntu 14" /etc/issue; then
-            # Taken from https://github.com/bprodoehl/phantomjs/releases
-            sudo apt-get install -y libicu52 libjpeg8 libfontconfig libwebp5
-            rm -rf /tmp/phantomjs /tmp/phantomjs2.tbz
-            wget -O/tmp/phantomjs2.zip https://github.com/bprodoehl/phantomjs/releases/download/v2.0.0-20150528/phantomjs-2.0.0-20150528-u1404-x86_64.zip
-            unzip -p /tmp/phantomjs2.zip phantomjs-2.0.0-20150528/bin/phantomjs >/tmp/phantomjs
-        elif grep -q "Ubuntu 15" /etc/issue; then
-            # Taken from https://github.com/bprodoehl/phantomjs/releases
-            sudo apt-get install -y libicu52 libjpeg8 libfontconfig1 libwebp5 libssl1.0.0
-            rm -rf /tmp/phantomjs /tmp/phantomjs2.tbz
-            wget -O/tmp/phantomjs2.zip https://github.com/bprodoehl/phantomjs/releases/download/v2.0.0-20150528/phantomjs-2.0.0-20150528-u1504-x86_64.zip
-            unzip -p /tmp/phantomjs2.zip phantomjs-2.0.0-20150528/bin/phantomjs >/tmp/phantomjs
-        else
-            echo "ERROR: Cannot install phantomjs -- update for your OS"
-            exit 1
-        fi
+        rm -rf /tmp/phantomjs /tmp/phantomjs.zip
+        wget -O/tmp/phantomjs.zip https://github.com/Vitallium/phantomjs/releases/download/2.0.1/phantomjs-2.0.1-linux-x86_64.zip
+        unzip -p /tmp/phantomjs.zip phantomjs-2.0.1-linux-x86_64/bin/phantomjs > /tmp/phantomjs
         sudo install -m755 /tmp/phantomjs /usr/local/bin
         which phantomjs >/dev/null
     else
