@@ -114,6 +114,9 @@ install_dotfiles() {
             cp -f "$file" "$dest"
         fi
     done
+
+    # Make sure we pick up any changes we've made, so later steps of install don't fail.
+    . ~/.profile
 }
 
 edit_system_config() {
