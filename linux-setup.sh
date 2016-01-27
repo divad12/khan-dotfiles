@@ -110,12 +110,10 @@ EOF
 }
 
 install_phantomjs() {
-    # TODO(jlfwong): When phantomjs2 becomes available as a binary package,
-    # switch to using that. See http://phantomjs.org/download.html
     if ! which phantomjs >/dev/null || ! expr `phantomjs --version` : 2 >/dev/null; then
-        rm -rf /tmp/phantomjs /tmp/phantomjs.zip
-        wget -O/tmp/phantomjs.zip https://github.com/Vitallium/phantomjs/releases/download/2.0.1/phantomjs-2.0.1-linux-x86_64.zip
-        unzip -p /tmp/phantomjs.zip phantomjs-2.0.1-linux-x86_64/bin/phantomjs > /tmp/phantomjs
+        rm -rf /tmp/phantomjs /tmp/phantomjs.tbz
+        wget -O/tmp/phantomjs.tbz https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+        tar xOjf /tmp/phantomjs.tbz phantomjs-2.1.1-linux-x86_64/bin/phantomjs >/tmp/phantomjs
         sudo install -m755 /tmp/phantomjs /usr/local/bin
         which phantomjs >/dev/null
     else
