@@ -12,7 +12,9 @@ install_packages() {
     updated_apt_repo=""
 
     # This is needed to get the add-apt-repository command.
-    sudo apt-get install -y software-properties-common
+    # apt-transport-https may not be strictly necessary, but can help
+    # for future updates.
+    sudo apt-get install -y software-properties-common apt-transport-https
 
     # To get the most recent nodejs, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
