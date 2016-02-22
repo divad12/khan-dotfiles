@@ -8,6 +8,8 @@
 set -e
 
 
+# NOTE: if you add a package here, check if you should also add it
+# to webapp's Dockerfile.
 install_packages() {
     updated_apt_repo=""
 
@@ -54,11 +56,14 @@ EOF
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # lib{xml2,xslt}-dev are needed for lxml
-    sudo apt-get install -y git git-svn subversion \
+    # libyaml-dev is needed for pyyaml
+    # libncurses-dev is needed for readline
+    sudo apt-get install -y git \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         libxslt1-dev \
+        libyaml-dev \
         libncurses-dev \
         nodejs \
         php5-cli php5-curl
