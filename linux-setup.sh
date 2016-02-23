@@ -80,6 +80,8 @@ EOF
     if ! which npm >/dev/null 2>&1 ; then
         sudo apt-get install -y npm
     fi
+    # Make sure we have the most up-to-date version of npm
+    sudo npm install -g npm
 
     # Get the latest slack deb file and install it.
     if ! which slack >/dev/null 2>&1 ; then
