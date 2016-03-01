@@ -57,14 +57,14 @@ EOF
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # lib{xml2,xslt}-dev are needed for lxml
     # libyaml-dev is needed for pyyaml
-    # libncurses-dev is needed for readline
+    # libncurses-dev and libreadline-dev are needed for readline
     sudo apt-get install -y git \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         libxslt1-dev \
         libyaml-dev \
-        libncurses-dev \
+        libncurses-dev libreadline-dev \
         nodejs \
         php5-cli php5-curl
 
