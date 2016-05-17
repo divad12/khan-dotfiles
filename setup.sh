@@ -101,6 +101,18 @@ install_dotfiles() {
         fi
     done
 
+    # If users are using a shell other than bash, the updates we make won't
+    # get picked up.  They'll have to activate the virtualenv in their shell
+    # config; if they haven't, the rest of the script will fail.
+    # TODO(benkraft): Add more specific instructions for other common shells,
+    # or just write dotfiles for them.
+    shell="`basename "$SHELL"`"
+    if [ "$shell" != bash ] && [ -z "$VIRTUAL_ENV" ] ; then
+        add_fatal_error "Your default shell is $shell, not bash, so you'll" \
+                        "need to update its config manually to activate our" \
+                        "virtualenv."
+    fi
+
     # *.template files are also copied so the user can change them.  Unlike the
     # "default" files above, these do not include KA code, they are merely
     # useful defaults we want to install if the user doesnt have anything
