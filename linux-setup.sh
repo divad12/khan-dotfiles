@@ -100,10 +100,6 @@ EOF
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
 
-    # This is useful for profiling
-    # cf. https://sites.google.com/a/khanacademy.org/forge/technical/performance/using-kcachegrind-qcachegrind-with-gae_mini_profiler-results
-    sudo apt-get install -y kcachegrind
-
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword curl diffstat expect gimp \
         imagemagick mplayer netcat netpbm screen w3m vim emacs \
