@@ -276,12 +276,11 @@ install_deps() {
     # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
 
-    # Install all the requirements for khan, khan-exercises.
+    # Install all the requirements for khan
     # This also installs npm deps.
     if [ "$WEBAPP" = true ]; then
         echo "Installing webapp dependencies"
         ( cd "$REPOS_DIR/webapp" && make install_deps )
-        ( cd "$REPOS_DIR/webapp/khan-exercises" && pip install -r requirements.txt )
     fi
 }
 
