@@ -58,6 +58,7 @@ EOF
     # lib{xml2,xslt}-dev are needed for lxml
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
+    # nginx is used as a devserver proxy that serves static files
     sudo apt-get install -y git \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
@@ -66,7 +67,8 @@ EOF
         libyaml-dev \
         libncurses-dev libreadline-dev \
         nodejs \
-        php5-cli php5-curl
+        php5-cli php5-curl \
+        nginx
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
     # it to be `node`.

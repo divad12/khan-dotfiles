@@ -255,6 +255,16 @@ install_phantomjs() {
     fi
 }
 
+install_nginx() {
+    info "Checking for nginx\n"
+    if ! type nginx >/dev/null 2>&1; then
+        info "Installing nginx\n"
+        brew install nginx
+    else
+        success "nginx already installed"
+    fi
+}
+
 install_helpful_tools() {
     # This is useful for profiling
     # cf. http://www.khanacademy.org/r/fun-with-miniprofiler
@@ -301,6 +311,7 @@ install_slack
 update_git
 install_node
 install_phantomjs
+install_nginx
 install_helpful_tools
 
 notice "You might be done! \n\n \
