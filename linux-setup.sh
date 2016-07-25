@@ -19,9 +19,13 @@ install_packages() {
     sudo apt-get install -y software-properties-common apt-transport-https
 
     # To get the most recent nodejs, later.
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
+    if ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
         # We used to use the (obsolete) chris-lea repo, remove that if needed
         sudo add-apt-repository -y -r ppa:chris-lea/node.js
+        sudo rm -f /etc/apt/sources.list.d/chris-lea-node_js*
+        updated_apt_repo=yes
+    fi
+    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource; then
         # This is a simplified version of https://deb.nodesource.com/setup_4.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
