@@ -265,6 +265,16 @@ install_nginx() {
     fi
 }
 
+install_image_utils() {
+    info "Checking for imagemagick\n"
+    if ! brew ls imagemagick >/dev/null 2>&1; then
+        info "Installing imagemagick\n"
+        brew install imagemagick
+    else
+        success "imagemagick already installed"
+    fi
+}
+
 install_helpful_tools() {
     # This is useful for profiling
     # cf. http://www.khanacademy.org/r/fun-with-miniprofiler
@@ -312,6 +322,7 @@ update_git
 install_node
 install_phantomjs
 install_nginx
+install_image_utils
 install_helpful_tools
 
 notice "You might be done! \n\n \

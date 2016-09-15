@@ -59,6 +59,7 @@ EOF
     # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
+    # imagemagick is needed for image resizing and other operations
     # lib{xml2,xslt}-dev are needed for lxml
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
@@ -67,6 +68,7 @@ EOF
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
+        imagemagick \
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
@@ -108,8 +110,7 @@ EOF
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword curl diffstat expect gimp \
-        imagemagick mplayer netcat netpbm screen w3m vim emacs \
-        google-chrome-stable
+        mplayer netcat netpbm screen w3m vim emacs google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     # This might fail if you already have ack installed, so let it fail silently.
