@@ -3,7 +3,10 @@
 *.pyc
 .svn
 Thumbs.db
-Icon?
 *.swp
 tags
 *.class
+Icon
+
+# Any new entries below this line (the above two lines are actually a single Icon\r\r entry).
+#   See: https://wolfgang.reutz.at/2015/06/16/git-ignore-mac-osx-icon-files/.
