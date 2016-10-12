@@ -21,6 +21,9 @@ REPOS_DIR="$ROOT/khan"
 DEVTOOLS_DIR="$REPOS_DIR/devtools"
 KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 
+# Load shared setup functions.
+. "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
+
 # the directory this script exists in, regardless of where it is called from
 #
 # TODO(mroth): some of the historical parts of this script assume the user is
@@ -174,32 +177,6 @@ clone_repo() {
             git clone "$1"
             cd "$dirname"
             git submodule update --init --recursive
-        fi
-    )
-}
-
-# replacement for clone_repo() function using ka-clone tool for local config
-# if run on an existing repository, will *update* and do --repair
-# $1: url of the repository to clone.  $2: directory to put repo
-# $3 onwards: any arguments to pass along to kaclone
-kaclone_repo() {
-    local src="$1"
-    shift
-    local dst="$1"
-    shift
-
-    (
-        mkdir -p "$dst"
-        cd "$dst"
-        dirname=$(basename "$src")
-        if [ ! -d "$dirname" ]; then
-            "$KACLONE_BIN" "$src" "$dirname" "$@"
-            cd "$dirname"
-            git submodule update --init --recursive
-        else
-            cd "$dirname"
-            # This 'ka-clone --repair' installs any new settings
-            "$KACLONE_BIN" --repair --quiet "$@"
         fi
     )
 }
