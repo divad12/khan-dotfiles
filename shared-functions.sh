@@ -32,6 +32,14 @@ update() {
     printf "\e[0;34m$1\e[0m\n"
 }
 
+# Print error in red and exit.
+# $1: error message
+# TODO(hannah): Factor out message-printing functions from mac-setup.sh.
+err_and_exit() {
+    printf "\e[0;31m$1\e[0m\n"
+    exit 1
+}
+
 # Get yes or no input from the user. Return default value if the user does no
 # enter a valid value (y, yes, n, or no with any captialization).
 # $1: prompt
@@ -58,4 +66,12 @@ get_yn_input() {
             echo $2
             ;;
     esac
+}
+
+# Exit with an error if the script is not being run on a Mac. (iOS development
+# can only be done on Macs.)
+ensure_mac_os() {
+    if [ "`uname -s`" != "Darwin" ]; then
+        err_and_exit "This script can only be run on Mac OS."
+    fi
 }

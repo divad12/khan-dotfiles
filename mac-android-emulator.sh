@@ -17,13 +17,6 @@ ANDROID_HOME=~/Library/Android/sdk
 # Load shared setup functions.
 . "$HOME"/khan/devtools/khan-dotfiles/shared-functions.sh
 
-# Print error in red and exit.
-# $1: error message
-err_and_exit() {
-    printf "\e[0;31m$1\e[0m\n"
-    exit
-}
-
 # Gets input from the user. Return default value if the user gives empty input.
 # $1: prompt
 # $2: default value
@@ -186,5 +179,5 @@ install_apk() {
     fi
 }
 
-# TODO(hannah): Ensure Mac OS.
+ensure_mac_os  # Function defined in shared-functions.sh.
 main

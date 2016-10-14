@@ -110,7 +110,8 @@ link_sdk() {
     fi
 }
 
-# TODO(hannah): Ensure setup.sh has already been run, ensure Mac OS.
+ensure_mac_os  # Function defined in shared-functions.sh.
+# TODO(hannah): Ensure setup.sh has already been run.
 install_jdks
 clone_android_repo
 install_android_sdk
