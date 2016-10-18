@@ -276,25 +276,14 @@ install_image_utils() {
 }
 
 install_helpful_tools() {
-    # This is useful for profiling
-    # cf. http://www.khanacademy.org/r/fun-with-miniprofiler
-    info "Would you like to install qcachegrind to profile performance woes?"
-    notice "c.f. ${tty_bold}http://www.khanacademy.org/r/fun-with-miniprofiler${tty_normal}"
-    user "y | N) "
-    read -n1 yepnope
-    case $yepnope in
-        y|Y )
-            success "Great, installing qcachegrind!"
-            if ! brew ls qcachegrind >/dev/null 2>&1; then
-                brew install qcachegrind 2>&1
-            else
-                info "qcachegrind already installed!\n"
-            fi
-            ;;
-        * )
-            success "Not installing qcachegrind (you can always do it later!)"
-        ;;
-    esac
+    # This installs gtimeout, among a ton of other tools, which we use
+    # some in our deploy pipeline.
+    if ! brew ls coreutils >/dev/null 2>&1; then
+        info "Installing coreutils\n"
+        brew install coreutils
+    else
+        success "coreutils already installed"
+    fi
 }
 
 

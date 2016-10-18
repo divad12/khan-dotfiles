@@ -39,4 +39,6 @@ if [ `uname -s` = Darwin ]; then
         ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future $ARCHFLAGS"
         export CPPFLAGS CFLAGS ARCHFLAGS
     fi
+    # We use the timeout command a lot, but os x calls it `gtimeout`.
+    alias timeout=gtimeout
 fi
