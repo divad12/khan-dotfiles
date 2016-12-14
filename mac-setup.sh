@@ -237,6 +237,12 @@ update_git() {
             read -p "Press enter to continue..."
         fi
     fi
+    # Some code, such as tools/diagnose_js_packages.py, uses pcre-grep.
+    # (Search for `perl_regexp` in webapp to see a complete list.)
+    if ! git grep -P -l . >/dev/null; then
+        echo "Updating git to be able to use PCRE."
+        brew reinstall --with-pcre git
+    fi
 }
 
 install_node() {
