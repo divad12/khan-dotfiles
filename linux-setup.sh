@@ -73,8 +73,12 @@ EOF
         libyaml-dev \
         libncurses-dev libreadline-dev \
         nodejs \
-        php5-cli php5-curl \
         nginx
+
+    # There are two different php packages, depending on if you're on Ubuntu
+    # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
+    # both of them.
+    sudo apt install -y php-cli php-curl || sudo apt-get install -y php5-cli php5-curl
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
     # it to be `node`.
