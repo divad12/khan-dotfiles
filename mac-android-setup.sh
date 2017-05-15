@@ -24,7 +24,7 @@ ANDROID_HOME=~/Library/Android
 
 # Ensure Java 7 and 8 are installed.
 # While Android doesn't support most of the features of Java 8, we use
-# retrolambda to give us the features of Java 8 lambdas. This requires 
+# retrolambda to give us the features of Java 8 lambdas. This requires
 # developers to have JDK 8 installed and set as their JDK.
 install_jdks() {
     # Ensure some version of Java is installed so /usr/libexec/java_home -V
@@ -48,11 +48,11 @@ install_jdks() {
     fi
 }
 
-# Ensure the Android Github repo is cloned.
-clone_android_repo() {
-    if [ ! -d "$REPOS_DIR"/android ]; then
-        update "Cloning android repository..."
-        kaclone_repo git@github.com:Khan/android "$REPOS_DIR/" -p --email="$gitmail"
+# Ensure the Mobile Github repo is cloned.
+clone_mobile_repo() {
+    if [ ! -d "$REPOS_DIR"/mobile ]; then
+        update "Cloning mobile repository..."
+        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" -p --email="$gitmail"
     fi
 }
 
@@ -75,7 +75,7 @@ configure_codestyle() {
 
     if [ ! -e ~/Library/Preferences/AndroidStudio2.2/codestyles/KhanAcademyAndroid.xml ]; then
         update "Linking KA codestyle files..."
-        ln -s "$REPOS_DIR"/android/third-party/style-guide/configs/KhanAcademyAndroid.xml ~/Library/Preferences/AndroidStudio2.2/codestyles/
+        ln -s "$REPOS_DIR"/mobile/android/third-party/style-guide/configs/KhanAcademyAndroid.xml ~/Library/Preferences/AndroidStudio2.2/codestyles/
     fi
 }
 
@@ -83,18 +83,23 @@ configure_codestyle() {
 install_android_sdk() {
     if [ ! -d "$ANDROID_HOME"/sdk/tools ]; then
         update "Installing Android SDK..."
-        
-        brew install android-sdk
+
+        brew cask install android-sdk
         link_sdk
     fi
 
     # Update or install SDK components.
     # Install platform-tools to get adb.
-    echo y | android update sdk --no-ui --all --filter "tools","platform-tools"
-    # Install Build Tools (23.0.2 is necessary to build using gradle).
-    echo y | android update sdk --no-ui --all --filter "build-tools","build-tools-23.0.2"
+    "$ANDROID_HOME"/sdk/tools/bin/sdkmanager "tools" "platform-tools"
+    # Install Build Tools (25.0.2 is necessary to build using gradle).
+    "$ANDROID_HOME"/sdk/tools/bin/sdkmanager "build-tools;25.0.2"
     # Install Google Play Services.
-    echo y | android update sdk --no-ui --all --filter "extra-google-google_play_services"
+    "$ANDROID_HOME"/sdk/tools/bin/sdkmanager "extras;google;google_play_services"
+
+    # Accept all license agreements.
+    # TODO(hannah): There doesn't seem to be a great way to accept all of the
+    # licenses programmatically, but make this more robust.
+    while sleep 1; do echo "y"; done | "$ANDROID_HOME"/sdk/tools/bin/sdkmanager --licenses
 }
 
 # Make a symbolic link from the default Homebrew location to $ANDROID_HOME.
@@ -104,18 +109,44 @@ link_sdk() {
         mkdir -p "$ANDROID_HOME"/sdk
 
         # Get the directory where Homebrew installed the Android SDK.
-        version_dir=`ls /usr/local/Cellar/android-sdk/ | head -n1`
+        version_dir=`ls /usr/local/Caskroom/android-sdk/ | head -n1`
 
-        ln -s /usr/local/Cellar/android-sdk/"$version_dir"/* "$ANDROID_HOME"/sdk/
+        ln -s /usr/local/Caskroom/android-sdk/"$version_dir"/* "$ANDROID_HOME"/sdk/
+    fi
+}
+
+# Yarn is used to manage our react-native dependencies.
+install_yarn() {
+    if ! which yarn ; then
+        update "Installing yarn..."
+        brew install yarn
+    fi
+}
+
+install_watchman() {
+    if ! which watchman ; then
+        update "Installing watchman..."
+        brew install watchman
+    fi
+}
+
+install_react_native_dependencies() {
+    if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
+        update "Installing react-native dependencies..."
+        (cd "$REPOS_DIR/mobile/react-native"; yarn)
     fi
 }
 
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 install_jdks
-clone_android_repo
+clone_mobile_repo
 install_android_sdk
 install_android_studio
+# TODO(hannah): Move the following three functions to shared-functions.sh.
+install_yarn
+install_watchman
+install_react_native_dependencies
 
 update "Done! Complete setup instructions at \
 https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/mobile-setup/android-setup"

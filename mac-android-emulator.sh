@@ -5,13 +5,13 @@ set -e -o pipefail
 # and install the KA APK. As of now, this script can only be run on Mac OSs.
 # (While there is support for Android dev on Linux, none of the mobile
 # developers on the team have tried it.)
-# 
+#
 # This script must be run after mac-android-setup.sh, which installs the JDKs
 # and SDKs and clones the repo necessary to create and run emulators with the KA
 # app. This script can be run whenever you want to create and/or run an Android
 # emulator with the KA app.
 
-ANDROID_REPO="$HOME"/khan/android
+ANDROID_REPO="$HOME"/khan/mobile/android
 ANDROID_HOME=~/Library/Android/sdk
 
 # Load shared setup functions.
@@ -34,6 +34,7 @@ ensure_android_home() {
     if [ ! -d "$ANDROID_HOME" ]; then
         err_and_exit "Run ./mac-android-setup.sh, then re-run this script."
     fi
+    export ANDROID_SDK_ROOT="$ANDROID_HOME"
 }
 
 main() {
@@ -51,7 +52,7 @@ main() {
     install_apk
 }
 
-# Return "true" if there is no available debug APK or if the user chooses to 
+# Return "true" if there is no available debug APK or if the user chooses to
 # rebuild it and "false" otherwise.
 get_should_build_apk() {
     should_build="true"
@@ -78,32 +79,32 @@ build_apk() {
 
 # Launches an existing emulator or creates an emulator and launches it.
 launch_emulator() {
-    if [ -z "$(emulator -list-avds)" ]; then 
+    if [ -z "$(emulator -list-avds)" ]; then
         echo "There are no existing emulators."
     else
         echo "Here are existing emulators:"
-        emulator -list-avds
+        "$ANDROID_HOME/emulator/emulator" -list-avds
     fi
 
-    name=$( get_input "Enter the name of the emulator you would like to use, or hit enter to create a new emulator: " "") 
+    name=$( get_input "Enter the name of the emulator you would like to use, or hit enter to create a new emulator: " "")
 
     # Create an emulator if the user hits enter.
     if [ -z "$name" ]; then
         update "Creating emulator..."
-        
+
         # Get name, API, and ABI from user.
         echo "The name of your emulator gives you a way to reference it. You might want to name them with the convention device_API_[api]_[abi]."
         name=$( get_input "Emulator name [test-device]: " "test-device" )
-        echo "API 16 is the oldest API level the KA app supports and API 23 is the newest API."
+        echo "API 16 is the oldest API level the KA app supports and API 25 is the newest API."
         api=$( get_input "API [23]: " "23" )
         echo "See https://developer.android.com/ndk/guides/abis.html for more information on Android ABIs."
         abi=$( get_input "ABI [x86_64]: " "x86_64" )
-        
+
         ensure_platform_and_abi "$api" "$abi"
 
         # Say "no" to "Do you wish to create a custom hardware profile".
         # TODO(hannah): Allow the user to specify the AVD's hardware.
-        echo "no" | android create avd --name "$name" --target android-"$api" --abi google_apis/"$abi"
+        echo "no" | "$ANDROID_HOME/tools/bin/avdmanager" create avd --name "$name" --abi google_apis/"$abi" --package "system-images;android-$api;google_apis;$abi"
     else
         check_emulator_exists "$name"
     fi
@@ -117,13 +118,13 @@ launch_emulator() {
     update "Launching emulator $name..."
     # Launch emulator with given name and GPU on (see
     # https://code.google.com/p/android/issues/detail?id=189040).
-    emulator -avd "$name" -gpu on &
+    "$ANDROID_HOME/emulator/emulator" -avd "$name" -gpu on &
 }
 
 # Exit if there is not an emulator with the given name.
 # $1: name of emulator
 check_emulator_exists() {
-    if [ -z "$1" ] || ! emulator -list-avds | grep -w -q "$1" ; then
+    if [ -z "$1" ] || ! "$ANDROID_HOME/emulator/emulator" -list-avds | grep -w -q "$1" ; then
         err_and_exit "The emulator $name does not exist. Run 'emulator -list-avds' to see the list of emulators."
     fi
 }
@@ -147,14 +148,20 @@ is_device_ready() {
 ensure_platform_and_abi() {
     if [ ! -d "$ANDROID_HOME/platforms/android-$1" ] ; then
         update "Installing platform..."
-        # echo y approves the necessary licenses.
-        echo y | android update sdk --no-ui --all --filter android-"$1"
+        "$ANDROID_HOME/tools/bin/sdkmanager" "platforms;android-$1"
     fi
 
     if [ ! -d "$ANDROID_HOME/system-images/android-$1/google_apis/$2" ] ; then
         update "Installing ABI..."
-        # echo y approves the necessary licenses.
-        echo y | android update sdk --no-ui --all --filter sys-img-"$2"-google_apis-"$1"
+        "$ANDROID_HOME/tools/bin/sdkmanager" "system-images;android-$1;google_apis;$2"
+    fi
+
+    # Ensure the system-images directory is properly linked.
+    if [ ! -d "$ANDROID_HOME/system-images" ] ; then
+        # Get the directory where Homebrew installed the Android SDK.
+        version_dir=`ls /usr/local/Caskroom/android-sdk/ | head -n1`
+
+        ln -s /usr/local/Caskroom/android-sdk/"$version_dir"/system-images "$ANDROID_HOME"/
     fi
 }
 
@@ -164,7 +171,7 @@ install_apk() {
     while [ "$(is_device_ready)" = "false" ]; do
         sleep 0.5
     done
-    
+
     # If the APK is already installed, ask the user if they want to reinstall.
     if adb shell pm list packages | grep -w -q "org.khanacademy.android.debug" ; then
         should_install=$( get_yn_input "Would you like to reinstall the APK?" "y" )
