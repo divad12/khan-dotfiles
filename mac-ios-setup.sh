@@ -12,6 +12,11 @@ mkdir -p "$ROOT"
 # The directory to which all repositories will be cloned.
 REPOS_DIR="$ROOT/khan"
 
+# Derived path location constants
+# TODO(abdul): define these in shared-functions.sh instead (it's also defined mac-android-setup).
+DEVTOOLS_DIR="$REPOS_DIR/devtools"
+KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
+
 # Load shared setup functions.
 . "$REPOS_DIR/devtools/khan-dotfiles/shared-functions.sh"
 
