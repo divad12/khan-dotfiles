@@ -52,7 +52,7 @@ install_jdks() {
 clone_mobile_repo() {
     if [ ! -d "$REPOS_DIR"/mobile ]; then
         update "Cloning mobile repository..."
-        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" -p --email="$gitmail"
+        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" --email="$gitmail"
     fi
 }
 

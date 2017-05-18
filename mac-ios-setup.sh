@@ -24,7 +24,7 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 clone_mobile_repo() {
     if [ ! -d "$REPOS_DIR/mobile" ]; then
         update "Cloning mobile repository..."
-        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" -p --email="$gitmail"
+        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" --email="$gitmail"
     fi
 }
 
