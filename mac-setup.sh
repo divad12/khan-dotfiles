@@ -196,7 +196,6 @@ install_homebrew() {
 
     # TODO(marcos) check for other versions of osx perhaps and do some
     # sanity checking and other goodness here. SO VERY SORRY EVERYONE.
-    brew tap homebrew/dupes
     brew install apple-gcc42
 
     # Install homebrew-cask, so we can use it manage installing binary/GUI apps
