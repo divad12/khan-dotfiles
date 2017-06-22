@@ -150,7 +150,7 @@ install_gcc() {
     if ! gcc --version >/dev/null 2>&1 || [ ! -s /usr/include/stdio.h ]; then
         if sw_vers -productVersion | grep -e '^10\.[0-8]$' -e '^10\.[0-8]\.'; then
             warn "Command line tools are *probably available* for your Mac's OS, but..."
-            info "Kayla or Kamens or your mentor will gladly upgrade your OS right now\n"
+            info "why not upgrade your OS right now?\n"
             info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
             exit 1
         else
@@ -188,18 +188,23 @@ install_homebrew() {
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     else
         success "Great! Mac homebrew already installed!"
-        info "Verifying homebrew is in a good state... "
-        brew doctor
+        info "Verifying homebrew is in a good state...\n"
+        if ! brew doctor; then
+            warn "Oh no! 'brew doctor' reported some warnings."
+            info "These warnings may cause you trouble, but they are likely harmless.\n"
+            read -r -p "Onward? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                    exit 1
+                    ;;
+            esac
+        fi
     fi
     success "Updating (but not upgrading) Homebrew"
     brew update > /dev/null
 
-    # TODO(marcos) check for other versions of osx perhaps and do some
-    # sanity checking and other goodness here. SO VERY SORRY EVERYONE.
-    brew install apple-gcc42
-
     # Install homebrew-cask, so we can use it manage installing binary/GUI apps
-    brew install caskroom/cask/brew-cask
+    brew tap caskroom/cask
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
@@ -294,7 +299,9 @@ install_helpful_tools() {
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
-warn "Warning: This is only tested on Mac OS 10.9 (Mavericks)\nand Mac OS 10.10 (Yosemite)\n"
+warn "Warning: This is only tested up to macOS 10.12 (Sierra).\n"
+notice "If you find that this works on a newer version of macOS, "
+notice "please update this message.\n"
 notice "After each statement, either something will open for you to"
 notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
