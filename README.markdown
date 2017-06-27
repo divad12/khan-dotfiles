@@ -22,7 +22,7 @@ the cloned directory:
 
     mkdir -p ~/khan/devtools
     cd ~/khan/devtools
-    git clone git://github.com/Khan/khan-dotfiles.git
+    git clone https://github.com/Khan/khan-dotfiles.git
     cd khan-dotfiles
     make
 
