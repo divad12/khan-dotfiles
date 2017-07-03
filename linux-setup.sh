@@ -7,6 +7,14 @@
 # Bail on any errors
 set -e
 
+install_java_ppa() {
+    # On ubuntu 14.04, we don't have java8, so we install it via ppa.
+    sudo add-apt-repository -y ppa:openjdk-r/ppa
+    sudo apt-get update
+    sudo apt-get install -y openjdk-8-jdk
+    sudo update-alternatives --config java
+    sudo update-alternatives --config javac
+}
 
 # NOTE: if you add a package here, check if you should also add it
 # to webapp's Dockerfile.
@@ -123,6 +131,12 @@ EOF
 
     # Needed to install printer drivers, and to use the printer scanner
     sudo apt-get install -y apparmor-utils xsane
+
+    # We use java for our google cloud dataflow jobs that live in webapp
+    # (as well as in khan-linter for linting those jobs)
+    # Prior to 16.04LTS we don't have openjdk-8, so fall back on a ppa if
+    # installing it fails.
+    sudo apt-get install -y openjdk-8-jdk || install_java_ppa
 }
 
 install_phantomjs() {

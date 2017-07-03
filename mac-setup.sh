@@ -296,6 +296,12 @@ install_helpful_tools() {
     fi
 }
 
+install_java() {
+    # We use java for our google cloud dataflow jobs that live in webapp
+    # (as well as in khan-linter for linting those jobs)
+    brew cask install java
+}
+
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
@@ -325,6 +331,7 @@ install_phantomjs
 install_nginx
 install_image_utils
 install_helpful_tools
+install_java
 
 notice "You might be done! \n\n \
 You should open a new shell to pick up any changes."
