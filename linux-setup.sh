@@ -7,11 +7,18 @@
 # Bail on any errors
 set -e
 
-install_java_ppa() {
-    # On ubuntu 14.04, we don't have java8, so we install it via ppa.
-    sudo add-apt-repository -y ppa:openjdk-r/ppa
-    sudo apt-get update
-    sudo apt-get install -y openjdk-8-jdk
+install_java() {
+    # On 16.04LTS or later we have openjdk-8, so install it directly.
+    sudo apt-get install -y openjdk-8-jdk || {
+        # On ubuntu 14.04, we don't have java8, so we install it via ppa if the
+        # direct installation failed.
+        sudo add-apt-repository -y ppa:openjdk-r/ppa
+        sudo apt-get update
+        sudo apt-get install -y openjdk-8-jdk
+    }
+    # We ask you to select a java version (interactively) in case you have more
+    # than one installed.  If there's only one, it'll just select that version
+    # by default.
     sudo update-alternatives --config java
     sudo update-alternatives --config javac
 }
@@ -134,9 +141,7 @@ EOF
 
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
-    # Prior to 16.04LTS we don't have openjdk-8, so fall back on a ppa if
-    # installing it fails.
-    sudo apt-get install -y openjdk-8-jdk || install_java_ppa
+    install_java
 }
 
 install_phantomjs() {
