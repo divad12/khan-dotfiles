@@ -40,12 +40,13 @@ install_packages() {
         sudo rm -f /etc/apt/sources.list.d/chris-lea-node_js*
         updated_apt_repo=yes
     fi
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource; then
-        # This is a simplified version of https://deb.nodesource.com/setup_4.x
+    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
+       ! grep -q node_8.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_8.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_4.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_4.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
         updated_apt_repo=yes
