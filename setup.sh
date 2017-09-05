@@ -113,7 +113,10 @@ install_dotfiles() {
     if [ "$shell" != bash ] && [ -z "$VIRTUAL_ENV" ] ; then
         add_fatal_error "Your default shell is $shell, not bash, so you'll" \
                         "need to update its config manually to activate our" \
-                        "virtualenv."
+                        "virtualenv. You can follow the instructions at" \
+                        "khanacademy.org/r/virtualenvs to create a new" \
+                        "virtualenv and then export its path in the" \
+                        "VIRTUAL_ENV environment variable before trying again."
     fi
 
     # *.template files are also copied so the user can change them.  Unlike the
