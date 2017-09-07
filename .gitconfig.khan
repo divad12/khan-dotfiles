@@ -8,9 +8,9 @@
 [alias]
   # Versions of commands that handle submodules properly.
   co = "!f() { git checkout \"$@\" && git submodule update --init --recursive; }; f"
-  p = "!f() { git pull \"$@\" && git submodule update --init --recursive; }; f"
-  m = "!f() { git merge \"$@\" && git submodule update --init --recursive; }; f"
-  gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive; }; f"
+  p = "!f() { git pull \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
+  m = "!f() { git merge \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
+  gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
 
   # Branch management for dealing with phabricator and github-style deploys.
   # e.g. deploy-branch, review-branch, find-reviewers
