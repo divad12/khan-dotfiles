@@ -209,7 +209,6 @@ clone_devtools() {
     clone_devtool git@github.com:Khan/khan-linter
     clone_devtool git@github.com:Khan/libphutil
     clone_devtool git@github.com:Khan/arcanist
-    clone_devtool git@github.com:Khan/git-bigfile
     clone_devtool git@github.com:Khan/git-workflow
 }
 
@@ -295,16 +294,6 @@ update_userinfo() {
     fi
 }
 
-update_credentials() {
-      if [ ! -s "$HOME/git-bigfile-storage.secret" ]; then
-          echo "You must update your S3 credentials for use with git-bigfile."
-          echo "Visit https://phabricator.khanacademy.org/K65 and click"
-          echo "'show secret' and copy the contents into a file called"
-          echo "   $HOME/git-bigfile-storage.secret"
-          read -p "Hit enter when this is done: " prompt
-      fi
-}
-
 
 check_dependencies
 
@@ -319,7 +308,6 @@ edit_system_config
 # the order for these is (mostly!) important, beware
 clone_repos
 install_deps        # pre-req: clone_repos
-update_credentials
 
 
 echo
