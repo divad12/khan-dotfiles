@@ -49,7 +49,7 @@
   #   If this fails, we ignore the error and defer to...
   # - The second, for Linux, uses "-d last\ monday" to request the date of the
   #   last monday instead.
-  weekly = "!git log --author=`git config user.email` --since=`date -v -Mon +%Y/%m/%d 2>/dev/null || date -d last\\ monday +Y%/m%/d%`"
+  weekly = "!git log --author=`git config user.email` --since=`date -v -Mon +%Y/%m/%d 2>/dev/null || date -d last\\ monday +%Y/%m/%d`"
 
   # Versions of commands with useful options specified.
   graph = log --graph --decorate --oneline --pretty=format:"%h%x20%Cgreen%d%x20%Cred%an%x20%Cblue%ad%x20%Creset%s" --all --full-history --date=short
