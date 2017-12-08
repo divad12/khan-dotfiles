@@ -157,6 +157,47 @@ install_phantomjs() {
     fi
 }
 
+install_protoc() {
+    # We use protocol buffers in webapp's event log stream infrastructure. This
+    # installs the protocol buffer compiler (which generates python & java code
+    # from the protocol buffer definitions), as well as a go-based compiler
+    # plugin that allows us to generate bigquery schemas as well.
+
+    if ! which protoc >/dev/null; then
+        # TODO(colin): I didn't see a good-looking ppa for the protbuf compiler.
+        # Look a bit harder to see if there's a better way to keep this up to date?
+        mkdir -p /tmp/protoc
+        wget -O/tmp/protoc/protoc-3.5.0.zip https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
+        (
+            cd /tmp/protoc
+            unzip protoc-3.5.0.zip
+            # This puts the compiler itself into ./bin/protoc and several
+            # definitions into ./include/google/**
+            # we move them both into /usr/local
+            sudo install -m755 ./bin/protoc /usr/local/bin
+            sudo mv ./include/google /usr/local/include/
+            sudo chmod -R a+rX /usr/local/include/google
+        )
+        rm -fr /tmp/protoc
+    else
+        echo "protoc already installed"
+    fi
+
+    if ! which go >/dev/null; then
+        # TODO(colin): should we check the version too? I don't know how
+        # stringent the protobuf plugin requirements are on version.
+        sudo add-apt-repository -y ppa:gophers/archive
+        sudo apt-get update -qq -y
+        sudo apt-get install -y golang-1.9
+        # The ppa installs go into /usr/lib/go-1.9/bin/go
+        # Let's link that to somewhere likely to be on $PATH
+        sudo ln -snf /usr/lib/go-1.9/bin/go /usr/local/bin/go
+    else
+        echo "golang already installed"
+    fi
+    go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -174,4 +215,5 @@ sudo sh -c 'echo Thanks'
 
 install_packages
 install_phantomjs
+install_protoc
 setup_clock

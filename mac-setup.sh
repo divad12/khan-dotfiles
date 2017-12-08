@@ -302,6 +302,26 @@ install_java() {
     brew cask install java
 }
 
+install_protoc() {
+    # We use protocol buffers in webapp's event log stream infrastructure. This
+    # installs the protocol buffer compiler (which generates python & java code
+    # from the protocol buffer definitions), as well as a go-based compiler
+    # plugin that allows us to generate bigquery schemas as well.
+    if ! brew ls protobuf >/dev/null 2>&1; then
+        info "Installing protoc\n"
+        brew install protobuf
+    else
+        success "protoc already installed"
+    fi
+    if ! brew ls go >/dev/null 2>&1; then
+        info "Installing go\n"
+        brew install go
+    else
+        success "go already installed"
+    fi
+    go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
+}
+
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
@@ -332,6 +352,7 @@ install_nginx
 install_image_utils
 install_helpful_tools
 install_java
+install_protoc
 
 notice "You might be done! \n\n \
 You should open a new shell to pick up any changes."
