@@ -93,8 +93,9 @@ EOF
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
-    # both of them.
-    sudo apt install -y php-cli php-curl || sudo apt-get install -y php5-cli php5-curl
+    # both of them.  In 16.04+, php-xml is also a separate package, which we
+    # need too.
+    sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
     # it to be `node`.
