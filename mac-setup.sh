@@ -325,7 +325,7 @@ install_protoc() {
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
-warn "Warning: This is only tested up to macOS 10.12 (Sierra).\n"
+warn "Warning: This is only tested up to macOS 10.13 (High Sierra).\n"
 notice "If you find that this works on a newer version of macOS, "
 notice "please update this message.\n"
 notice "After each statement, either something will open for you to"
