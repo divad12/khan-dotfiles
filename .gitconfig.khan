@@ -7,7 +7,9 @@
 
 [alias]
   # Versions of commands that handle submodules properly.
-  co = "!f() { git checkout \"$@\" && git submodule update --init --recursive; }; f"
+  # co will also try to convert a phabricator diff-id to a tag if it can.
+  # TODO(csilvers): also work with flags: `git co -t D1234`.
+  co = "!f() { if [ -n "$1" -a -z "$2" ]; then git checkout "`revisionid-to-diffid.sh --tag \"$@\"`"; else git checkout \"$@\"; fi && git submodule update --init --recursive; }; f"
   p = "!f() { git pull \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
   m = "!f() { git merge \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
   gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
