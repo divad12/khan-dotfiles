@@ -26,25 +26,22 @@ ANDROID_HOME=~/Library/Android
 # While Android doesn't support most of the features of Java 8, we use
 # retrolambda to give us the features of Java 8 lambdas. This requires
 # developers to have JDK 8 installed and set as their JDK.
-install_jdks() {
+ensure_jdks() {
     # Ensure some version of Java is installed so /usr/libexec/java_home -V
     # doesn't cause an error.
     if ! java -version ; then
-        update "Installing Java 7 SDK..."
-        brew cask install caskroom/versions/java7
+        err_and_exit "Could not find any JDKs.\n\nDownload JDK 7 _and_ 8 from Oracle's website, install them both, and then re-run this script."
     fi
 
     # Determine which Java SDKs we have. Note: -V prints to stderr.
     java_versions=$( /usr/libexec/java_home -V 2>&1 )
 
     if ! echo "$java_versions" | grep -q -e "Java SE 7"; then
-        update "Installing Java 7 SDK..."
-        brew cask install caskroom/versions/java7
+        err_and_exit "Could not find JDK 7.\n\nDownload if from Oracle's website, install it, and then re-run this script."
     fi
 
     if ! echo "$java_versions" | grep -q -e "Java SE 8"; then
-        update "Installing Java 8 SDK..."
-        brew cask install java
+        err_and_exit "Could not find JDK 8.\n\nDownload if from Oracle's website, install it, and then re-run this script."
     fi
 }
 
@@ -139,7 +136,7 @@ install_react_native_dependencies() {
 
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
-install_jdks
+ensure_jdks
 clone_mobile_repo
 install_android_sdk
 install_android_studio
