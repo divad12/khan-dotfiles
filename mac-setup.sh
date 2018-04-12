@@ -6,6 +6,16 @@ set -e
 tty_bold=`tput bold`
 tty_normal=`tput sgr0`
 
+# The directory to which all repositories will be cloned.
+ROOT=${1-$HOME}
+REPOS_DIR="$ROOT/khan"
+
+# Derived path location constants
+DEVTOOLS_DIR="$REPOS_DIR/devtools"
+
+# Load shared setup functions.
+. "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
+
 # for printing standard echoish messages
 notice () {
     printf "         $1\n"
@@ -206,6 +216,9 @@ install_homebrew() {
     # Install homebrew-cask, so we can use it manage installing binary/GUI apps
     brew tap caskroom/cask
 
+    # Likely need an alternate versions of Casks in order to install chrome-canary
+    brew tap caskroom/versions
+
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
     # doctor', we look at its output.  The last 'grep', combined with
@@ -322,6 +335,21 @@ install_protoc() {
     go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
+# To install some useful mac apps.
+install_mac_apps() {
+     # Prompt the user before installing these useful mac apps
+    if [ "$(get_yn_input "Install some useful mac apps, for instance dropbox, firefox, chrome, google-handgouts, etc" "y")" = "y" ]; then
+        mac_apps=(dropbox flux firefox google-chrome-canary google-cloud-sdk google-drive-file-stream google-hangouts iterm2 macvim spotify sublime-text virtualbox zoomus)
+        for apps in ${mac_apps[@]}; do
+            if ! brew cask ls $apps >/dev/null 2>&1; then
+                info "$apps is not installed, installing $apps"
+                brew cask install $apps
+            else
+                 success "$apps already installed"  
+            fi
+        done
+    fi
+}
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
@@ -353,6 +381,7 @@ install_image_utils
 install_helpful_tools
 install_java
 install_protoc
+install_mac_apps
 
 notice "You might be done! \n\n \
 You should open a new shell to pick up any changes."
