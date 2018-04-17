@@ -312,7 +312,7 @@ install_helpful_tools() {
 install_java() {
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
-    brew cask install java
+    brew cask install java8
 }
 
 install_protoc() {
