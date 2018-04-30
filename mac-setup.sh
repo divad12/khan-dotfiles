@@ -353,13 +353,24 @@ install_mac_apps() {
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
-warn "Warning: This is only tested up to macOS 10.13 (High Sierra).\n"
-notice "If you find that this works on a newer version of macOS, "
-notice "please update this message.\n"
+
+if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[123]\.' ; then
+    warn "Warning: This is only tested up to macOS 10.13 (High Sierra).\n"
+    notice "If you find that this works on a newer version of macOS, "
+    notice "please update this message.\n"
+fi
+
 notice "After each statement, either something will open for you to"
 notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
 notice "the next step (including this one)"
+
+if ! echo "$SHELL" | grep -q '/bash$' ; then
+    echo "\n"
+    warn "It looks like you're using a shell other than bash!"
+    notice "Other shells are not officially supported.  Most things"
+    notice "should work, but dev-support help is not guaranteed."
+fi
 
 read -p "Press enter to continue..."
 

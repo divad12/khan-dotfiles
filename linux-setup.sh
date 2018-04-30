@@ -209,6 +209,20 @@ setup_clock() {
     fi
 }
 
+echo "\n"
+success "Running Khan Installation Script 1.1\n"
+# We grep -i to have a good chance of catching flavors like Xubuntu.
+if ! lsb_release -is 2>/dev/null | grep -i ubuntu ; then
+    warn "This script is mostly tested on Ubuntu;"
+    notice "other distributions may or may not work."
+fi
+
+if ! echo "$SHELL" | grep -q '/bash$' ; then
+    echo "\n"
+    warn "It looks like you're using a shell other than bash!"
+    notice "Other shells are not officially supported.  Most things"
+    notice "should work, but dev-support help is not guaranteed."
+fi
 
 # Run sudo once at the beginning to get the necessary permissions.
 echo "This setup script needs your password to install things as root."
