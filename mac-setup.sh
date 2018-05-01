@@ -264,7 +264,12 @@ update_git() {
 
 install_node() {
     if ! brew ls node >/dev/null 2>&1; then
-        brew install node 2>&1
+        # Install node 8: webapp doesn't (yet!) work with node 10.
+        # (Node 8 is LTS.)
+        brew install node@8
+        # We need this because brew doesn't link /usr/local/bin/node
+        # by default when installing non-latest node.
+        brew link --force node@8
     fi
 }
 
