@@ -398,6 +398,3 @@ install_helpful_tools
 install_java
 install_protoc
 install_mac_apps
-
-notice "You might be done! \n\n \
-You should open a new shell to pick up any changes."

@@ -322,5 +322,8 @@ else
 fi
 
 echo
-echo "To finish your setup, go to"
-echo "   https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup"
+echo "*** IMPORTANT: Please restart this terminal (and any ***"
+echo "***   others you have open) to pick up the changes.  ***"
+echo
+echo "Then, to finish your setup, head back to the setup docs:"
+echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit#heading=h.z23mgzycm3j2"
