@@ -294,6 +294,14 @@ update_userinfo() {
     fi
 }
 
+# Install webapp's git hooks
+install_hooks() {
+    if [ "$WEBAPP" = true ]; then
+        echo "Installing git hooks"
+        ( cd "$REPOS_DIR/webapp" && make hooks )
+    fi
+}
+
 
 check_dependencies
 
@@ -308,6 +316,7 @@ edit_system_config
 # the order for these is (mostly!) important, beware
 clone_repos
 install_deps        # pre-req: clone_repos
+install_hooks       # pre-req: clone_repos
 
 
 echo
