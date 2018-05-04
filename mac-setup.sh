@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Bail on any errors
 set -e
@@ -356,7 +356,7 @@ install_mac_apps() {
     fi
 }
 
-echo "\n"
+echo
 success "Running Khan Installation Script 1.1\n"
 
 if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[123]\.' ; then
@@ -371,7 +371,7 @@ notice "Press enter when a download/install is completed to go to"
 notice "the next step (including this one)"
 
 if ! echo "$SHELL" | grep -q '/bash$' ; then
-    echo "\n"
+    echo
     warn "It looks like you're using a shell other than bash!"
     notice "Other shells are not officially supported.  Most things"
     notice "should work, but dev-support help is not guaranteed."

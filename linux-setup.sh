@@ -119,7 +119,7 @@ EOF
             x86_64) arch=amd64;;
             *) echo "WARNING: Cannot install slack: no client for `uname -m`";;
         esac
-        if [ -n "$arch"]; then
+        if [ -n "$arch" ]; then
             rm -rf /tmp/slack.deb
             wget -O- https://slack.com/downloads | grep -o "http.*$arch.deb" | head -n1 | xargs wget -O/tmp/slack.deb
             sudo dpkg -i /tmp/slack.deb
@@ -209,19 +209,20 @@ setup_clock() {
     fi
 }
 
-echo "\n"
-success "Running Khan Installation Script 1.1\n"
+echo
+echo "Running Khan Installation Script 1.1"
+echo
 # We grep -i to have a good chance of catching flavors like Xubuntu.
-if ! lsb_release -is 2>/dev/null | grep -i ubuntu ; then
-    warn "This script is mostly tested on Ubuntu;"
-    notice "other distributions may or may not work."
+if ! lsb_release -is 2>/dev/null | grep -iq ubuntu ; then
+    echo "This script is mostly tested on Ubuntu;"
+    echo "other distributions may or may not work."
 fi
 
 if ! echo "$SHELL" | grep -q '/bash$' ; then
-    echo "\n"
-    warn "It looks like you're using a shell other than bash!"
-    notice "Other shells are not officially supported.  Most things"
-    notice "should work, but dev-support help is not guaranteed."
+    echo
+    echo "It looks like you're using a shell other than bash!"
+    echo "Other shells are not officially supported.  Most things"
+    echo "should work, but dev-support help is not guaranteed."
 fi
 
 # Run sudo once at the beginning to get the necessary permissions.
