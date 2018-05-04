@@ -342,18 +342,49 @@ install_protoc() {
 
 # To install some useful mac apps.
 install_mac_apps() {
-     # Prompt the user before installing these useful mac apps
-    if [ "$(get_yn_input "Install some useful mac apps, for instance dropbox, firefox, chrome, google-handgouts, etc" "y")" = "y" ]; then
-        mac_apps=(dropbox flux firefox google-chrome-canary google-drive-file-stream google-hangouts iterm2 macvim spotify sublime-text virtualbox zoomus)
-        for app in ${mac_apps[@]}; do
-            if ! brew cask ls $app >/dev/null 2>&1; then
-                info "$app is not installed, installing $app"
-                brew cask install $app || warn "Failed to install $app, perhaps it is already installed."
-            else
-                success "$app already installed"  
+  chosen_apps=() # When the user opts to install a package it will be added to this array.
+
+  mac_apps=(
+    # Browsers
+    firefox firefox-developer-edition google-chrome google-chrome-canary
+    # Tools
+    dropbox google-drive-file-stream iterm2 virtualbox zoomus
+    # Text Editors
+    macvim sublime-text textmate atom
+  )
+
+  mac_apps_str="${mac_apps[@]}"
+  info "We recommend installing the following apps: ${mac_apps_str}. \n\n"
+
+  read -r -p "Would you like to install [a]ll, [n]one, or [s]ome of the apps? [a/n/s]: " input
+
+  case "$input" in
+      [aA][lL][lL] | [aA])
+          chosen_apps=("${mac_apps[@]}")
+          ;;
+      [sS][oO][mM][eE] | [sS])
+          for app in ${mac_apps[@]}; do
+            if [ "$(get_yn_input "Would you like to install ${app}?" "y")" = "y" ]; then
+              chosen_apps=("${chosen_apps[@]}" "${app}")
             fi
-        done
+          done
+          ;;
+      [nN][oO][nN][eE] | [nN])
+          ;;
+      *)
+          echo "Please choose [a]ll, [n]one, or [s]ome."
+          exit 100
+          ;;
+  esac
+
+  for app in ${chosen_apps[@]}; do
+    if ! brew cask ls $app >/dev/null 2>&1; then
+        info "$app is not installed, installing $app"
+        brew cask install $app || warn "Failed to install $app, perhaps it is already installed."
+    else
+        success "$app already installed"
     fi
+  done
 }
 
 echo
