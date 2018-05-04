@@ -348,7 +348,7 @@ install_mac_apps() {
         for app in ${mac_apps[@]}; do
             if ! brew cask ls $app >/dev/null 2>&1; then
                 info "$app is not installed, installing $app"
-                brew cask install $app || warning "Failed to install $app, perhaps it is already installed."
+                brew cask install $app || warn "Failed to install $app, perhaps it is already installed."
             else
                 success "$app already installed"  
             fi
