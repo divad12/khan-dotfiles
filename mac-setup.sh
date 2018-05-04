@@ -345,12 +345,12 @@ install_mac_apps() {
      # Prompt the user before installing these useful mac apps
     if [ "$(get_yn_input "Install some useful mac apps, for instance dropbox, firefox, chrome, google-handgouts, etc" "y")" = "y" ]; then
         mac_apps=(dropbox flux firefox google-chrome-canary google-cloud-sdk google-drive-file-stream google-hangouts iterm2 macvim spotify sublime-text virtualbox zoomus)
-        for apps in ${mac_apps[@]}; do
-            if ! brew cask ls $apps >/dev/null 2>&1; then
-                info "$apps is not installed, installing $apps"
-                brew cask install $apps
+        for app in ${mac_apps[@]}; do
+            if ! brew cask ls $app >/dev/null 2>&1; then
+                info "$app is not installed, installing $app"
+                brew cask install $app || warning "Failed to install $app, perhaps it is already installed."
             else
-                 success "$apps already installed"  
+                success "$app already installed"  
             fi
         done
     fi
