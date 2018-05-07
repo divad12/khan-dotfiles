@@ -258,7 +258,7 @@ update_git() {
     # (Search for `perl_regexp` in webapp to see a complete list.)
     if ! git grep -P -l . >/dev/null; then
         echo "Updating git to be able to use PCRE."
-        brew reinstall --with-pcre git
+        brew reinstall --with-pcre2 git
     fi
 }
 
