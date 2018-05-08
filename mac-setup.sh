@@ -344,7 +344,7 @@ install_protoc() {
 install_mac_apps() {
      # Prompt the user before installing these useful mac apps
     if [ "$(get_yn_input "Install some useful mac apps, for instance dropbox, firefox, chrome, google-handgouts, etc" "y")" = "y" ]; then
-        mac_apps=(dropbox flux firefox google-chrome-canary google-cloud-sdk google-drive-file-stream google-hangouts iterm2 macvim spotify sublime-text virtualbox zoomus)
+        mac_apps=(dropbox flux firefox google-chrome-canary google-drive-file-stream google-hangouts iterm2 macvim spotify sublime-text virtualbox zoomus)
         for app in ${mac_apps[@]}; do
             if ! brew cask ls $app >/dev/null 2>&1; then
                 info "$app is not installed, installing $app"

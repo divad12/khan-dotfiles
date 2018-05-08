@@ -15,6 +15,7 @@ export PATH="$KA_DEVROOT/arcanist/khan-bin:$PATH"
 export PATH="$KA_DEVROOT/git-workflow/bin:$PATH"
 export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
+export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}

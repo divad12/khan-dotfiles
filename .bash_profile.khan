@@ -36,6 +36,13 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Enable autocompletion for git
 source "$DIR/git-completion.bash"
+# Similarly for gcloud, if available
+if ! which gcloud >/dev/null; then
+    GCLOUD_COMPLETION_FILE="$(basename "$(basename gcloud)")/completion.bash.inc"
+    if [ -f "$GCLOUD_COMPLETION_FILE" ]; then
+        source "$GCLOUD_COMPLETION_FILE"
+    fi
+fi
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}
