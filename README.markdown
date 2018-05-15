@@ -1,24 +1,21 @@
-Configuration files, and setup scripts, for Khan Academy website
-developers.  A lot of what's here is Khan Academy-specific:
+# 💻 🍎 🐧 khan-dotfiles 🐧 🍎 💻
 
-- Vim filetype plugins conforming to Khan Academy's style guide
-- tell ack to skip crap that the deploy script litters
-  (eg. combined/compressed CSS/JS files)
-- a [pre-commit linter](https://github.com/Khan/khan-linter)
+This repository contains configuration files and setup scripts for
+the Khan Academy web developer environment.  This includes a
+variety of things, some very Khan-specific, some not, including:
+- the [Khan linter](https://github.com/Khan/khan-linter)
+- various `git` aliases, including for working with submodules
+- tools needed to run a dev server for the Khan webapp
+- other useful and "useful" miscellany
 
-and the rest of it just contains generally useful things, such as
+This is meant to complement the
+[developer setup documentation](https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit)
+in EngDocs.  If you run into any problems with this script, contact
+the Infrastructure team, such as by pinging `@dev-support` on Slack.
 
-- handy `git` aliases such as `git graph`
+## Setup
 
-This is meant to complement [the dev setup on the Khan Academy Forge](https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup).
-The setup scripts here assume you have done the initial setup on that
-Forge page (installing npm, etc) before running commands here.
-
-Setup
------
-Clone this repo somewhere (I recommend into a `~/khan/devtools`
-directory, but it doesn't really matter), and then run `make` in
-the cloned directory:
+Run the following commands:
 
     mkdir -p ~/khan/devtools
     cd ~/khan/devtools
@@ -31,18 +28,43 @@ libraries, dotfiles, etc.  It will not overwrite any of your existing
 dotfiles but will emit a warning if it sees something it doesn't
 understand.
 
-This script is idempotent, so it should be safe to run it multiple times.
+If you later need to fix up your setup, or get updates to it,
+you can do:
 
-You may wish to install
-[autojump](https://github.com/joelthelion/autojump) if you're a
-frequent user of the terminal to navigate the filesystem.
+    cd ~/khan/devtools/khan-dotfiles
+    git pull
+    make
 
-Hello
------
-Originally extracted from [David's
-dotfiles](http://github.com/divad12/dotfiles), with commits and lines
-here and there stolen from [Jamie](http://github.com/phleet/dotfiles),
+This script is idempotent, so it should be safe to run it multiple
+times.  We support macOS and Ubuntu, using `bash`, but other flavors
+of Linux and other shells may work too.
+
+## Hacking on `khan-dotfiles`
+
+Pull requests, whether to fix bugs, or add new goodies, are welcome!
+A few notes to keep in mind:
+
+- If you make nontrivial changes to the setup script, make sure to
+  test them!  The best way is to run the script on a blank VM, and
+  check that `make quickcheck` passes.  See
+  [EngDocs](https://docs.google.com/document/d/1KU70sbXOltXeS21DjoW_NpMfiHbrm_aONyZidA921lE/edit)
+  for instructions on VM setup.
+- Make sure to keep the script idempotent!  Running it on a working
+  dev setup should avoid breaking anything.  You can keep it that way
+  by making sure to no-op if a package is already installed or setup,
+  and so on.
+
+Ask in `#infrastructure-devops` if you have any questions, and thanks
+for the contributions!
+
+## Credits
+
+The `khan-dotfiles` are now maintained by the DevOps group within the
+Infrastructure Team; ping them (e.g. `@dev-support` in Slack) if you
+have any questions or run into problems.  They were originally
+extracted from [David's dotfiles](http://github.com/divad12/dotfiles),
+with commits and lines here and there stolen from
+[Jamie](http://github.com/phleet/dotfiles),
 [Desmond](https://github.com/dmnd), and others.  Non-dotfile config
-files, and the setup script, written by Craig Silverstein.
-
-Pull requests are welcome!
+files, and the setup script, were originally written by Craig
+Silverstein.  Pull requests are welcome!
