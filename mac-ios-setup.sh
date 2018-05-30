@@ -69,4 +69,4 @@ install_watchman
 install_react_native_dependencies
 
 update "Done! Complete setup instructions at \
-https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/mobile-setup/ios-setup"
+https://docs.google.com/document/d/15FxEYI7l_p4mMv3SYFSIM6cxiOz6I4pxEvzDLFle-eE"

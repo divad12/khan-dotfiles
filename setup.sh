@@ -61,7 +61,7 @@ check_dependencies() {
     # You need to have run the setup to install binaries: node, npm/etc.
     if ! npm --version >/dev/null; then
         echo "You must install binaries before running $0.  See"
-        echo "   https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup"
+        echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU"
         exit 1
     fi
 }
@@ -234,7 +234,7 @@ install_deps() {
     sudo easy_install --quiet pip
 
     # Install virtualenv.
-    # https://sites.google.com/a/khanacademy.org/forge/for-khan-employees/-new-employees-onboard-doc/developer-setup/using-virtualenv
+    # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
     sudo pip install -q virtualenv
     if [ ! -d "$ROOT/.virtualenv/khan27" ]; then
         # Note that --no-site-packages is the default on recent virtualenv,
