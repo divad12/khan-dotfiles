@@ -121,8 +121,13 @@ EOF
         esac
         if [ -n "$arch" ]; then
             rm -rf /tmp/slack.deb
-            wget -O- https://slack.com/downloads | grep -o "http.*$arch.deb" | head -n1 | xargs wget -O/tmp/slack.deb
-            sudo dpkg -i /tmp/slack.deb
+            deb_url="$(wget -O- https://slack.com/downloads/instructions/ubuntu | grep -o 'https.*\.deb' | head -n1)"
+            if [ -n "$deb_url" ]; then
+                wget -O/tmp/slack.deb "$deb_url" || echo "WARNING: Cannot install slack: couldn't download $deb_url"
+                sudo dpkg -i /tmp/slack.deb
+            else
+                echo "WARNING: Cannot install slack: couldn't find .deb URL"
+            fi
         fi
     fi
 
