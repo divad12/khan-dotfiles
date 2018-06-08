@@ -19,14 +19,7 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 
 # Load shared setup functions.
 . "$REPOS_DIR/devtools/khan-dotfiles/shared-functions.sh"
-
-# Ensure the Mobile Github repo is cloned.
-clone_mobile_repo() {
-    if [ ! -d "$REPOS_DIR/mobile" ]; then
-        update "Cloning mobile repository..."
-        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" --email="$gitmail"
-    fi
-}
+. "$REPOS_DIR/devtools/khan-dotfiles/mobile-functions.sh"
 
 # Ensure Carthage is installed. Carthage is used to manage some dependencies and
 # is required to compile the app.
@@ -37,33 +30,13 @@ install_carthage() {
     fi
 }
 
-# Yarn is used to manage our react-native dependencies.
-install_yarn() {
-    if ! which yarn ; then
-        update "Installing yarn..."
-        brew install yarn
-    fi
-}
-
-install_watchman() {
-    if ! which watchman ; then
-        update "Installing watchman..."
-        brew install watchman
-    fi
-}
-
-install_react_native_dependencies() {
-    if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
-        update "Installing react-native dependencies..."
-        (cd "$REPOS_DIR/mobile/react-native"; yarn)
-    fi
-}
-
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 clone_mobile_repo
 install_carthage
-# TODO(hannah): Move the following three functions to shared-functions.sh.
+
+install_homebrew_libraries
+
 install_yarn
 install_watchman
 install_react_native_dependencies

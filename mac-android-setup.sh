@@ -21,6 +21,7 @@ ANDROID_HOME=~/Library/Android
 
 # Load shared setup functions.
 . "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
+. "$DEVTOOLS_DIR"/khan-dotfiles/mobile-functions.sh
 
 # Ensure Java 7 and 8 are installed.
 # While Android doesn't support most of the features of Java 8, we use
@@ -42,14 +43,6 @@ ensure_jdks() {
 
     if ! echo "$java_versions" | grep -q -e "Java SE 8"; then
         err_and_exit "Could not find JDK 8.\n\nDownload if from Oracle's website, install it, and then re-run this script."
-    fi
-}
-
-# Ensure the Mobile Github repo is cloned.
-clone_mobile_repo() {
-    if [ ! -d "$REPOS_DIR"/mobile ]; then
-        update "Cloning mobile repository..."
-        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" --email="$gitmail"
     fi
 }
 
@@ -112,35 +105,15 @@ link_sdk() {
     fi
 }
 
-# Yarn is used to manage our react-native dependencies.
-install_yarn() {
-    if ! which yarn ; then
-        update "Installing yarn..."
-        brew install yarn
-    fi
-}
-
-install_watchman() {
-    if ! which watchman ; then
-        update "Installing watchman..."
-        brew install watchman
-    fi
-}
-
-install_react_native_dependencies() {
-    if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
-        update "Installing react-native dependencies..."
-        (cd "$REPOS_DIR/mobile/react-native"; yarn)
-    fi
-}
-
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 ensure_jdks
 clone_mobile_repo
 install_android_sdk
 install_android_studio
-# TODO(hannah): Move the following three functions to shared-functions.sh.
+
+install_homebrew_libraries
+
 install_yarn
 install_watchman
 install_react_native_dependencies
