@@ -27,6 +27,11 @@ ANDROID_HOME=~/Library/Android
 # While Android doesn't support most of the features of Java 8, we use
 # retrolambda to give us the features of Java 8 lambdas. This requires
 # developers to have JDK 8 installed and set as their JDK.
+install_java8() {
+    brew tap caskroom/versions
+    brew cask install java8
+}
+
 ensure_jdks() {
     # Ensure some version of Java is installed so /usr/libexec/java_home -V
     # doesn't cause an error.
@@ -37,12 +42,15 @@ ensure_jdks() {
     # Determine which Java SDKs we have. Note: -V prints to stderr.
     java_versions=$( /usr/libexec/java_home -V 2>&1 )
 
+    # TODO(Kai): maybe need to remove the chceking of JDK 7 if it is no longer needed.
     if ! echo "$java_versions" | grep -q -e "Java SE 7"; then
-        err_and_exit "Could not find JDK 7.\n\nDownload if from Oracle's website, install it, and then re-run this script."
+        echo "Because Oracle requires a login to install JDK 7, so you have to manually install it from Oracle's website:"
+        echo "http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html"
     fi
 
     if ! echo "$java_versions" | grep -q -e "Java SE 8"; then
-        err_and_exit "Could not find JDK 8.\n\nDownload if from Oracle's website, install it, and then re-run this script."
+        echo "Could not find JDK 8.Installing it ..."
+        install_java8
     fi
 }
 
@@ -61,11 +69,11 @@ install_android_studio() {
 # Create a symbolic link to the KA codestyle files so that they can be used by
 # Android Studio.
 configure_codestyle() {
-    mkdir -p ~/Library/Preferences/AndroidStudio2.2/codestyles
+    mkdir -p ~/Library/Preferences/AndroidStudio3.1/codestyles
 
-    if [ ! -e ~/Library/Preferences/AndroidStudio2.2/codestyles/KhanAcademyAndroid.xml ]; then
+    if [ ! -e ~/Library/Preferences/AndroidStudio3.1/codestyles/KhanAcademyAndroid.xml ]; then
         update "Linking KA codestyle files..."
-        ln -s "$REPOS_DIR"/mobile/android/third-party/style-guide/configs/KhanAcademyAndroid.xml ~/Library/Preferences/AndroidStudio2.2/codestyles/
+        ln -s "$REPOS_DIR"/mobile/android/third-party/style-guide/configs/KhanAcademyAndroid.xml ~/Library/Preferences/AndroidStudio3.1/codestyles/
     fi
 }
 
@@ -89,7 +97,9 @@ install_android_sdk() {
     # Accept all license agreements.
     # TODO(hannah): There doesn't seem to be a great way to accept all of the
     # licenses programmatically, but make this more robust.
-    while sleep 1; do echo "y"; done | "$ANDROID_HOME"/sdk/tools/bin/sdkmanager --licenses
+    # TODO(Kai): For some reason, this way to accept all licenses doesn't work and exits unexpectedly,
+    # so temporarily diable it.
+    # while sleep 1; do echo "y"; done | "$ANDROID_HOME"/sdk/tools/bin/sdkmanager --licenses
 }
 
 # Make a symbolic link from the default Homebrew location to $ANDROID_HOME.

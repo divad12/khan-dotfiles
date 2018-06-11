@@ -30,13 +30,29 @@ install_carthage() {
     fi
 }
 
+install_fastlane() {
+     if ! which fastlane ; then
+        update "Installing fastlane..."
+        brew cask install fastlane
+        export PATH="$PATH:$HOME/.fastlane/bin" 
+        echo 'export PATH="$PATH:$HOME/.fastlane/bin"' >> ~/.bash_profile
+    fi
+}
+
+install_react_native_dependencies() {
+    if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
+        update "Installing react-native dependencies..."
+        (cd "$REPOS_DIR/mobile/react-native"; yarn)
+    fi
+}
+
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 clone_mobile_repo
 install_carthage
-
+install_fastlane
 install_homebrew_libraries
-
+# TODO(hannah): Move the following three functions to shared-functions.sh.
 install_yarn
 install_watchman
 install_react_native_dependencies
