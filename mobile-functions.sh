@@ -6,7 +6,7 @@ set -e -o pipefail
 
 install_homebrew_libraries() {
     # The mobile project requires these Homebrew packages
-    brew install pkg-config cairo libpng jpeg giflib pango
+    brew install pkg-config cairo libpng jpeg giflib pango zopfli
 }
 
 # Ensure the Mobile Github repo is cloned.
