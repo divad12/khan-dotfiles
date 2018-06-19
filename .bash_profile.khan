@@ -27,7 +27,7 @@ source ~/.virtualenv/khan27/bin/activate
 # virtualenv it happens to find itself in, but instead to use its own.
 # TODO(benkraft): If in the future we move to pipenv everywhere, we can
 # dispense with the auto-activated virtualenvs, and get rid of this.
-export PIPENV_INGORE_VIRTUALENVS=1
+export PIPENV_IGNORE_VIRTUALENVS=1
 
 # Figure out what directory we're *really* in (following symlinks).
 # We need this because *-completion.bash are siblings to this script.
