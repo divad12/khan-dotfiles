@@ -51,3 +51,9 @@ fi
 # The default on OS X is 256; we increase it to 1024--the default value of
 # `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
 ulimit -S -n 1024
+
+# Since we auto-activate the khan27 virtualenv, we don't want pipenv using any
+# virtualenv it happens to find itself in, but instead to use its own.
+# TODO(benkraft): If in the future we move to pipenv everywhere, we can
+# dispense with the auto-activated virtualenvs, and get rid of this.
+export PIPENV_INGORE_VIRTUALENVS=1
