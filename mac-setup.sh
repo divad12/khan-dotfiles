@@ -277,7 +277,7 @@ install_phantomjs() {
     info "Checking for phantomjs\n"
     if ! type phantomjs >/dev/null 2>&1 || ! expr `phantomjs --version` : 2 >/dev/null; then
         brew uninstall --force phantomjs
-        brew install phantomjs
+        brew cask install phantomjs
     else
         success "phantomjs 2.x already installed"
     fi
