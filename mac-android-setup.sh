@@ -55,6 +55,7 @@ ensure_jdks() {
 }
 
 # Ensure Android Studio is installed (or that the user does not want to install it).
+# This function isn't used; see TODO at the bottom of the file.
 install_android_studio() {
     if [ ! -e "/Applications/Android Studio.app" ]; then
         # If Android Studio is not installed, ask the user before installing it.
@@ -120,7 +121,9 @@ ensure_mac_os  # Function defined in shared-functions.sh.
 ensure_jdks
 clone_mobile_repo
 install_android_sdk
-install_android_studio
+# TODO(hannah): We can't use install_android_studio because our app doesn't
+# build with the latest version of Android Studio. Uncomment this once we can!
+#install_android_studio
 
 install_homebrew_libraries
 
