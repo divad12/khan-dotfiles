@@ -252,6 +252,9 @@ install_deps() {
         # This checks for gcloud, so we do it after install_and_setup_gcloud.
         ( cd "$REPOS_DIR/webapp" && make install_deps )
     fi
+
+    echo "Installing yarn"
+    sudo npm install -g yarn
 }
 
 install_and_setup_gcloud() {
