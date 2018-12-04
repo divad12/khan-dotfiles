@@ -48,6 +48,8 @@ error () {
     printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
 }
 
+trap exit_warning EXIT   # from shared-functions.sh
+
 
 update_path() {
     # We need /usr/local/bin to come before /usr/bin on the path, to
@@ -429,3 +431,5 @@ install_helpful_tools
 install_java
 install_protoc
 install_mac_apps
+
+trap - EXIT

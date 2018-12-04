@@ -75,3 +75,14 @@ ensure_mac_os() {
         err_and_exit "This script can only be run on Mac OS."
     fi
 }
+
+# If we exit unexpectedly, log this warning.
+# Scripts should call "trap exit_warning EXIT" near the top to enable,
+# then "trap - EXIT" just before exiting on success.
+exit_warning() {
+    echo "***        FATAL ERROR: khan-dotfiles crashed!         ***"
+    echo "***     Please check the dev setup docs for common     ***"
+    echo "***  errors, or send the output above to @dev-support. ***"
+    echo "***  Once you've resolved the problem, re-run 'make'.  ***"
+    echo "***     Khan dev tools WILL NOT WORK until you do!     ***"
+}

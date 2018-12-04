@@ -35,6 +35,8 @@ DIR=$(dirname "$0")
 # should we install webapp? (disable for mobile devs or to make testing faster)
 WEBAPP="${WEBAPP:-true}"
 
+trap exit_warning EXIT   # from shared-functions.sh
+
 warnings=""
 
 add_warning() {
@@ -44,7 +46,6 @@ add_warning() {
 
 add_fatal_error() {
     echo "FATAL ERROR: $*"
-    echo "FATAL ERROR: Fix this problem and then re-run $0"
     exit 1
 }
 
@@ -388,3 +389,5 @@ echo "***   others you have open) to pick up the changes.  ***"
 echo
 echo "Then, to finish your setup, head back to the setup docs:"
 echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit#heading=h.z23mgzycm3j2"
+
+trap - EXIT

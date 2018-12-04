@@ -7,6 +7,21 @@
 # Bail on any errors
 set -e
 
+# Install in $HOME by default, but can set an alternate destination via $1.
+ROOT=${1-$HOME}
+mkdir -p "$ROOT"
+
+# the directory all repositories will be cloned to
+REPOS_DIR="$ROOT/khan"
+
+# derived path location constants
+DEVTOOLS_DIR="$REPOS_DIR/devtools"
+
+# Load shared setup functions.
+. "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
+
+trap exit_warning EXIT   # from shared-functions.sh
+
 install_java() {
     # On 16.04LTS or later we have openjdk-8, so install it directly.
     sudo apt-get install -y openjdk-8-jdk || {
@@ -238,3 +253,5 @@ install_packages
 install_phantomjs
 install_protoc
 setup_clock
+
+trap - EXIT
