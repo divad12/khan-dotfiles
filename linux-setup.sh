@@ -229,6 +229,12 @@ setup_clock() {
     fi
 }
 
+config_inotify() {
+    # webpack gets sad on webapp if it can only watch 8192 files (which is the
+    # ubuntu default).
+    echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+}
+
 echo
 echo "Running Khan Installation Script 1.1"
 echo
@@ -253,5 +259,6 @@ install_packages
 install_phantomjs
 install_protoc
 setup_clock
+config_inotify
 
 trap - EXIT
