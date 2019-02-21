@@ -165,7 +165,13 @@ install_gcc() {
             info "why not upgrade your OS right now?\n"
             info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
             exit 1
-        else
+        fi
+        if sw_vers -productVersion | grep -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
+            # mac version is Mojave 10.14.*, install SDK headers
+            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+            success "macOS_SDK_headers_for_macOS_10.14 installed"
+        fi
+        if ! gcc --version >/dev/null 2>&1 ; then
             success "Installing command line developer tools"
             # Also, how did you get this dotfiles repo in 10.9 without
             # git auto-triggering the command line tools install process??
@@ -173,9 +179,9 @@ install_gcc() {
             warn "The dotfile setup is stopping now."
             warn "When the install finishes, rerun ${tty_bold}make${tty_normal} to continue. (sorry)"
             exit 1
+            # If this doesn't work for you, you can find the most recent
+            # version here: https://developer.apple.com/downloads
         fi
-        # If this doesn't work for you, you can find the most recent
-        # version here: https://developer.apple.com/downloads
     else
         success "Great, found gcc! (assuming we also have other recent devtools)"
     fi
@@ -319,7 +325,11 @@ install_helpful_tools() {
 install_java() {
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
-    brew cask install java8
+    if ! brew cask list |grep java8 >/dev/null 2>&1; then
+        brew cask install caskroom/versions/java8
+    else
+        success "java8 already installed"
+    fi
 }
 
 install_protoc() {
@@ -390,10 +400,10 @@ install_mac_apps() {
 }
 
 echo
-success "Running Khan Installation Script 1.1\n"
+success "Running Khan Installation Script 1.2\n"
 
-if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[123]\.' ; then
-    warn "Warning: This is only tested up to macOS 10.13 (High Sierra).\n"
+if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[1234]\.' ; then
+    warn "Warning: This is only tested up to macOS 10.14 (Mojave).\n"
     notice "If you find that this works on a newer version of macOS, "
     notice "please update this message.\n"
 fi
