@@ -259,12 +259,12 @@ install_deps() {
 }
 
 install_and_setup_gcloud() {
+    version=236.0.0  # should match webapp's MAX_SUPPORTED_VERSION
     if ! which gcloud >/dev/null; then
         echo "Installing Google Cloud SDK (gcloud)"
         # On mac, we could alternately do `brew install google-cloud-sdk`,
         # but we need this code for linux anyway, so we might as well be
         # consistent across platforms; this also makes dotfiles simpler.
-        version=192.0.0  # should match webapp's MAX_SUPPORTED_VERSION
         platform="$(uname -s | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz)-$(uname -m)"
         gcloud_url="https://storage.googleapis.com/cloud-sdk-release/google-cloud-sdk-$version-$platform.tar.gz"
         local_archive_filename="/tmp/gcloud-$version.tar.gz"
@@ -286,6 +286,19 @@ install_and_setup_gcloud() {
         gcloud auth login
         gcloud auth application-default login
     fi
+
+    echo "Ensuring gcloud is up to date and has the right components."
+    gcloud components update --version="$version"
+    # The components we install:
+    # - app-engine-java: used by kotlin dev servers
+    # - app-engine-python: not strictly necessary (since we package it into
+    #   frankenserver) but potentially useful
+    # - bq: biquery tool used by webapp and many humans
+    # - cloud-datastore-emulator: used by all dev servers (or rather will be
+    #   "soon" as of March 2019)
+    # - gsutil: GCS client used by "make current.sqlite" and sometimes humans
+    gcloud components install app-engine-java app-engine-python \
+        bq cloud-datastore-emulator gsutil
 }
 
 download_db_dump() {
