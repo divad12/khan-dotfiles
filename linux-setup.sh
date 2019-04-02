@@ -95,6 +95,9 @@ EOF
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
+    # nodejs is used for various frontendy stuff in webapp, and
+    #   we standardize on version 8.
+    # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
         python-dev \
@@ -104,7 +107,7 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs \
+        nodejs=8* \
         nginx \
         curl
 
@@ -126,8 +129,9 @@ EOF
     if ! which npm >/dev/null 2>&1 ; then
         sudo apt-get install -y npm
     fi
-    # Make sure we have the most up-to-date version of npm
-    sudo npm install -g npm
+    # Make sure we have the preferred version of npm
+    # TODO(benkraft): Pull this version number from webapp somehow.
+    sudo npm install -g npm@5.6.0
 
     # Get the latest slack deb file and install it.
     if ! which slack >/dev/null 2>&1 ; then
