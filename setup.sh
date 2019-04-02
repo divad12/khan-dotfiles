@@ -294,7 +294,7 @@ install_and_setup_gcloud() {
     fi
 
     echo "Ensuring gcloud is up to date and has the right components."
-    gcloud components update --version="$version"
+    gcloud components update --quiet --version="$version"
     # The components we install:
     # - app-engine-java: used by kotlin dev servers
     # - app-engine-python: not strictly necessary (since we package it into
@@ -303,7 +303,7 @@ install_and_setup_gcloud() {
     # - cloud-datastore-emulator: used by all dev servers (or rather will be
     #   "soon" as of March 2019)
     # - gsutil: GCS client used by "make current.sqlite" and sometimes humans
-    gcloud components install app-engine-java app-engine-python \
+    gcloud components install --quiet app-engine-java app-engine-python \
         bq cloud-datastore-emulator gsutil
 }
 
