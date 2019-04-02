@@ -95,6 +95,7 @@ EOF
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
+    # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
         python-dev \
         pychecker python-mode python-setuptools python-pip python-virtualenv \
@@ -104,7 +105,8 @@ EOF
         libyaml-dev \
         libncurses-dev libreadline-dev \
         nodejs \
-        nginx
+        nginx \
+        curl
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
