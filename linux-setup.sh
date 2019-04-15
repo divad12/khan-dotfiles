@@ -166,18 +166,6 @@ EOF
     install_java
 }
 
-install_phantomjs() {
-    if ! which phantomjs >/dev/null || ! expr `phantomjs --version` : 2 >/dev/null; then
-        rm -rf /tmp/phantomjs /tmp/phantomjs.tbz
-        wget -O/tmp/phantomjs.tbz https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-        tar xOjf /tmp/phantomjs.tbz phantomjs-2.1.1-linux-x86_64/bin/phantomjs >/tmp/phantomjs
-        sudo install -m755 /tmp/phantomjs /usr/local/bin
-        which phantomjs >/dev/null
-    else
-        echo "phantomjs 2 already installed"
-    fi
-}
-
 install_protoc() {
     # We use protocol buffers in webapp's event log stream infrastructure. This
     # installs the protocol buffer compiler (which generates python & java code
@@ -256,7 +244,6 @@ echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
 install_packages
-install_phantomjs
 install_protoc
 setup_clock
 config_inotify

@@ -281,16 +281,6 @@ install_node() {
     fi
 }
 
-install_phantomjs() {
-    info "Checking for phantomjs\n"
-    if ! type phantomjs >/dev/null 2>&1 || ! expr `phantomjs --version` : 2 >/dev/null; then
-        brew uninstall --force phantomjs
-        brew cask install phantomjs
-    else
-        success "phantomjs 2.x already installed"
-    fi
-}
-
 install_nginx() {
     info "Checking for nginx\n"
     if ! type nginx >/dev/null 2>&1; then
@@ -434,7 +424,6 @@ install_homebrew
 install_slack
 update_git
 install_node
-install_phantomjs
 install_nginx
 install_image_utils
 install_helpful_tools
