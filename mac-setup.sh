@@ -315,8 +315,8 @@ install_helpful_tools() {
 install_java() {
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
-    if ! brew cask list |grep java8 >/dev/null 2>&1; then
-        brew cask install caskroom/versions/java8
+    if ! brew cask list | grep "java8\|jdk8" >/dev/null 2>&1; then
+        brew cask install adoptopenjdk8
     else
         success "java8 already installed"
     fi

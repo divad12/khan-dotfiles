@@ -23,13 +23,14 @@ DEVTOOLS_DIR="$REPOS_DIR/devtools"
 trap exit_warning EXIT   # from shared-functions.sh
 
 install_java() {
-    # On 16.04LTS or later we have openjdk-8, so install it directly.
+    # On 16.04LTS and some later versions we have openjdk-8, so install it directly.
     sudo apt-get install -y openjdk-8-jdk || {
-        # On ubuntu 14.04, we don't have java8, so we install it via ppa if the
-        # direct installation failed.
-        sudo add-apt-repository -y ppa:openjdk-r/ppa
+        # On more recent versions, use the Azul Systems binary distribution of OpenJDK 8,
+        # since Java 8 has been removed from the official packages.
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+        sudo apt-add-repository -y 'deb http://repos.azulsystems.com/ubuntu stable main'
         sudo apt-get update
-        sudo apt-get install -y openjdk-8-jdk
+        sudo apt-get install -y zulu-8
     }
     # We ask you to select a java version (interactively) in case you have more
     # than one installed.  If there's only one, it'll just select that version
@@ -141,6 +142,7 @@ EOF
             *) echo "WARNING: Cannot install slack: no client for `uname -m`";;
         esac
         if [ -n "$arch" ]; then
+            sudo apt-get install -y gconf2 gconf-service libgtk2.0-0 libappindicator1
             rm -rf /tmp/slack.deb
             deb_url="$(wget -O- https://slack.com/downloads/instructions/ubuntu | grep -o 'https.*\.deb' | head -n1)"
             if [ -n "$deb_url" ]; then
@@ -203,10 +205,10 @@ install_protoc() {
         # stringent the protobuf plugin requirements are on version.
         sudo add-apt-repository -y ppa:gophers/archive
         sudo apt-get update -qq -y
-        sudo apt-get install -y golang-1.9
-        # The ppa installs go into /usr/lib/go-1.9/bin/go
+        sudo apt-get install -y golang-1.11
+        # The ppa installs go into /usr/lib/go-1.11/bin/go
         # Let's link that to somewhere likely to be on $PATH
-        sudo ln -snf /usr/lib/go-1.9/bin/go /usr/local/bin/go
+        sudo ln -snf /usr/lib/go-1.11/bin/go /usr/local/bin/go
     else
         echo "golang already installed"
     fi
