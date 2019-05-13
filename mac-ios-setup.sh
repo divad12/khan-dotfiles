@@ -46,7 +46,6 @@ install_carthage
 install_fastlane
 install_homebrew_libraries
 install_yarn
-install_watchman
 install_react_native_dependencies
 
 update "Done! Complete setup instructions at \

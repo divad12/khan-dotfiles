@@ -342,6 +342,13 @@ install_protoc() {
     go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
+install_watchman() {
+    if ! which watchman ; then
+        update "Installing watchman..."
+        brew install watchman
+    fi
+}
+
 # To install some useful mac apps.
 install_mac_apps() {
   chosen_apps=() # When the user opts to install a package it will be added to this array.
@@ -429,6 +436,7 @@ install_image_utils
 install_helpful_tools
 install_java
 install_protoc
+install_watchman
 install_mac_apps
 
 trap - EXIT

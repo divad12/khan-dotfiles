@@ -26,13 +26,6 @@ install_yarn() {
     fi
 }
 
-install_watchman() {
-    if ! which watchman ; then
-        update "Installing watchman..."
-        brew install watchman
-    fi
-}
-
 install_react_native_dependencies() {
     if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
         update "Installing react-native dependencies..."

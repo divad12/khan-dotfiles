@@ -215,6 +215,22 @@ install_protoc() {
     go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
+install_watchman() {
+    if ! which watchman ; then
+        update "Installing watchman..."
+        kaclone_repo https://github.com/facebook/watchman.git "$REPOS_DIR/"
+        (
+            # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
+            cd "$REPOS_DIR/watchman"
+            sudo apt-get install -y autoconf automake build-essential python-dev
+            git checkout tags/v4.9.0
+            ./autogen.sh
+            make
+            sudo make install
+        )
+    fi
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -253,6 +269,7 @@ sudo sh -c 'echo Thanks'
 
 install_packages
 install_protoc
+install_watchman
 setup_clock
 config_inotify
 
