@@ -225,6 +225,7 @@ install_watchman() {
             sudo apt-get install -y autoconf automake build-essential python-dev
             git checkout tags/v4.9.0
             ./autogen.sh
+            ./configure
             make
             sudo make install
         )
