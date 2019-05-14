@@ -305,8 +305,10 @@ install_and_setup_gcloud() {
     # - cloud-datastore-emulator: used by all dev servers (or rather will be
     #   "soon" as of March 2019)
     # - gsutil: GCS client used by "make current.sqlite" and sometimes humans
+    # - pubsub-emulator: used in the devserver and for inter-service
+    #   communication
     gcloud components install --quiet app-engine-java app-engine-python \
-        bq cloud-datastore-emulator gsutil
+        bq cloud-datastore-emulator gsutil pubsub-emulator
 }
 
 download_db_dump() {
