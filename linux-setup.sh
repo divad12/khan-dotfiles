@@ -65,6 +65,14 @@ deb https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
 deb-src https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
+
+        # Pin nodejs to 8.x, otherwise apt will update it to 10.x on newer
+        # Ubuntu versions
+        cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
+Package: nodejs
+Pin: version 8.*
+Pin-Priority: 999
+EOF
         updated_apt_repo=yes
     fi
 
@@ -218,14 +226,21 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
-        kaclone_repo https://github.com/facebook/watchman.git "$REPOS_DIR/"
+        builddir="$DEVTOOLS_DIR/watchman/"
+        if [ ! -d "$builddir" ]; then
+            mkdir -p "$builddir"
+            git clone https://github.com/facebook/watchman.git "$builddir"
+        fi
+
         (
             # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
-            cd "$REPOS_DIR/watchman"
-            sudo apt-get install -y autoconf automake build-essential python-dev
+            cd "$builddir"
+            sudo apt-get install -y autoconf automake build-essential python-dev libtool libssl-dev
             git checkout tags/v4.9.0
             ./autogen.sh
-            ./configure
+            # --enable-lenient is required for newer versions of GCC, which is
+            # stricter with certain constructs.
+            ./configure --enable-lenient
             make
             sudo make install
         )
