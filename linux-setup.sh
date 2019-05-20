@@ -247,6 +247,24 @@ install_watchman() {
     fi
 }
 
+install_postgresql() {
+    # Instructions taken from
+    # https://pgdash.io/blog/postgres-11-getting-started.html
+    # Postgres 11 is not available in 18.04, so we need to add the pg apt repository.
+    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        | sudo apt-key add -
+
+    sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
+    sudo apt-get update
+    sudo apt-get install -y postgresql-11 postgresql-contrib libpq-dev
+
+    # Set up authentication to allow connections from the postgres user with no
+    # password. This matches the authentication setup that homebrew installs on
+    # a mac. Unlike a mac, we do not need to create a postgres user manually.
+    sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/11/main/pg_hba.conf"
+    sudo service postgresql restart
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -288,5 +306,6 @@ install_protoc
 install_watchman
 setup_clock
 config_inotify
+install_postgresql
 
 trap - EXIT

@@ -281,6 +281,25 @@ install_node() {
     fi
 }
 
+install_postgresql() {
+    if ! brew ls postgresql >/dev/null 2>&1; then
+        info "Installing postgresql\n"
+        brew install postgresql@11
+    else
+        success "postgresql already installed"
+    fi
+
+    # We create a postgres user locally that we use in test and dev.
+    if ! psql \
+      -tc "SELECT rolname from pg_catalog.pg_roles"  postgres \
+      | grep -c 'postgres' > /dev/null 2>&1 ; then
+        info "Creating postgres user for dev\n"
+        psql --quiet -c "CREATE ROLE postgres LOGIN SUPERUSER;" postgres;
+    else
+        success "postgres user already created"
+    fi
+}
+
 install_nginx() {
     info "Checking for nginx\n"
     if ! type nginx >/dev/null 2>&1; then
@@ -343,7 +362,7 @@ install_protoc() {
 }
 
 install_watchman() {
-    if ! which watchman ; then
+    if ! which watchman >/dev/null 2>&1; then
         update "Installing watchman..."
         brew install watchman
     fi
@@ -431,6 +450,7 @@ install_homebrew
 install_slack
 update_git
 install_node
+install_postgresql
 install_nginx
 install_image_utils
 install_helpful_tools

@@ -318,6 +318,13 @@ download_db_dump() {
     fi
 }
 
+create_pg_databases() {
+    if [ "$WEBAPP" = true ]; then
+        echo "Creating postgres databases"
+        ( cd "$REPOS_DIR/webapp" ; make pg_create )
+    fi
+}
+
 # Make sure we store userinfo so we can pass appropriately when ka-cloning.
 update_userinfo() {
     echo "Updating your git user info"
@@ -393,6 +400,7 @@ install_deps        # pre-reqs: clone_repos, install_and_setup_gcloud
 install_hooks       # pre-req: clone_repos
 setup_arc           # pre-req: clone_repos
 download_db_dump    # pre-req: install_deps
+create_pg_databases # pre-req: install_deps
 
 
 echo
