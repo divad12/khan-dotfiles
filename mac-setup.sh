@@ -285,6 +285,7 @@ install_postgresql() {
     if ! brew ls postgresql >/dev/null 2>&1; then
         info "Installing postgresql\n"
         brew install postgresql@11
+        brew services start postgresql
     else
         success "postgresql already installed"
     fi
