@@ -23,10 +23,7 @@ ANDROID_HOME=~/Library/Android
 . "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
 . "$DEVTOOLS_DIR"/khan-dotfiles/mobile-functions.sh
 
-# Ensure Java 7 and 8 are installed.
-# While Android doesn't support most of the features of Java 8, we use
-# retrolambda to give us the features of Java 8 lambdas. This requires
-# developers to have JDK 8 installed and set as their JDK.
+# Ensure Java 8 is installed.
 install_java8() {
     brew tap AdoptOpenJDK/openjdk
     brew cask install adoptopenjdk/openjdk/adoptopenjdk8
