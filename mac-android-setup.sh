@@ -28,8 +28,8 @@ ANDROID_HOME=~/Library/Android
 # retrolambda to give us the features of Java 8 lambdas. This requires
 # developers to have JDK 8 installed and set as their JDK.
 install_java8() {
-    brew tap caskroom/versions
-    brew cask install java8
+    brew tap AdoptOpenJDK/openjdk
+    brew cask install adoptopenjdk/openjdk/adoptopenjdk8
 }
 
 ensure_jdks() {
@@ -48,7 +48,7 @@ ensure_jdks() {
         echo "http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html"
     fi
 
-    if ! echo "$java_versions" | grep -q -e "Java SE 8"; then
+    if ! echo "$java_versions" | grep -q -e "Java SE 8" -e "AdoptOpenJDK 8"; then
         echo "Could not find JDK 8.Installing it ..."
         install_java8
     fi
@@ -119,6 +119,7 @@ link_sdk() {
 ensure_mac_os  # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 ensure_jdks
+configure_codestyle
 clone_mobile_repo
 install_android_sdk
 # TODO(hannah): We can't use install_android_studio because our app doesn't
