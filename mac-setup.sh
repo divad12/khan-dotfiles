@@ -362,6 +362,23 @@ install_protoc() {
     go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
+install_python_tools() {
+    # We use various python versions (e.g. internal-service)
+    # and use Pyenv, pipenv as environment manager
+    if ! brew ls pyenv >/dev/null 2>&1; then
+        info "Installing pyenv\n"
+        brew install pyenv
+    else
+        success "pyenv already installed"
+    fi
+    if ! brew ls pipenv >/dev/null 2>&1; then
+        info "Installing pipenv\n"
+        brew install pipenv
+    else
+        success "pipenv already installed"
+    fi
+}
+
 install_watchman() {
     if ! which watchman >/dev/null 2>&1; then
         update "Installing watchman..."
@@ -459,5 +476,6 @@ install_java
 install_protoc
 install_watchman
 install_mac_apps
+install_python_tools
 
 trap - EXIT
