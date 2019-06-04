@@ -264,6 +264,10 @@ install_deps() {
 
     echo "Installing yarn"
     sudo npm install -g yarn
+
+    # Used by various infra projects for managing python3 environment
+    echo "Installing pipenv"
+    pip install -q pipenv
 }
 
 install_and_setup_gcloud() {

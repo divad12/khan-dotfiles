@@ -307,6 +307,7 @@ install_watchman
 setup_clock
 config_inotify
 install_postgresql
-# TODO (boris): Setup pyenv and pipenv (see mac_setup:install_python_tools)
+# TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
+# https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 
 trap - EXIT

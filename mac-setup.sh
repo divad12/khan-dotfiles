@@ -371,12 +371,6 @@ install_python_tools() {
     else
         success "pyenv already installed"
     fi
-    if ! brew ls pipenv >/dev/null 2>&1; then
-        info "Installing pipenv\n"
-        brew install pipenv
-    else
-        success "pipenv already installed"
-    fi
 }
 
 install_watchman() {
