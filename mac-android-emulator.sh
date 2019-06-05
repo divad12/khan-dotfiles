@@ -104,7 +104,10 @@ launch_emulator() {
 
         # Say "no" to "Do you wish to create a custom hardware profile".
         # TODO(hannah): Allow the user to specify the AVD's hardware.
-        echo "no" | "$ANDROID_HOME/tools/bin/avdmanager" create avd --name "$name" --abi google_apis/"$abi" --package "system-images;android-$api;google_apis;$abi"
+        echo "no" | "$ANDROID_HOME/tools/bin/avdmanager" create avd \
+            --name "$name" \
+            --abi google_apis/"$abi" \
+            --package "system-images;android-$api;google_apis;$abi"
     else
         check_emulator_exists "$name"
     fi
@@ -183,6 +186,10 @@ install_apk() {
         update "Installing APK..."
         # Include -r so we re-install if necessary.
         adb install -r "$ANDROID_REPO"/app/build/outputs/apk/app-debug.apk
+
+        # Disables the annoying error when you launch for the first time
+        # where it asks if the app can draw over other apps!
+        adb shell 'appops set org.khanacademy.android.debug SYSTEM_ALERT_WINDOW allow'
     fi
 }
 

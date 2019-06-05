@@ -5,6 +5,7 @@ set -e -o pipefail
 # This file should be sourced from within a Bash-ish shell
 
 install_homebrew_libraries() {
+    update "Installing Homebrew dependencies..."
     # The mobile project requires these Homebrew packages
     brew install pkg-config cairo libpng jpeg giflib pango zopfli \
         getsentry/tools/sentry-cli
