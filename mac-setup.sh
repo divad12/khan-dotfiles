@@ -64,7 +64,7 @@ maybe_generate_ssh_keys () {
   # Create a public key if need be.
   info "Checking for ssh keys"
   mkdir -p ~/.ssh
-  if [ -e ~/.ssh/id_[rd]sa ]
+  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_dsa ]
   then
     success "Found existing ssh keys"
   else
