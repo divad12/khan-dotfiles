@@ -285,9 +285,20 @@ install_postgresql() {
     if ! brew ls postgresql >/dev/null 2>&1; then
         info "Installing postgresql\n"
         brew install postgresql@11
-        brew services start postgresql
     else
         success "postgresql already installed"
+    fi
+
+    # Make sure that postgres is started, so that we can create the user below,
+    # if necessary and so later steps in setup_webapp can connect to the db.
+    if ! brew services list | grep postgresql \
+                            | grep started > /dev/null 2>&1; then
+        info "Starting postgreql service\n"
+        brew services start postgresql > /dev/null 2>&1
+        # Give postgres a chance to start up before we connect to it on the next line
+        sleep 5
+    else
+        success "postgresql service already started"
     fi
 
     # We create a postgres user locally that we use in test and dev.
