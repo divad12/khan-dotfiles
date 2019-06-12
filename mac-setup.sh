@@ -166,11 +166,6 @@ install_gcc() {
             info "Otherwise, you can always visit developer.apple.com and grab 'em there.\n"
             exit 1
         fi
-        if sw_vers -productVersion | grep -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
-            # mac version is Mojave 10.14.*, install SDK headers
-            sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-            success "macOS_SDK_headers_for_macOS_10.14 installed"
-        fi
         if ! gcc --version >/dev/null 2>&1 ; then
             success "Installing command line developer tools"
             # Also, how did you get this dotfiles repo in 10.9 without
@@ -181,6 +176,19 @@ install_gcc() {
             exit 1
             # If this doesn't work for you, you can find the most recent
             # version here: https://developer.apple.com/downloads
+        fi
+        if sw_vers -productVersion | grep -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
+            # mac version is Mojave 10.14.*, install SDK headers
+            # The file "macOS_SDK_headers_for_macOS_10.14.pkg" is from
+            # xcode command line tools install
+            if [ -s /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg ]; then
+                sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+                success "macOS_SDK_headers_for_macOS_10.14 installed"
+            else
+                error "You don't have '/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg' in your local"
+                info "you can contact @dev-support to get it.\n"
+                exit 1
+            fi
         fi
     else
         success "Great, found gcc! (assuming we also have other recent devtools)"
