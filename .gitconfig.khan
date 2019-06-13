@@ -36,10 +36,10 @@
   # which-deploy: in which deploy did this commit first go out?
   # prev-deploy and next-deploy: what deploys came before and after this one?
   # when-deploy: when was this deploy completed?
-  which-deploy = "!f() { git tag --contains \"$@\" | grep '^gae-' | grep -v bad | head -n 1 | sed 's/gae-//'; }; f"
-  prev-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -B 1 gae-\"$1\" | head -n 1 | sed 's/gae-//'; }; f"
-  next-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -A 1 gae-\"$1\" | tail -n 1 | sed 's/gae-//'; }; f"
-  when-deploy = "!f() { git cat-file -p gae-\"$1\" | perl -nle 'print scalar localtime $1 if /^tagger .* (\\d+) \\S+$/'; }; f"
+  which-deploy = "!f() { git tag --contains \"$@\" | grep '^gae-' | grep -v bad | head -n 1; }; f"
+  prev-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -B 1 \"$1\" | head -n 1; }; f"
+  next-deploy = "!f() { git tag | grep '^gae-' | grep -v bad | grep -A 1 \"$1\" | tail -n 1; }; f"
+  when-deploy = "!f() { git cat-file -p \"$1\" | perl -nle 'print scalar localtime $1 if /^tagger .* (\\d+) \\S+$/'; }; f"
 
   # For after a commit fails with lint, and it says 'commit message saved...'
   recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
