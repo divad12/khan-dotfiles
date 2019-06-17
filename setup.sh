@@ -314,6 +314,10 @@ install_and_setup_gcloud() {
     # - beta: used for the command to start the pubsub emulator
     gcloud components install --quiet app-engine-java app-engine-python \
         bq cloud-datastore-emulator gsutil pubsub-emulator beta
+
+    # Turn off checking for updates automatically -- having gcloud always say
+    # "you can update!" is not useful when we don't want you to!
+    gcloud config set component_manager/disable_update_check true
 }
 
 download_db_dump() {
