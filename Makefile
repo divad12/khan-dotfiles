@@ -1,4 +1,5 @@
 install:
+	./git_sync.sh
 	$(MAKE) os-install
 	$(MAKE) common-install
 
