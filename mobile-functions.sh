@@ -19,14 +19,6 @@ clone_mobile_repo() {
     fi
 }
 
-# Yarn is used to manage our react-native dependencies.
-install_yarn() {
-    if ! which yarn ; then
-        update "Installing yarn..."
-        brew install yarn
-    fi
-}
-
 install_react_native_dependencies() {
     if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
         update "Installing react-native dependencies..."
