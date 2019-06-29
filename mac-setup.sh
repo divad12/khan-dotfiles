@@ -279,13 +279,22 @@ update_git() {
 }
 
 install_node() {
-    if ! brew ls node >/dev/null 2>&1; then
+    if ! which node >/dev/null 2>&1; then
+        # to break the dependence between node@8 and icu4c@63.x
+        # to uninstall icu4c@63.x before re-install node@8
+        # so node@8 will work with icu4c@64.x which installed from postgres@11
+        # https://khanacademy.slack.com/archives/C8Y4Q1E0J/p1560792688074600
+        if brew ls icu4c --versions | grep "icu4c 63"; then
+            brew uninstall --ignore-dependencies icu4c@63.1
+        fi
         # Install node 8: webapp doesn't (yet!) work with node 10.
         # (Node 8 is LTS.)
         brew install node@8
+
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force node@8
+        brew link --force --overwrite node@8
+
     fi
 }
 
@@ -293,6 +302,12 @@ install_postgresql() {
     if ! brew ls postgresql >/dev/null 2>&1; then
         info "Installing postgresql\n"
         brew install postgresql@11
+        # swtich icu4c to 64.2
+        # if default verison is 63.x and v64.2 was installed by postgres@11
+        if [ "$(brew ls icu4c --versions |grep "icu4c 63")" ] && \
+           [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
+           brew switch icu4c 64.2
+        fi
     else
         success "postgresql already installed"
     fi

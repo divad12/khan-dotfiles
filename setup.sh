@@ -439,4 +439,3 @@ echo "Then, to finish your setup, head back to the setup docs:"
 echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit#heading=h.z23mgzycm3j2"
 
 trap - EXIT
-f
