@@ -76,6 +76,20 @@ ensure_mac_os() {
     fi
 }
 
+# Mac-specific function to install Java JDK
+install_mac_java() {
+    # Determine which Java JDKs we have.
+    # If a non-Adopt Open JDK that is v1.8 (aka Java 8), that's ok!
+    java_versions=$( /usr/libexec/java_home --version "1.8" 2>&1)
+
+    if [ "$?" -ne 0 ]; then
+        echo "Installing Adopt Open JDK v8..."
+        brew install homebrew/cask-versions/adoptopenjdk8
+    else
+        echo "java8 already installed ($java_versions)"
+    fi
+}
+
 # If we exit unexpectedly, log this warning.
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
 # then "trap - EXIT" just before exiting on success.

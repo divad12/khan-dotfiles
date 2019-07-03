@@ -158,7 +158,7 @@ ssh_auth_loop() {
 }
 
 install_gcc() {
-    info "\nChecking for apple command line developer tools..."
+    info "\nChecking for Apple command line developer tools..."
     if ! gcc --version >/dev/null 2>&1 || [ ! -s /usr/include/stdio.h ]; then
         if sw_vers -productVersion | grep -e '^10\.[0-8]$' -e '^10\.[0-8]\.'; then
             warn "Command line tools are *probably available* for your Mac's OS, but..."
@@ -294,7 +294,6 @@ install_node() {
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
         brew link --force --overwrite node@8
-
     fi
 }
 
@@ -363,16 +362,6 @@ install_helpful_tools() {
         brew install coreutils
     else
         success "coreutils already installed"
-    fi
-}
-
-install_java() {
-    # We use java for our google cloud dataflow jobs that live in webapp
-    # (as well as in khan-linter for linting those jobs)
-    if ! brew cask list | grep "java8\|jdk8" >/dev/null 2>&1; then
-        brew cask install adoptopenjdk8
-    else
-        success "java8 already installed"
     fi
 }
 
@@ -500,7 +489,9 @@ install_postgresql
 install_nginx
 install_image_utils
 install_helpful_tools
-install_java
+# We use java for our google cloud dataflow jobs that live in webapp
+# (as well as in khan-linter for linting those jobs)
+install_mac_java
 install_protoc
 install_watchman
 install_mac_apps

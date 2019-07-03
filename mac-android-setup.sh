@@ -24,24 +24,6 @@ ANDROID_STUDIO_APP_PATH="/Applications/Android Studio.app"
 . "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
 . "$DEVTOOLS_DIR"/khan-dotfiles/mobile-functions.sh
 
-# Ensure Java 8 is installed.
-install_java8() {
-    brew tap AdoptOpenJDK/openjdk
-    brew cask install adoptopenjdk/openjdk/adoptopenjdk8
-}
-
-ensure_jdks() {
-    # Determine which Java JDKs we have.
-    java_versions=$( /usr/libexec/java_home --version "1.8" 2>&1)
-
-    if [ "$?" -ne 0 ]; then
-        echo "Could not find JDK 8. Installing it..."
-        install_java8
-    else
-        update "JDK 8 found ($java_versions)"
-    fi
-}
-
 # Ensure Android Studio is installed (or that the user does not want to install it).
 install_android_studio() {
     if [ ! -e "$ANDROID_STUDIO_APP_PATH" ]; then
@@ -117,7 +99,7 @@ install_android_sdk() {
         # so temporarily diable it.
         # while sleep 1; do echo "y"; done |
         # "$ANDROID_HOME"/sdk/tools/bin/sdkmanager --licenses
-    }
+    fi
 }
 
 ensure_mac_os  # Function defined in shared-functions.sh.
@@ -125,7 +107,7 @@ ensure_mac_os  # Function defined in shared-functions.sh.
 brew update # Make sure the Homebrew package DB is up to date
 
 # TODO(hannah): Ensure setup.sh has already been run.
-ensure_jdks
+install_mac_java
 clone_mobile_repo
 
 install_android_studio
