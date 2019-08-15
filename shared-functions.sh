@@ -90,6 +90,16 @@ install_mac_java() {
     fi
 }
 
+# Evaluates to truthy if go is installed and >1.12 (we need module
+# support).  Evaluates to falsey else.
+has_recent_go() {
+    which go >/dev/null || return 1
+    go_version=`go version`
+    go_major_version=`expr "$go_version" : '.*go\([0-9]*\)'`
+    go_minor_version=`expr "$go_version" : '.*go[0-9]*\.\([0-9]*\)'`
+    [ "$go_major_version" -gt 1 -o "$go_minor_version" -ge 12 ]
+}
+
 # If we exit unexpectedly, log this warning.
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
 # then "trap - EXIT" just before exiting on success.

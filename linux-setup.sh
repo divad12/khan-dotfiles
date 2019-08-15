@@ -39,6 +39,19 @@ install_java() {
     sudo update-alternatives --config javac
 }
 
+install_go() {
+    if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
+        sudo add-apt-repository -y ppa:longsleep/golang-backports
+        sudo apt-get update -qq -y
+        sudo apt-get install -y golang-1.12
+        # The ppa installs go into /usr/lib/go-1.12/bin/go
+        # Let's link that to somewhere likely to be on $PATH
+        sudo ln -snf /usr/lib/go-1.12/bin/go /usr/local/bin/go
+    else
+        echo "golang already installed"
+    fi
+}
+
 # NOTE: if you add a package here, check if you should also add it
 # to webapp's Dockerfile.
 install_packages() {
@@ -180,6 +193,9 @@ EOF
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
     install_java
+
+    # We use go for our code, going forward
+    install_go
 }
 
 install_protoc() {
@@ -188,14 +204,14 @@ install_protoc() {
     # from the protocol buffer definitions), as well as a go-based compiler
     # plugin that allows us to generate bigquery schemas as well.
 
-    if ! which protoc >/dev/null; then
+    if ! which protoc >/dev/null || ! protoc --version | grep -q 3.4.0; then
         # TODO(colin): I didn't see a good-looking ppa for the protbuf compiler.
         # Look a bit harder to see if there's a better way to keep this up to date?
         mkdir -p /tmp/protoc
-        wget -O/tmp/protoc/protoc-3.5.0.zip https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
+        wget -O/tmp/protoc/protoc-3.4.0.zip https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
         (
             cd /tmp/protoc
-            unzip protoc-3.5.0.zip
+            unzip protoc-3.4.0.zip
             # This puts the compiler itself into ./bin/protoc and several
             # definitions into ./include/google/**
             # we move them both into /usr/local
@@ -207,20 +223,6 @@ install_protoc() {
     else
         echo "protoc already installed"
     fi
-
-    if ! which go >/dev/null; then
-        # TODO(colin): should we check the version too? I don't know how
-        # stringent the protobuf plugin requirements are on version.
-        sudo add-apt-repository -y ppa:gophers/archive
-        sudo apt-get update -qq -y
-        sudo apt-get install -y golang-1.11
-        # The ppa installs go into /usr/lib/go-1.11/bin/go
-        # Let's link that to somewhere likely to be on $PATH
-        sudo ln -snf /usr/lib/go-1.11/bin/go /usr/local/bin/go
-    else
-        echo "golang already installed"
-    fi
-    go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
 install_watchman() {

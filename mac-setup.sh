@@ -297,6 +297,15 @@ install_node() {
     fi
 }
 
+install_go() {
+    if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
+        info "Installing go\n"
+        brew install go@1.12
+    else
+        success "go already installed"
+    fi
+}
+
 install_postgresql() {
     if ! brew ls postgresql >/dev/null 2>&1; then
         info "Installing postgresql\n"
@@ -365,6 +374,7 @@ install_helpful_tools() {
     fi
 }
 
+# TODO(csilvers): make sure we have the right version of protoc, somehow
 install_protoc() {
     # We use protocol buffers in webapp's event log stream infrastructure. This
     # installs the protocol buffer compiler (which generates python & java code
@@ -376,13 +386,6 @@ install_protoc() {
     else
         success "protoc already installed"
     fi
-    if ! brew ls go >/dev/null 2>&1; then
-        info "Installing go\n"
-        brew install go
-    else
-        success "go already installed"
-    fi
-    go get github.com/GoogleCloudPlatform/protoc-gen-bq-schema
 }
 
 install_python_tools() {
@@ -485,6 +488,7 @@ install_homebrew
 install_slack
 update_git
 install_node
+install_go
 install_postgresql
 install_nginx
 install_image_utils
