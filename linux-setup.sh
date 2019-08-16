@@ -213,11 +213,14 @@ install_protoc() {
             cd /tmp/protoc
             unzip protoc-3.4.0.zip
             # This puts the compiler itself into ./bin/protoc and several
-            # definitions into ./include/google/**
+            # definitions into ./include/google/protobuf/**
             # we move them both into /usr/local
             sudo install -m755 ./bin/protoc /usr/local/bin
-            sudo mv ./include/google /usr/local/include/
-            sudo chmod -R a+rX /usr/local/include/google
+            # Remove old versions of the includes, if they exist
+            sudo rm -rf /usr/local/include/google/protobuf || true
+            sudo mkdir -p /usr/local/include/google
+            sudo mv ./include/google/protobuf /usr/local/include/google/
+            sudo chmod -R a+rX /usr/local/include/google/protobuf
         )
         rm -fr /tmp/protoc
     else
