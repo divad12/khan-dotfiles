@@ -20,8 +20,6 @@ clone_mobile_repo() {
 }
 
 install_react_native_dependencies() {
-    if [ ! -d "$REPOS_DIR/mobile/react-native/node_modules" ]; then
-        update "Installing react-native dependencies..."
-        (cd "$REPOS_DIR/mobile/react-native"; yarn)
-    fi
+    update "Installing react-native dependencies..."
+    (cd "$REPOS_DIR/mobile/react-native"; yarn)
 }
