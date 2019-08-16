@@ -199,33 +199,9 @@ EOF
 }
 
 install_protoc() {
-    # We use protocol buffers in webapp's event log stream infrastructure. This
-    # installs the protocol buffer compiler (which generates python & java code
-    # from the protocol buffer definitions), as well as a go-based compiler
-    # plugin that allows us to generate bigquery schemas as well.
-
-    if ! which protoc >/dev/null || ! protoc --version | grep -q 3.4.0; then
-        # TODO(colin): I didn't see a good-looking ppa for the protbuf compiler.
-        # Look a bit harder to see if there's a better way to keep this up to date?
-        mkdir -p /tmp/protoc
-        wget -O/tmp/protoc/protoc-3.4.0.zip https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
-        (
-            cd /tmp/protoc
-            unzip protoc-3.4.0.zip
-            # This puts the compiler itself into ./bin/protoc and several
-            # definitions into ./include/google/protobuf/**
-            # we move them both into /usr/local
-            sudo install -m755 ./bin/protoc /usr/local/bin
-            # Remove old versions of the includes, if they exist
-            sudo rm -rf /usr/local/include/google/protobuf || true
-            sudo mkdir -p /usr/local/include/google
-            sudo mv ./include/google/protobuf /usr/local/include/google/
-            sudo chmod -R a+rX /usr/local/include/google/protobuf
-        )
-        rm -fr /tmp/protoc
-    else
-        echo "protoc already installed"
-    fi
+    # The linux and mac installation process is the same aside from the
+    # platform-dependent zip archive.
+    install_protoc_common https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
 }
 
 install_watchman() {

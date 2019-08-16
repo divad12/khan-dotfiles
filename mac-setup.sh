@@ -378,18 +378,17 @@ install_helpful_tools() {
     fi
 }
 
-# TODO(csilvers): make sure we have the right version of protoc, somehow
 install_protoc() {
-    # We use protocol buffers in webapp's event log stream infrastructure. This
-    # installs the protocol buffer compiler (which generates python & java code
-    # from the protocol buffer definitions), as well as a go-based compiler
-    # plugin that allows us to generate bigquery schemas as well.
-    if ! brew ls protobuf >/dev/null 2>&1; then
-        info "Installing protoc\n"
-        brew install protobuf
-    else
-        success "protoc already installed"
+    # If the user has a homebrew version of protobuf installed, uninstall it so
+    # we can manually install our own version in /usr/local.
+    if brew list | grep -q '^protobuf$'; then
+        info "Uninstalling homebrew version of protobuf\n"
+        brew uninstall protobuf
     fi
+
+    # The mac and linux installation process is the same from here on out aside
+    # from the platform-dependent zip archive.
+    install_protoc_common https://github.com/protocolbuffers/protobuf/releases/download/v3.4.0/protoc-3.4.0-osx-x86_64.zip
 }
 
 install_python_tools() {

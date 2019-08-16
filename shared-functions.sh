@@ -90,6 +90,48 @@ install_mac_java() {
     fi
 }
 
+install_protoc_common() {
+    # Platform independent installation of protoc.
+    # usage: install_protoc_common <zip_url>
+
+    # The URL of the protoc zip file is passed as the first argument to this
+    # function. This file is platform dependent.
+    zip_url=$1
+
+    # We use protocol buffers in webapp's event log stream infrastructure. This
+    # installs the protocol buffer compiler (which generates python & java code
+    # from the protocol buffer definitions), as well as a go-based compiler
+    # plugin that allows us to generate bigquery schemas as well.
+
+    if ! which protoc >/dev/null || ! protoc --version | grep -q 3.4.0; then
+        echo "Installing protoc"
+        mkdir -p /tmp/protoc
+        wget -O /tmp/protoc/protoc-3.4.0.zip "$zip_url"
+        # Change directories within a subshell so that we don't have to worry
+        # about changing back to the current directory when done.
+        (
+            cd /tmp/protoc
+            # This puts the compiler itself into ./bin/protoc and several
+            # definitions into ./include/google/protobuf we move them both
+            # into /usr/local.
+            unzip -q protoc-3.4.0.zip
+            # Move the protoc binary to the final location and set the
+            # permissions as needed.
+            sudo install -m755 ./bin/protoc /usr/local/bin
+            # Remove old versions of the includes, if they exist
+            sudo rm -rf /usr/local/include/google/protobuf
+            sudo mkdir -p /usr/local/include/google
+            # Move the protoc include files to the final location and set the
+            # permissions as needed.
+            sudo mv ./include/google/protobuf /usr/local/include/google/
+            sudo chmod -R a+rX /usr/local/include/google/protobuf
+        )
+        rm -rf /tmp/protoc
+    else
+        echo "protoc already installed"
+    fi
+}
+
 # Evaluates to truthy if go is installed and >1.12 (we need module
 # support).  Evaluates to falsey else.
 has_recent_go() {
