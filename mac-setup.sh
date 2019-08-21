@@ -300,7 +300,11 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        brew install go@1.12
+        if brew ls go >/dev/null 2>&1; then
+            brew upgrade go@1.12
+        else
+            brew install go@1.12
+        fi
     else
         success "go already installed"
     fi
