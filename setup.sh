@@ -279,7 +279,7 @@ install_deps() {
 }
 
 install_and_setup_gcloud() {
-    version=236.0.0  # should match webapp's MAX_SUPPORTED_VERSION
+    version=257.0.0  # should match webapp's MAX_SUPPORTED_VERSION
     if ! which gcloud >/dev/null; then
         echo "Installing Google Cloud SDK (gcloud)"
         # On mac, we could alternately do `brew install google-cloud-sdk`,
