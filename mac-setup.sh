@@ -305,6 +305,10 @@ install_go() {
         else
             brew install go@1.12
         fi
+
+        if [ -x $(hash go 2>/dev/null) ] && [ -d "/usr/local/opt/go@1.12/bin" ]; then
+            echo 'export PATH="/usr/local/opt/go@1.12/bin:$PATH"' >> ~/.bash_profile
+        fi
     else
         success "go already installed"
     fi
