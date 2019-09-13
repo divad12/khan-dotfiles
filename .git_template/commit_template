@@ -1,9 +1,15 @@
-<one-line summary, followed by blank line and full summary>
+<one-line summary>
 
-Test Plan:
+<full summary>
+
+Issue: <url or "none">
+
+Test plan:
 <see below>
 
 # --
+# For 'Issue:', A link (JIRA, Slack, etc) to the issue that
+#   drives this change or "none" if there isn't a link
 # For 'Test Plan:', list the commands you ran or process you
 #   followed to test this change.
 # If this commit is adding to an existing review, delete the
