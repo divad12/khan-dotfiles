@@ -57,3 +57,10 @@ fi
 # The default on OS X is 256; we increase it to 1024--the default value of
 # `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
 ulimit -S -n 1024
+
+# Using brew to install a version of go that isn't the latest can
+# result in it not ending up on the path. Try to fix if so.
+# TODO (davidbraley) When lastest version of go is in use, this can be removed
+if ! which go >/dev/null 2>&1 && [ -d "/usr/local/opt/go@1.12/bin" ]; then
+    export PATH="/usr/local/opt/go@1.12/bin:$PATH"
+fi

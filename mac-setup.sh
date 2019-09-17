@@ -300,14 +300,11 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
+        # TODO (davidbraley) When go 1.13 or later is supported, update here AND in .bash_profile.khan
         if brew ls go >/dev/null 2>&1; then
             brew upgrade go@1.12
         else
             brew install go@1.12
-        fi
-
-        if [ -x $(hash go 2>/dev/null) ] && [ -d "/usr/local/opt/go@1.12/bin" ]; then
-            echo 'export PATH="/usr/local/opt/go@1.12/bin:$PATH"' >> ~/.bash_profile
         fi
     else
         success "go already installed"
@@ -379,6 +376,16 @@ install_helpful_tools() {
         brew install coreutils
     else
         success "coreutils already installed"
+    fi
+}
+
+install_wget() {
+    info "Checking for wget\n"
+    if ! which wget  >/dev/null 2>&1; then
+        info "Installing wget\n"
+        brew install wget
+    else
+        success "wget already installed"
     fi
 }
 
@@ -492,6 +499,7 @@ maybe_generate_ssh_keys
 register_ssh_keys
 install_gcc
 install_homebrew
+install_wget
 install_slack
 update_git
 install_node
