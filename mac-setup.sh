@@ -306,6 +306,10 @@ install_go() {
         else
             brew install go@1.12
         fi
+        # .bash_profile will add go's directory to $PATH but only if
+        # the path exists.  It didn't exist until this brew
+        # install/upgrade so let's manually add it to the path now!
+        export PATH="/usr/local/opt/go@1.12/bin:$PATH"
     else
         success "go already installed"
     fi
