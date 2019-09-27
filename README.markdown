@@ -46,7 +46,7 @@ A few notes to keep in mind:
 
 - If you make nontrivial changes to the setup script, make sure to
   test them!  The best way is to run the script on a blank VM, and
-  check that `make quickcheck` passes.  See
+  check that `make check MAX_TEST_SIZE=tiny` passes.  See
   [EngDocs](https://docs.google.com/document/d/1KU70sbXOltXeS21DjoW_NpMfiHbrm_aONyZidA921lE/edit)
   for instructions on VM setup.
 - Make sure to keep the script idempotent!  Running it on a working
