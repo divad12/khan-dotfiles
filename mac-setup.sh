@@ -168,16 +168,16 @@ install_gcc() {
         fi
         if ! gcc --version >/dev/null 2>&1 ; then
             success "Installing command line developer tools"
+            # If enter is pressed before its done, not a big deal, but it'll just loop to the same place.
+            success "You'll want to wait until the xcode install is complete to press Enter again."
             # Also, how did you get this dotfiles repo in 10.9 without
             # git auto-triggering the command line tools install process??
             xcode-select --install
-            warn "The dotfile setup is stopping now."
-            warn "When the install finishes, rerun ${tty_bold}make${tty_normal} to continue. (sorry)"
-            exit 1
+            exec sh ./mac-setup.sh
             # If this doesn't work for you, you can find the most recent
             # version here: https://developer.apple.com/downloads
         fi
-        if sw_vers -productVersion | grep -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
+        if sw_vers -productVersion | grep -q -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
             # mac version is Mojave 10.14.*, install SDK headers
             # The file "macOS_SDK_headers_for_macOS_10.14.pkg" is from
             # xcode command line tools install
@@ -185,9 +185,12 @@ install_gcc() {
                 sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
                 success "macOS_SDK_headers_for_macOS_10.14 installed"
             else
-                error "You don't have '/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg' in your local"
-                info "you can contact @dev-support to get it.\n"
-                exit 1
+                success "Updating your command line tools"
+                # If enter is pressed before its done, not a big deal, but it'll just loop to the same place.
+                success "You'll want to wait until the xcode install is complete to press Enter again."
+                sudo rm -rf /Library/Developer/CommandLineTools
+                xcode-select --install
+                exec sh ./mac-setup.sh
             fi
         fi
     else
