@@ -46,7 +46,7 @@ install_go() {
         sudo apt-get install -y golang-1.12
         # The ppa installs go into /usr/lib/go-1.12/bin/go
         # Let's link that to somewhere likely to be on $PATH
-        sudo ln -snf /usr/lib/go-1.12/bin/go /usr/local/bin/go
+        sudo cp -sf /usr/lib/go-1.12/bin/* /usr/local/bin/
     else
         echo "golang already installed"
     fi
