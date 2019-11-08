@@ -300,16 +300,16 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        # TODO (davidbraley) When go 1.13 or later is supported, update here AND in .bash_profile.khan
+        # TODO (davidbraley) Update when go 1.13 or later is supported
         if brew ls go >/dev/null 2>&1; then
             brew upgrade go@1.12
         else
             brew install go@1.12
         fi
-        # .bash_profile will add go's directory to $PATH but only if
-        # the path exists.  It didn't exist until this brew
-        # install/upgrade so let's manually add it to the path now!
-        export PATH="/usr/local/opt/go@1.12/bin:$PATH"
+
+        # Brew doesn't link non-latest versions of go on install. This command
+        # fixes that, telling the system that this is the go executable to use
+        brew link --force --overwrite go@1.12
     else
         success "go already installed"
     fi
