@@ -39,6 +39,11 @@ if [ `uname -s` = Darwin ]; then
         ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future $ARCHFLAGS"
         export CPPFLAGS CFLAGS ARCHFLAGS
     fi
+
+    # Link openssl into build flags
+    export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
+    export CPPFLAGS="-I/usr/local/opt/openssl/include $CPPFLAGS"
+
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
 fi

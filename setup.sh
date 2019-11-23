@@ -254,6 +254,17 @@ install_deps() {
     # Activate the virtualenv.
     . ~/.virtualenv/khan27/bin/activate
 
+    # On OSX 10.15, we need to install an older version of readline
+    #  so that when pip will not install the latest, which results
+    #  in a library error trying to load readline/libreadline.a
+    # This must be done after installing the virtualenv.
+    if [ "`uname -s`" == "Darwin" ] && sw_vers -productVersion | grep -q -e '^10\.15\.'; then
+        echo "On OSX 10.15 - Installing readline 6.2.0"
+        if [ -z $(pip --disable-pip-version-check freeze | grep readline) ] ; then
+            pip install https://pypi.python.org/packages/source/r/readline/readline-6.2.0.tar.gz
+        fi
+    fi
+
     # Inspiration from this slack discussion
     # https://khanacademy.slack.com/archives/C0918TZ5G/p1560899833202100
     # In general, need to pin npm to V6.4.1

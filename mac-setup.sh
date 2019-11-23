@@ -316,7 +316,7 @@ install_go() {
 }
 
 install_postgresql() {
-    if ! brew ls postgresql >/dev/null 2>&1; then
+    if ! brew ls postgresql >/dev/null 2>&1 && ! brew ls postgresql@11 >/dev/null 2>&1 ; then
         info "Installing postgresql\n"
         brew install postgresql@11
         # swtich icu4c to 64.2
@@ -325,6 +325,10 @@ install_postgresql() {
            [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
            brew switch icu4c 64.2
         fi
+
+        # Brew doesn't link non-latest versions on install. This command fixes that
+        # allowing postgresql and commads like psql to be found
+        brew link --force postgresql@11
     else
         success "postgresql already installed"
     fi
@@ -334,7 +338,7 @@ install_postgresql() {
     if ! brew services list | grep postgresql \
                             | grep started > /dev/null 2>&1; then
         info "Starting postgreql service\n"
-        brew services start postgresql > /dev/null 2>&1
+        brew services start postgresql@11 2>&1
         # Give postgres a chance to start up before we connect to it on the next line
         sleep 5
     else
@@ -391,6 +395,30 @@ install_wget() {
     else
         success "wget already installed"
     fi
+}
+
+install_openssl() {
+    info "Checking for openssl\n"
+    if ! which openssl  >/dev/null 2>&1; then
+        info "Installing openssl\n"
+        brew install openssl
+    else
+        success "openssl already installed"
+    fi
+    for source in $(brew --prefix openssl)/lib/*.dylib ; do
+        dest="/usr/local/lib/$(basename $source)"
+        # if dest is already a symlink pointing to the correct source, skip it
+        if [ -h "$dest" -a "$(readlink "$dest")" = "$source" ]; then
+            :
+        # else if dest already exists, warn user and skip dotfile
+        elif [ -e "$dest" ]; then
+            warn "Not symlinking to $dest because it already exists."
+        # otherwise, verbosely symlink the file (with --force)
+        else
+            info "Symlinking $(basename $source) "
+            ln -sfvn "$source" "$dest"
+        fi
+    done
 }
 
 install_protoc() {
@@ -474,8 +502,8 @@ install_mac_apps() {
 echo
 success "Running Khan Installation Script 1.2\n"
 
-if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[1234]\.' ; then
-    warn "Warning: This is only tested up to macOS 10.14 (Mojave).\n"
+if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[12345]\.' ; then
+    warn "Warning: This is only tested up to macOS 10.15 (Catalina).\n"
     notice "If you find that this works on a newer version of macOS, "
     notice "please update this message.\n"
 fi
@@ -504,6 +532,7 @@ register_ssh_keys
 install_gcc
 install_homebrew
 install_wget
+install_openssl
 install_slack
 update_git
 install_node
