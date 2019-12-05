@@ -43,10 +43,10 @@ install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         sudo add-apt-repository -y ppa:longsleep/golang-backports
         sudo apt-get update -qq -y
-        sudo apt-get install -y golang-1.12
-        # The ppa installs go into /usr/lib/go-1.12/bin/go
+        sudo apt-get install -y golang-1.13
+        # The ppa installs go into /usr/lib/go-1.13/bin/go
         # Let's link that to somewhere likely to be on $PATH
-        sudo cp -sf /usr/lib/go-1.12/bin/* /usr/local/bin/
+        sudo cp -sf /usr/lib/go-1.13/bin/* /usr/local/bin/
     else
         echo "golang already installed"
     fi

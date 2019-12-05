@@ -300,16 +300,15 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        # TODO (davidbraley) Update when go 1.13 or later is supported
         if brew ls go >/dev/null 2>&1; then
-            brew upgrade go@1.12
+            brew upgrade go@1.13
         else
-            brew install go@1.12
+            brew install go@1.13
         fi
 
         # Brew doesn't link non-latest versions of go on install. This command
         # fixes that, telling the system that this is the go executable to use
-        brew link --force --overwrite go@1.12
+        brew link --force --overwrite go@1.13
     else
         success "go already installed"
     fi
