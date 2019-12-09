@@ -132,14 +132,19 @@ install_protoc_common() {
     fi
 }
 
-# Evaluates to truthy if go is installed and >=1.13.  Evaluates to falsey else.
-# For grep: golang-1.13 go@1.13
+DESIRED_GO_MAJOR_VERISON=1
+DESIRED_GO_MINOR_VERISON=13
+DESIRED_GO_VERSION="$DESIRED_GO_MAJOR_VERISON.$DESIRED_GO_MINOR_VERISON"
+
+# Evaluates to truthy if go is installed and
+# >=$DESIRED_GO_VERSION.  Evaluates to falsey else.
 has_recent_go() {
     which go >/dev/null || return 1
     go_version=`go version`
     go_major_version=`expr "$go_version" : '.*go\([0-9]*\)'`
     go_minor_version=`expr "$go_version" : '.*go[0-9]*\.\([0-9]*\)'`
-    [ "$go_major_version" -gt 1 -o "$go_minor_version" -ge 13 ]
+    [ "$go_major_version" -gt "$DESIRED_GO_MAJOR_VERISON" \
+        -o "$go_minor_version" -ge "$DESIRED_GO_MINOR_VERISON" ]
 }
 
 # If we exit unexpectedly, log this warning.
