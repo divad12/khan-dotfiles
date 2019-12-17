@@ -314,8 +314,20 @@ install_go() {
     fi
 }
 
+# Gets the name brew uses to refer to postgresql 11, or NONE if not isntalled
+recent_postgresql_brewname() {
+    if brew ls postgresql@11 >/dev/null 2>&1 ; then
+        echo "postgresql@11"
+    elif brew ls postgresql --versions >/dev/null 2>&1 | grep "\s11\.\d" ; then
+        echo "postgresql"
+    else
+        echo "NONE"
+    fi
+}
+
 install_postgresql() {
-    if ! brew ls postgresql >/dev/null 2>&1 && ! brew ls postgresql@11 >/dev/null 2>&1 ; then
+    pg11_brewname="$(recent_postgresql_brewname)"
+    if [ "$pg11_brewname" = "NONE" ] ; then
         info "Installing postgresql\n"
         brew install postgresql@11
         # swtich icu4c to 64.2
@@ -327,17 +339,18 @@ install_postgresql() {
 
         # Brew doesn't link non-latest versions on install. This command fixes that
         # allowing postgresql and commads like psql to be found
-        brew link --force postgresql@11
+        brew link --force --overwrite postgresql@11
+        pg11_brewname="postgresql@11"
     else
         success "postgresql already installed"
     fi
 
     # Make sure that postgres is started, so that we can create the user below,
     # if necessary and so later steps in setup_webapp can connect to the db.
-    if ! brew services list | grep postgresql \
+    if ! brew services list | grep "$pg11_brewname" \
                             | grep started > /dev/null 2>&1; then
         info "Starting postgreql service\n"
-        brew services start postgresql@11 2>&1
+        brew services start "$pg11_brewname" 2>&1
         # Give postgres a chance to start up before we connect to it on the next line
         sleep 5
     else
