@@ -9,3 +9,6 @@ os-install:
 
 common-install:
 	./setup.sh
+
+virtualenv:
+	./rebuild_virtualenv.sh
