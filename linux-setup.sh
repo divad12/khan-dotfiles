@@ -119,6 +119,7 @@ EOF
     # nginx is used as a devserver proxy that serves static files
     # nodejs is used for various frontendy stuff in webapp, and
     #   we standardize on version 8.
+    # redis is needed to run memorystore on dev
     # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
@@ -131,6 +132,7 @@ EOF
         libncurses-dev libreadline-dev \
         nodejs=8* \
         nginx \
+        redis-server \
         curl
 
     # There are two different php packages, depending on if you're on Ubuntu

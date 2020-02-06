@@ -347,8 +347,7 @@ install_postgresql() {
 
     # Make sure that postgres is started, so that we can create the user below,
     # if necessary and so later steps in setup_webapp can connect to the db.
-    if ! brew services list | grep "$pg11_brewname" \
-                            | grep started > /dev/null 2>&1; then
+    if ! brew services list | grep "$pg11_brewname" | grep -q started; then
         info "Starting postgreql service\n"
         brew services start "$pg11_brewname" 2>&1
         # Give postgres a chance to start up before we connect to it on the next line
@@ -375,6 +374,23 @@ install_nginx() {
         brew install nginx
     else
         success "nginx already installed"
+    fi
+}
+
+install_redis() {
+    info "Checking for redis\n"
+    if ! type redis-cli >/dev/null 2>&1; then
+        info "Installing redis\n"
+        brew install redis
+    else
+        success "redis already installed"
+    fi
+
+    if ! brew services list | grep redis | grep -q started; then
+        info "Starting redis service\n"
+        brew services start redis 2>&1
+    else
+        success "redis service already started"
     fi
 }
 
@@ -551,6 +567,7 @@ install_node
 install_go
 install_postgresql
 install_nginx
+install_redis
 install_image_utils
 install_helpful_tools
 # We use java for our google cloud dataflow jobs that live in webapp
