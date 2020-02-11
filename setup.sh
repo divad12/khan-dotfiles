@@ -244,7 +244,7 @@ install_deps() {
 
     # Install virtualenv.
     # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    sudo pip install -q virtualenv
+    sudo pip install -q virtualenv==v16.7.9
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 

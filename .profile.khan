@@ -43,6 +43,7 @@ if [ `uname -s` = Darwin ]; then
     # Link openssl into build flags
     export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
     export CPPFLAGS="-I/usr/local/opt/openssl/include $CPPFLAGS"
+    export CFLAGS="-I/usr/local/include -L/usr/local/lib $CFLAGS"
 
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
