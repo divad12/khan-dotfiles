@@ -111,8 +111,8 @@ install_dotfiles() {
     # TODO(benkraft): Add more specific instructions for other common shells,
     # or just write dotfiles for them.
     shell="`basename "$SHELL"`"
-    if [ "$shell" != bash ] && [ -z "$VIRTUAL_ENV" ] ; then
-        add_fatal_error "Your default shell is $shell, not bash, so you'll" \
+    if [ -z "$VIRTUAL_ENV" ] && [ "$shell" != bash ] && [ "$shell" != zsh ]; then
+        add_fatal_error "Your default shell is $shell, not bash or zsh, so you'll" \
                         "need to update its config manually to activate our" \
                         "virtualenv. You can follow the instructions at" \
                         "khanacademy.org/r/virtualenvs to create a new" \

@@ -541,9 +541,9 @@ notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
 notice "the next step (including this one)"
 
-if ! echo "$SHELL" | grep -q '/bash$' ; then
+if ! echo "$SHELL" | grep -q -e '/bash$' -e '/zsh$' ; then
     echo
-    warn "It looks like you're using a shell other than bash!"
+    warn "It looks like you're using a shell other than bash or zsh!"
     notice "Other shells are not officially supported.  Most things"
     notice "should work, but dev-support help is not guaranteed."
 fi

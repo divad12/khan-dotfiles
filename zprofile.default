@@ -1,0 +1,7 @@
+################################################################################
+# Local .zprofile.
+# Feel free to add whatever you like after the profile.khan' line.
+
+if [ -s ~/.zprofile.khan ]; then
+    . ~/.zprofile.khan
+fi
