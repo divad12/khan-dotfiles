@@ -280,20 +280,18 @@ update_git() {
 
 install_node() {
     if ! which node >/dev/null 2>&1; then
-        # to break the dependence between node@8 and icu4c@63.x
-        # to uninstall icu4c@63.x before re-install node@8
-        # so node@8 will work with icu4c@64.x which installed from postgres@11
-        # https://khanacademy.slack.com/archives/C8Y4Q1E0J/p1560792688074600
-        if brew ls icu4c --versions | grep "icu4c 63"; then
-            brew uninstall --ignore-dependencies icu4c@63.1
-        fi
-        # Install node 8: webapp doesn't (yet!) work with node 10.
-        # (Node 8 is LTS.)
-        brew install node@8
+        # Install node 10: webapp doesn't (yet!) work with node 12.
+        # (Node 10 is LTS.)
+        brew install node@10
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force --overwrite node@8
+        brew link --force --overwrite node@10
+    fi
+    if ! which yarn >/dev/null 2>&1; then
+        # Using brew to install node 10 seems to prevent npm from
+        # correctly installing yarn. Use brew instead
+        brew install yarn
     fi
 }
 
@@ -468,6 +466,13 @@ install_python_tools() {
     if ! brew ls pyenv >/dev/null 2>&1; then
         info "Installing pyenv\n"
         brew install pyenv
+        # At the moment, we depend on MacOS coming with python 2.7. If that
+        # stops, or we want to align the python versions with the linux
+        # dotfiles more effectively, we could do it with pyenv:
+        # `pyenv install 2.7.16 ; pyenv global 2.7.16`
+        # Because the linux dotfiles do not yet install pyenv, holding off on
+        # using pyenv to enforce python version until either that happens, or
+        # MacOs stops including python 2.7 by default.
     else
         success "pyenv already installed"
     fi
