@@ -1,13 +1,12 @@
 ################################################################################
-# Khan Academy specific .bash_profile
+# Khan Academy specific .zprofile
 #
-# The difference between .bash_profile and .profile is that the latter
-# is called for all sh-compatible shells.  So we put bashisms here
-# and non-bashisms in .profile.
+# The difference between .zprofile and .profile is that the latter
+# is called for all sh-compatible shells.  So we put zshisms here
+# and non-zshisms in .profile.
 #
-# According to the bash manpage, if both .bash_profile and .profile
-# exist, bash only reads the first one.  So we have to source .profile
-# manually.
+# The zsh shell does not load .profile itself, so we have to source
+# .profile here.
 
 if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
    # We check and then set this environment variable to ensure that we source
@@ -22,8 +21,8 @@ unset KA_DOTFILES_PROFILE_SOURCED
 
 # Figure out what directory we're *really* in (following symlinks).
 # We need this because *-completion.bash are siblings to this script.
-# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
-SOURCE="${BASH_SOURCE[0]}"
+# https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
+SOURCE="${(%):-%N}"
 while [ -h "$SOURCE" ]; do   # follow symlinks
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   SOURCE="$(readlink "$SOURCE")"
@@ -31,8 +30,10 @@ while [ -h "$SOURCE" ]; do   # follow symlinks
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-# Enable autocompletion for git
+# Enable autocompletion for git. Should use git-completion.zsh, but it seems problematic on mac
+autoload -Uz compinit && compinit
 source "$DIR/git-completion.bash"
+
 # Similarly for gcloud, if available
 if ! which gcloud >/dev/null; then
     GCLOUD_COMPLETION_FILE="$(basename "$(basename gcloud)")/completion.bash.inc"
