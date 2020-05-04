@@ -8,9 +8,6 @@
 # Add frankenserver bins to PATH
 export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
 
-# Add our go-binaries home to PATH
-export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
-
 # Add devtools bins to PATH
 # TODO(mroth): rewrite these paths at install time based on user preference
 KA_DEVROOT="$HOME/khan/devtools"
@@ -19,6 +16,11 @@ export PATH="$KA_DEVROOT/git-workflow/bin:$PATH"
 export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
+
+# Add our go-binaries home to PATH.
+# TODO(csilvers): move this back above the devtools ones after we get
+# rid of khan-linter.
+export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}
