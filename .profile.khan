@@ -8,6 +8,9 @@
 # Add frankenserver bins to PATH
 export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
 
+# Add our go-binaries home to PATH
+export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
+
 # Add devtools bins to PATH
 # TODO(mroth): rewrite these paths at install time based on user preference
 KA_DEVROOT="$HOME/khan/devtools"
