@@ -182,8 +182,16 @@ install_gcc() {
             # The file "macOS_SDK_headers_for_macOS_10.14.pkg" is from
             # xcode command line tools install
             if [ -s /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg ]; then
-                sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-                success "macOS_SDK_headers_for_macOS_10.14 installed"
+                # This command isn't guaranteed to work. If it fails, just warn
+                # the user there may be problems and advise they contact 
+                # @dev-support if so.
+                if sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target / ; then
+                    success "macOS_SDK_headers_for_macOS_10.14 installed"
+                else
+                    warn "We're not able to determine if stdio.h is able to be used by compilers correctly on your system."
+                    warn "Please reach out to @dev-support if you encounter errors indicating this is a problem while building code or dependencies."
+                    warn "You may be able to get more information about the setup by running ${tty_bold}gcc -v${tty_normal}"
+                fi
             else
                 success "Updating your command line tools"
                 # If enter is pressed before its done, not a big deal, but it'll just loop to the same place.
@@ -250,8 +258,7 @@ install_homebrew() {
 }
 
 update_git() {
-    if ! git --version | grep -q -e 'version 1.[89]' \
-                                 -e 'version 2'; then
+    if ! git --version | grep -q -e 'version 2\.[2-9][0-9]\.'; then
         echo "Installing an updated version of git using Homebrew"
         echo "Current version is `git --version`"
 
@@ -264,17 +271,14 @@ update_git() {
         fi
 
         # Check git version again
-        if ! git --version | grep -q -e 'version 1.[89]' \
-                                     -e 'version 2'; then
-            echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
-            read -p "Press enter to continue..."
+        if ! git --version | grep -q -e 'version 2\.[2-9][0-9]\.'; then
+            if ! brew ls --versions git | grep -q -e 'git 2\.[2-9][0-9]\.' ; then
+                echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
+                read -p "Press enter to continue..."
+            else 
+                echo "Git has been updated correctly, but will require restarting your terminal to take effect."
+            fi
         fi
-    fi
-    # Some code, such as tools/diagnose_js_packages.py, uses pcre-grep.
-    # (Search for `perl_regexp` in webapp to see a complete list.)
-    if ! git grep -P -l . >/dev/null; then
-        echo "Updating git to be able to use PCRE."
-        brew reinstall --with-pcre2 git
     fi
 }
 
@@ -287,6 +291,19 @@ install_node() {
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
         brew link --force --overwrite node@10
+    fi
+    # We don't want to force usage of node v10, but we want to make clear we don't support it
+    if ! node --version | grep "v10" >/dev/null ; then 
+        notice "Your version of node is $(node --version). We currently only support v10."
+        if brew ls --versions node@10 >/dev/null ; then
+            notice "You do however have node 10 installed."
+            notice "Consider running:"
+        else
+            notice "Consider running:"
+            notice "\t${tty_bold}brew install node@10${tty_normal}"
+        fi
+        notice "\t${tty_bold}brew link --force --overwrite node@10${tty_normal}"
+        read -p "Press enter to continue..."
     fi
     if ! which yarn >/dev/null 2>&1; then
         # Using brew to install node 10 seems to prevent npm from
