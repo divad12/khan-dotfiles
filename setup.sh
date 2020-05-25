@@ -389,7 +389,7 @@ setup_arc() {
         read
         # This is added to PATh by dotfiles, but those may not be sourced yet.
         PATH="$DEVTOOLS_DIR/arcanist/khan-bin:$PATH"
-        arc install-certificate https://phabricator.khanacademy.org
+        arc install-certificate -- https://phabricator.khanacademy.org
     fi
 }
 
