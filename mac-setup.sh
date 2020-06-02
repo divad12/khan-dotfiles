@@ -225,17 +225,6 @@ install_homebrew() {
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     else
         success "Great! Mac homebrew already installed!"
-        info "Verifying homebrew is in a good state...\n"
-        if ! brew doctor; then
-            warn "Oh no! 'brew doctor' reported some warnings."
-            info "These warnings may cause you trouble, but they are likely harmless.\n"
-            read -r -p "Onward? [Y/n] " response
-            case "$response" in
-                [nN][oO]|[nN])
-                    exit 1
-                    ;;
-            esac
-        fi
     fi
     success "Updating (but not upgrading) Homebrew"
     brew update > /dev/null

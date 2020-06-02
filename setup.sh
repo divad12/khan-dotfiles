@@ -237,7 +237,7 @@ clone_repos() {
 install_deps() {
     echo "Installing virtualenv and any global dependencies"
     # pip is a nicer installer/package manager than easy-install.
-    if ! which pip >/dev/null; then
+    if ! pip --version >/dev/null 2>&1 ; then
         sudo easy_install --quiet pip
     fi
 
