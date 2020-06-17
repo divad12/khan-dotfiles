@@ -230,10 +230,10 @@ install_homebrew() {
     brew update > /dev/null
 
     # Install homebrew-cask, so we can use it manage installing binary/GUI apps
-    brew tap caskroom/cask
+    # brew tap caskroom/cask
 
     # Likely need an alternate versions of Casks in order to install chrome-canary
-    brew tap caskroom/versions
+    brew tap homebrew/cask-versions
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
