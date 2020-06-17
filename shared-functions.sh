@@ -132,14 +132,49 @@ install_protoc_common() {
     fi
 }
 
-# Evaluates to truthy if go is installed and >1.12 (we need module
-# support).  Evaluates to falsey else.
+DESIRED_GO_MAJOR_VERISON=1
+DESIRED_GO_MINOR_VERISON=13
+DESIRED_GO_VERSION="$DESIRED_GO_MAJOR_VERISON.$DESIRED_GO_MINOR_VERISON"
+
+# Evaluates to truthy if go is installed and
+# >=$DESIRED_GO_VERSION.  Evaluates to falsey else.
 has_recent_go() {
     which go >/dev/null || return 1
     go_version=`go version`
     go_major_version=`expr "$go_version" : '.*go\([0-9]*\)'`
     go_minor_version=`expr "$go_version" : '.*go[0-9]*\.\([0-9]*\)'`
-    [ "$go_major_version" -gt 1 -o "$go_minor_version" -ge 12 ]
+    [ "$go_major_version" -gt "$DESIRED_GO_MAJOR_VERISON" \
+        -o "$go_minor_version" -ge "$DESIRED_GO_MINOR_VERISON" ]
+}
+
+
+# Creates a webapp virtualenv in $1, if none exists, then activates it.
+#
+# Assumes pip and virtualenv are already installed.  Note this also
+# pre-installs the correct readline on OS X -- see comments below.
+#
+# Arguments:
+#   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
+create_and_activate_virtualenv() {
+    if [ ! -d "$1" ]; then
+        # Note that --no-site-packages is the default on recent virtualenv,
+        # but we specify in case yours is super old.
+        virtualenv -q --python="$(which python)" --no-site-packages "$1"
+    fi
+
+    # Activate the virtualenv.
+    . "$1/bin/activate"
+
+    # On OSX 10.15, we need to install an older version of readline
+    #  so that when pip will not install the latest, which results
+    #  in a library error trying to load readline/libreadline.a
+    # This must be done after installing the virtualenv.
+    if [ "`uname -s`" == "Darwin" ] && sw_vers -productVersion | grep -q -e '^10\.15\.'; then
+        echo "On OSX 10.15 - Installing readline 6.2.0"
+        if [ -z $(pip --disable-pip-version-check freeze | grep readline) ] ; then
+            pip install https://pypi.python.org/packages/source/r/readline/readline-6.2.0.tar.gz
+        fi
+    fi
 }
 
 # If we exit unexpectedly, log this warning.

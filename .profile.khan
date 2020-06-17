@@ -17,6 +17,11 @@ export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
 
+# Add our go-binaries home to PATH.
+# TODO(csilvers): move this back above the devtools ones after we get
+# rid of khan-linter.
+export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
+
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}
 
@@ -39,6 +44,35 @@ if [ `uname -s` = Darwin ]; then
         ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future $ARCHFLAGS"
         export CPPFLAGS CFLAGS ARCHFLAGS
     fi
+
+    # Link openssl into build flags
+    export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
+    export CPPFLAGS="-I/usr/local/opt/openssl/include $CPPFLAGS"
+    export CFLAGS="-I/usr/local/include -L/usr/local/lib $CFLAGS"
+
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
 fi
+
+# Activate Python2.7 virtualenv if present
+if [ -s ~/.virtualenv/khan27/bin/activate ]; then
+  . ~/.virtualenv/khan27/bin/activate
+else
+  echo "[WARN]  Could not find '~/.virtualenv/khan27/bin/activate'"\
+    "- All processes that depend on Python may be negatively impacted."\
+    "Please run 'make' from the dotfiles directory to fix this."
+fi
+
+# Since we auto-activate the khan27 virtualenv, we don't want pipenv using any
+# virtualenv it happens to find itself in, but instead to use its own.
+# TODO(benkraft): If in the future we move to pipenv everywhere, we can
+# dispense with the auto-activated virtualenvs, and get rid of this.
+export PIPENV_IGNORE_VIRTUALENVS=1
+
+# Make sure git (and other apps) prefer 'vim' to 'vi'.
+: ${EDITOR:=vim}
+
+# Set a high limit for open file descriptors per shell.
+# The default on OS X is 256; we increase it to 1024--the default value of
+# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
+ulimit -S -n 1024

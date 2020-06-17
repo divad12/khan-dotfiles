@@ -168,26 +168,37 @@ install_gcc() {
         fi
         if ! gcc --version >/dev/null 2>&1 ; then
             success "Installing command line developer tools"
+            # If enter is pressed before its done, not a big deal, but it'll just loop to the same place.
+            success "You'll want to wait until the xcode install is complete to press Enter again."
             # Also, how did you get this dotfiles repo in 10.9 without
             # git auto-triggering the command line tools install process??
             xcode-select --install
-            warn "The dotfile setup is stopping now."
-            warn "When the install finishes, rerun ${tty_bold}make${tty_normal} to continue. (sorry)"
-            exit 1
+            exec sh ./mac-setup.sh
             # If this doesn't work for you, you can find the most recent
             # version here: https://developer.apple.com/downloads
         fi
-        if sw_vers -productVersion | grep -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
+        if sw_vers -productVersion | grep -q -e '^10\.14\.' && [ ! -s /usr/include/stdio.h ]; then
             # mac version is Mojave 10.14.*, install SDK headers
             # The file "macOS_SDK_headers_for_macOS_10.14.pkg" is from
             # xcode command line tools install
             if [ -s /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg ]; then
-                sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
-                success "macOS_SDK_headers_for_macOS_10.14 installed"
+                # This command isn't guaranteed to work. If it fails, just warn
+                # the user there may be problems and advise they contact 
+                # @dev-support if so.
+                if sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target / ; then
+                    success "macOS_SDK_headers_for_macOS_10.14 installed"
+                else
+                    warn "We're not able to determine if stdio.h is able to be used by compilers correctly on your system."
+                    warn "Please reach out to @dev-support if you encounter errors indicating this is a problem while building code or dependencies."
+                    warn "You may be able to get more information about the setup by running ${tty_bold}gcc -v${tty_normal}"
+                fi
             else
-                error "You don't have '/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg' in your local"
-                info "you can contact @dev-support to get it.\n"
-                exit 1
+                success "Updating your command line tools"
+                # If enter is pressed before its done, not a big deal, but it'll just loop to the same place.
+                success "You'll want to wait until the xcode install is complete to press Enter again."
+                sudo rm -rf /Library/Developer/CommandLineTools
+                xcode-select --install
+                exec sh ./mac-setup.sh
             fi
         fi
     else
@@ -214,17 +225,6 @@ install_homebrew() {
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     else
         success "Great! Mac homebrew already installed!"
-        info "Verifying homebrew is in a good state...\n"
-        if ! brew doctor; then
-            warn "Oh no! 'brew doctor' reported some warnings."
-            info "These warnings may cause you trouble, but they are likely harmless.\n"
-            read -r -p "Onward? [Y/n] " response
-            case "$response" in
-                [nN][oO]|[nN])
-                    exit 1
-                    ;;
-            esac
-        fi
     fi
     success "Updating (but not upgrading) Homebrew"
     brew update > /dev/null
@@ -233,6 +233,7 @@ install_homebrew() {
     # brew tap caskroom/cask
 
     # Likely need an alternate versions of Casks in order to install chrome-canary
+    # Required to install chrome-canary
     brew tap homebrew/cask-versions
 
     # Make sure everything is ok.  We don't care if we're using an
@@ -250,8 +251,7 @@ install_homebrew() {
 }
 
 update_git() {
-    if ! git --version | grep -q -e 'version 1.[89]' \
-                                 -e 'version 2'; then
+    if ! git --version | grep -q -e 'version 2\.[2-9][0-9]\.'; then
         echo "Installing an updated version of git using Homebrew"
         echo "Current version is `git --version`"
 
@@ -264,59 +264,78 @@ update_git() {
         fi
 
         # Check git version again
-        if ! git --version | grep -q -e 'version 1.[89]' \
-                                     -e 'version 2'; then
-            echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
-            read -p "Press enter to continue..."
+        if ! git --version | grep -q -e 'version 2\.[2-9][0-9]\.'; then
+            if ! brew ls --versions git | grep -q -e 'git 2\.[2-9][0-9]\.' ; then
+                echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
+                read -p "Press enter to continue..."
+            else 
+                echo "Git has been updated correctly, but will require restarting your terminal to take effect."
+            fi
         fi
-    fi
-    # Some code, such as tools/diagnose_js_packages.py, uses pcre-grep.
-    # (Search for `perl_regexp` in webapp to see a complete list.)
-    if ! git grep -P -l . >/dev/null; then
-        echo "Updating git to be able to use PCRE."
-        brew reinstall --with-pcre2 git
     fi
 }
 
 install_node() {
     if ! which node >/dev/null 2>&1; then
-        # to break the dependence between node@8 and icu4c@63.x
-        # to uninstall icu4c@63.x before re-install node@8
-        # so node@8 will work with icu4c@64.x which installed from postgres@11
-        # https://khanacademy.slack.com/archives/C8Y4Q1E0J/p1560792688074600
-        if brew ls icu4c --versions | grep "icu4c 63"; then
-            brew uninstall --ignore-dependencies icu4c@63.1
-        fi
-        # Install node 8: webapp doesn't (yet!) work with node 10.
-        # (Node 8 is LTS.)
-        brew install node@8
+        # Install node 10: webapp doesn't (yet!) work with node 12.
+        # (Node 10 is LTS.)
+        brew install node@10
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force --overwrite node@8
+        brew link --force --overwrite node@10
+    fi
+    # We don't want to force usage of node v10, but we want to make clear we don't support it
+    if ! node --version | grep "v10" >/dev/null ; then 
+        notice "Your version of node is $(node --version). We currently only support v10."
+        if brew ls --versions node@10 >/dev/null ; then
+            notice "You do however have node 10 installed."
+            notice "Consider running:"
+        else
+            notice "Consider running:"
+            notice "\t${tty_bold}brew install node@10${tty_normal}"
+        fi
+        notice "\t${tty_bold}brew link --force --overwrite node@10${tty_normal}"
+        read -p "Press enter to continue..."
+    fi
+    if ! which yarn >/dev/null 2>&1; then
+        # Using brew to install node 10 seems to prevent npm from
+        # correctly installing yarn. Use brew instead
+        brew install yarn
     fi
 }
 
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        # TODO (davidbraley) When go 1.13 or later is supported, update here AND in .bash_profile.khan
         if brew ls go >/dev/null 2>&1; then
-            brew upgrade go@1.12
+            brew upgrade "go@$DESIRED_GO_VERSION"
         else
-            brew install go@1.12
+            brew install "go@$DESIRED_GO_VERSION"
         fi
-        # .bash_profile will add go's directory to $PATH but only if
-        # the path exists.  It didn't exist until this brew
-        # install/upgrade so let's manually add it to the path now!
-        export PATH="/usr/local/opt/go@1.12/bin:$PATH"
+
+        # Brew doesn't link non-latest versions of go on install. This command
+        # fixes that, telling the system that this is the go executable to use
+        brew link --force --overwrite "go@$DESIRED_GO_VERSION"
     else
         success "go already installed"
     fi
 }
 
+# Gets the name brew uses to refer to postgresql 11, or NONE if not isntalled
+recent_postgresql_brewname() {
+    if brew ls postgresql@11 >/dev/null 2>&1 ; then
+        echo "postgresql@11"
+    elif brew ls postgresql --versions >/dev/null 2>&1 | grep "\s11\.\d" ; then
+        echo "postgresql"
+    else
+        echo "NONE"
+    fi
+}
+
 install_postgresql() {
-    if ! brew ls postgresql >/dev/null 2>&1; then
+    pg11_brewname="$(recent_postgresql_brewname)"
+    if [ "$pg11_brewname" = "NONE" ] ; then
         info "Installing postgresql\n"
         brew install postgresql@11
         # swtich icu4c to 64.2
@@ -325,16 +344,20 @@ install_postgresql() {
            [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
            brew switch icu4c 64.2
         fi
+
+        # Brew doesn't link non-latest versions on install. This command fixes that
+        # allowing postgresql and commads like psql to be found
+        brew link --force --overwrite postgresql@11
+        pg11_brewname="postgresql@11"
     else
         success "postgresql already installed"
     fi
 
     # Make sure that postgres is started, so that we can create the user below,
     # if necessary and so later steps in setup_webapp can connect to the db.
-    if ! brew services list | grep postgresql \
-                            | grep started > /dev/null 2>&1; then
+    if ! brew services list | grep "$pg11_brewname" | grep -q started; then
         info "Starting postgreql service\n"
-        brew services start postgresql > /dev/null 2>&1
+        brew services start "$pg11_brewname" 2>&1
         # Give postgres a chance to start up before we connect to it on the next line
         sleep 5
     else
@@ -359,6 +382,23 @@ install_nginx() {
         brew install nginx
     else
         success "nginx already installed"
+    fi
+}
+
+install_redis() {
+    info "Checking for redis\n"
+    if ! type redis-cli >/dev/null 2>&1; then
+        info "Installing redis\n"
+        brew install redis
+    else
+        success "redis already installed"
+    fi
+
+    if ! brew services list | grep redis | grep -q started; then
+        info "Starting redis service\n"
+        brew services start redis 2>&1
+    else
+        success "redis service already started"
     fi
 }
 
@@ -393,6 +433,30 @@ install_wget() {
     fi
 }
 
+install_openssl() {
+    info "Checking for openssl\n"
+    if ! which openssl  >/dev/null 2>&1; then
+        info "Installing openssl\n"
+        brew install openssl
+    else
+        success "openssl already installed"
+    fi
+    for source in $(brew --prefix openssl)/lib/*.dylib ; do
+        dest="/usr/local/lib/$(basename $source)"
+        # if dest is already a symlink pointing to the correct source, skip it
+        if [ -h "$dest" -a "$(readlink "$dest")" = "$source" ]; then
+            :
+        # else if dest already exists, warn user and skip dotfile
+        elif [ -e "$dest" ]; then
+            warn "Not symlinking to $dest because it already exists."
+        # otherwise, verbosely symlink the file (with --force)
+        else
+            info "Symlinking $(basename $source) "
+            ln -sfvn "$source" "$dest"
+        fi
+    done
+}
+
 install_protoc() {
     # If the user has a homebrew version of protobuf installed, uninstall it so
     # we can manually install our own version in /usr/local.
@@ -412,6 +476,13 @@ install_python_tools() {
     if ! brew ls pyenv >/dev/null 2>&1; then
         info "Installing pyenv\n"
         brew install pyenv
+        # At the moment, we depend on MacOS coming with python 2.7. If that
+        # stops, or we want to align the python versions with the linux
+        # dotfiles more effectively, we could do it with pyenv:
+        # `pyenv install 2.7.16 ; pyenv global 2.7.16`
+        # Because the linux dotfiles do not yet install pyenv, holding off on
+        # using pyenv to enforce python version until either that happens, or
+        # MacOs stops including python 2.7 by default.
     else
         success "pyenv already installed"
     fi
@@ -474,8 +545,8 @@ install_mac_apps() {
 echo
 success "Running Khan Installation Script 1.2\n"
 
-if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[1234]\.' ; then
-    warn "Warning: This is only tested up to macOS 10.14 (Mojave).\n"
+if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[12345]\.' ; then
+    warn "Warning: This is only tested up to macOS 10.15 (Catalina).\n"
     notice "If you find that this works on a newer version of macOS, "
     notice "please update this message.\n"
 fi
@@ -485,9 +556,9 @@ notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
 notice "the next step (including this one)"
 
-if ! echo "$SHELL" | grep -q '/bash$' ; then
+if ! echo "$SHELL" | grep -q -e '/bash$' -e '/zsh$' ; then
     echo
-    warn "It looks like you're using a shell other than bash!"
+    warn "It looks like you're using a shell other than bash or zsh!"
     notice "Other shells are not officially supported.  Most things"
     notice "should work, but dev-support help is not guaranteed."
 fi
@@ -504,12 +575,14 @@ register_ssh_keys
 install_gcc
 install_homebrew
 install_wget
+install_openssl
 install_slack
 update_git
 install_node
 install_go
 install_postgresql
 install_nginx
+install_redis
 install_image_utils
 install_helpful_tools
 # We use java for our google cloud dataflow jobs that live in webapp

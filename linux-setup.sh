@@ -43,10 +43,10 @@ install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         sudo add-apt-repository -y ppa:longsleep/golang-backports
         sudo apt-get update -qq -y
-        sudo apt-get install -y golang-1.12
-        # The ppa installs go into /usr/lib/go-1.12/bin/go
+        sudo apt-get install -y "golang-$DESIRED_GO_VERSION"
+        # The ppa installs go into /usr/lib/go-<version>/bin/go
         # Let's link that to somewhere likely to be on $PATH
-        sudo ln -snf /usr/lib/go-1.12/bin/go /usr/local/bin/go
+        sudo cp -sf /usr/lib/"go-$DESIRED_GO_VERSION"/bin/* /usr/local/bin/
     else
         echo "golang already installed"
     fi
@@ -70,20 +70,19 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_8.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_8.x
+       ! grep -q node_10.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_10.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_8.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 8.x, otherwise apt will update it to 10.x on newer
-        # Ubuntu versions
+        # Pin nodejs to 10.x, otherwise apt will update newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 8.*
+Pin: version 10.*
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
@@ -118,7 +117,8 @@ EOF
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
     # nodejs is used for various frontendy stuff in webapp, and
-    #   we standardize on version 8.
+    #   we standardize on version 10.
+    # redis is needed to run memorystore on dev
     # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
@@ -129,8 +129,9 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=8* \
+        nodejs=10* \
         nginx \
+        redis-server \
         curl
 
     # There are two different php packages, depending on if you're on Ubuntu

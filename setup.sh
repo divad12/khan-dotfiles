@@ -111,8 +111,8 @@ install_dotfiles() {
     # TODO(benkraft): Add more specific instructions for other common shells,
     # or just write dotfiles for them.
     shell="`basename "$SHELL"`"
-    if [ "$shell" != bash ] && [ -z "$VIRTUAL_ENV" ] ; then
-        add_fatal_error "Your default shell is $shell, not bash, so you'll" \
+    if [ -z "$VIRTUAL_ENV" ] && [ "$shell" != bash ] && [ "$shell" != zsh ]; then
+        add_fatal_error "Your default shell is $shell, not bash or zsh, so you'll" \
                         "need to update its config manually to activate our" \
                         "virtualenv. You can follow the instructions at" \
                         "khanacademy.org/r/virtualenvs to create a new" \
@@ -214,7 +214,6 @@ clone_devtools() {
     echo "Installing devtools"
     clone_devtool git@github.com:Khan/ka-clone    # already cloned, so will --repair the first time
     clone_devtool git@github.com:Khan/khan-linter
-    clone_devtool git@github.com:Khan/libphutil
     clone_devtool git@github.com:Khan/arcanist
     clone_devtool git@github.com:Khan/git-workflow
 }
@@ -238,21 +237,15 @@ clone_repos() {
 install_deps() {
     echo "Installing virtualenv and any global dependencies"
     # pip is a nicer installer/package manager than easy-install.
-    if ! which pip >/dev/null; then
+    if ! pip --version >/dev/null 2>&1 ; then
         sudo easy_install --quiet pip
     fi
 
     # Install virtualenv.
     # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    sudo pip install -q virtualenv
-    if [ ! -d "$ROOT/.virtualenv/khan27" ]; then
-        # Note that --no-site-packages is the default on recent virtualenv,
-        # but we specify in case yours is super old.
-        virtualenv -q --python="$(which python2.7)" --no-site-packages \
-            "$ROOT/.virtualenv/khan27"
-    fi
-    # Activate the virtualenv.
-    . ~/.virtualenv/khan27/bin/activate
+    sudo pip install -q virtualenv==v16.7.9
+
+    create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 
     # Inspiration from this slack discussion
     # https://khanacademy.slack.com/archives/C0918TZ5G/p1560899833202100
@@ -395,7 +388,7 @@ setup_arc() {
         read
         # This is added to PATh by dotfiles, but those may not be sourced yet.
         PATH="$DEVTOOLS_DIR/arcanist/khan-bin:$PATH"
-        arc install-certificate https://phabricator.khanacademy.org
+        arc install-certificate -- https://phabricator.khanacademy.org
     fi
 }
 
