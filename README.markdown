@@ -9,7 +9,7 @@ variety of things, some very Khan-specific, some not, including:
 - other useful and "useful" miscellany
 
 This is meant to complement the
-[developer setup documentation](https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit)
+[developer setup documentation](https://khanacademy.atlassian.net/wiki/x/VgKiC)
 in EngDocs.  If you run into any problems with this script, contact
 the Infrastructure team, such as by pinging `@dev-support` on Slack.
 
