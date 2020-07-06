@@ -41,8 +41,9 @@ install_java() {
 
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
-        sudo add-apt-repository -y ppa:longsleep/golang-backports
-        sudo apt-get update -qq -y
+        # This PPA is needed for ubuntus <20 but not >=20
+        # (and it doesn't install for them anyway)
+        sudo add-apt-repository -y ppa:longsleep/golang-backports && sudo apt-get update -qq -y || true
         sudo apt-get install -y "golang-$DESIRED_GO_VERSION"
         # The ppa installs go into /usr/lib/go-<version>/bin/go
         # Let's link that to somewhere likely to be on $PATH
@@ -108,6 +109,22 @@ EOF
         sudo apt-get update -qq -y || true
     fi
 
+    # This is needed for ubuntu >=20, but not prior ones.
+    sudo apt-get install -y python-is-python2 || true
+
+    # Install pip manually.
+    curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+    sudo python2 get-pip.py
+    # Delete get-pip.py after we're finish running it.
+    rm -f get-pip.py
+    # Match webapp's version version.
+    sudo pip install pip==20.1.1
+
+    # Install virtualenv and pychecker manually; ubuntu
+    # dropped support for them in ubuntu >=20 (since they're python2)
+    sudo pip install virtualenv
+    sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
+
     # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
@@ -123,7 +140,7 @@ EOF
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
         python-dev \
-        pychecker python-mode python-setuptools python-pip python-virtualenv \
+        python-mode python-setuptools \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         imagemagick \
         libxslt1-dev \
