@@ -43,7 +43,7 @@ install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         # This PPA is needed for ubuntus <20 but not >=20
         # (and it doesn't install for them anyway)
-        sudo add-apt-repository -y ppa:longsleep/golang-backports && sudo apt-get update -qq -y || true
+        sudo add-apt-repository -y ppa:longsleep/golang-backports && sudo apt-get update -qq -y || sudo add-apt-repository -y -r ppa:longsleep/golang-backports
         sudo apt-get install -y "golang-$DESIRED_GO_VERSION"
         # The ppa installs go into /usr/lib/go-<version>/bin/go
         # Let's link that to somewhere likely to be on $PATH
