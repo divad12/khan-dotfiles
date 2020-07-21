@@ -261,6 +261,7 @@ install_postgresql() {
     # password. This matches the authentication setup that homebrew installs on
     # a mac. Unlike a mac, we do not need to create a postgres user manually.
     sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/11/main/pg_hba.conf"
+    sudo chown postgres.postgres "/etc/postgresql/11/main/pg_hba.conf"
     sudo service postgresql restart
 }
 
