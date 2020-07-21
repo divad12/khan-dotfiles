@@ -71,19 +71,19 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_10.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_10.x
+       ! grep -q node_12.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_12.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 10.x, otherwise apt will update newer Ubuntu versions
+        # Pin nodejs to 12.x, otherwise apt will update newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 10.*
+Pin: version 12.*
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
@@ -133,8 +133,9 @@ EOF
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
-    # nodejs is used for various frontendy stuff in webapp, and
-    #   we standardize on version 10.
+    # nodejs is used for various frontendy stuff in webapp, as well as our js
+    #   services. We standardize on version 12 (the latest version suppported
+    #   on appengine standard).
     # redis is needed to run memorystore on dev
     # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
@@ -146,7 +147,7 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=10* \
+        nodejs=12* \
         nginx \
         redis-server \
         curl
