@@ -24,22 +24,25 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 # Ensure Carthage is installed. Carthage is used to manage some dependencies and
 # is required to compile the app.
 install_carthage() {
-    if ! which carthage ; then
+    if ! which carthage; then
         update "Installing Carthage..."
         brew install carthage
     fi
 }
 
 install_fastlane() {
-     if ! which fastlane ; then
+    if ! which fastlane; then
         update "Installing fastlane..."
-        brew cask install fastlane
-        export PATH="$PATH:$HOME/.fastlane/bin"
-        echo 'export PATH="$PATH:$HOME/.fastlane/bin"' >> ~/.bash_profile
+        sudo gem install fastlane --no-document --verbose
+
+        # Make sure the gem install dir is in our PATH
+        if ! command -v fastlane &>/dev/null; then
+            echo "export PATH=$(gem environment gemdir)/bin:$PATH" >>~/.bash_profile
+        fi
     fi
 }
 
-ensure_mac_os  # Function defined in shared-functions.sh.
+ensure_mac_os # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 clone_mobile_repo
 install_carthage
