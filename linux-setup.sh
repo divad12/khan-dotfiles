@@ -122,7 +122,7 @@ EOF
 
     # Install virtualenv and pychecker manually; ubuntu
     # dropped support for them in ubuntu >=20 (since they're python2)
-    sudo pip install virtualenv
+    sudo pip install virtualenv==20.0.23
     sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
 
     # Needed to develop at Khan: git, python, node (js).
