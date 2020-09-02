@@ -172,7 +172,9 @@ EOF
     fi
     # Make sure we have the preferred version of npm
     # TODO(benkraft): Pull this version number from webapp somehow.
-    sudo npm install -g npm@5.6.0
+    # We need npm 6 or greater to support node12. This is a particular npm6
+    # version known to work.
+    sudo npm install -g npm@6.14.4
 
     # Get the latest slack deb file and install it.
     if ! which slack >/dev/null 2>&1 ; then
