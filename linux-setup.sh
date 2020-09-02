@@ -41,8 +41,9 @@ install_java() {
 
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
-        sudo add-apt-repository -y ppa:longsleep/golang-backports
-        sudo apt-get update -qq -y
+        # This PPA is needed for ubuntus <20 but not >=20
+        # (and it doesn't install for them anyway)
+        sudo add-apt-repository -y ppa:longsleep/golang-backports && sudo apt-get update -qq -y || sudo add-apt-repository -y -r ppa:longsleep/golang-backports
         sudo apt-get install -y "golang-$DESIRED_GO_VERSION"
         # The ppa installs go into /usr/lib/go-<version>/bin/go
         # Let's link that to somewhere likely to be on $PATH
@@ -70,19 +71,19 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_10.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_10.x
+       ! grep -q node_12.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_12.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_10.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 10.x, otherwise apt will update newer Ubuntu versions
+        # Pin nodejs to 12.x, otherwise apt will update newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 10.*
+Pin: version 12.*
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
@@ -108,6 +109,22 @@ EOF
         sudo apt-get update -qq -y || true
     fi
 
+    # This is needed for ubuntu >=20, but not prior ones.
+    sudo apt-get install -y python-is-python2 || true
+
+    # Install pip manually.
+    curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+    sudo python2 get-pip.py
+    # Delete get-pip.py after we're finish running it.
+    rm -f get-pip.py
+    # Match webapp's version version.
+    sudo pip install pip==20.1.1
+
+    # Install virtualenv and pychecker manually; ubuntu
+    # dropped support for them in ubuntu >=20 (since they're python2)
+    sudo pip install virtualenv==20.0.23
+    sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
+
     # Needed to develop at Khan: git, python, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
@@ -116,20 +133,21 @@ EOF
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
-    # nodejs is used for various frontendy stuff in webapp, and
-    #   we standardize on version 10.
+    # nodejs is used for various frontendy stuff in webapp, as well as our js
+    #   services. We standardize on version 12 (the latest version suppported
+    #   on appengine standard).
     # redis is needed to run memorystore on dev
     # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
         python-dev \
-        pychecker python-mode python-setuptools python-pip python-virtualenv \
+        python-mode python-setuptools \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         imagemagick \
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=10* \
+        nodejs=12* \
         nginx \
         redis-server \
         curl
@@ -244,6 +262,7 @@ install_postgresql() {
     # password. This matches the authentication setup that homebrew installs on
     # a mac. Unlike a mac, we do not need to create a postgres user manually.
     sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/11/main/pg_hba.conf"
+    sudo chown postgres.postgres "/etc/postgresql/11/main/pg_hba.conf"
     sudo service postgresql restart
 }
 

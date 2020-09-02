@@ -43,17 +43,27 @@ configure_codestyle() {
     if [ ! -e "$ANDROID_STUDIO_APP_PATH" ]; then
         echo "Android Studio not found. The Khan Academy codestyle will not be installed."
         echo "Rerun this script after installing Android Studio to install it."
-    else
-        ANDROID_STUDIO_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString"  /Applications/Android\ Studio.app/Contents/Info.plist)
-        ANDROID_STUDIO_CODESTYLES_PATH="$HOME/Library/Preferences/AndroidStudio${ANDROID_STUDIO_VERSION}/codestyles"
-        mkdir -p "$ANDROID_STUDIO_CODESTYLES_PATH"
+        return
+    fi
 
-        if [ ! -e "$ANDROID_STUDIO_CODESTYLES_PATH"/KhanAcademyAndroid.xml ]; then
-            update "Linking Khan Academy codestyle files..."
-            ln -s \
-                "$REPOS_DIR"/mobile/android/third-party/style-guide/configs/KhanAcademyAndroid.xml \
-                "$ANDROID_STUDIO_CODESTYLES_PATH"
-        fi
+    ANDROID_STUDIO_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" /Applications/Android\ Studio.app/Contents/Info.plist)
+    ANDROID_STUDIO_CODESTYLES_PATH="$HOME/Library/Preferences/AndroidStudio${ANDROID_STUDIO_VERSION}/codestyles"
+    CODESTYLE_SOURCE="$REPOS_DIR"/mobile/android/third-party/style-guide/configs/KhanAcademyAndroid.xml
+
+    mkdir -p "$ANDROID_STUDIO_CODESTYLES_PATH"
+
+	# Ensure submodules are up to date. Otherwise Android Studio can't see the 
+	# style file. This should be done by `kaclone_repo` but for some reason it
+	# doesn't always seem to happen!
+	# Example: https://khanacademy.slack.com/archives/C02NPE076/p1597853211320400?thread_ts=1597853074.320200&cid=C02NPE076
+    if [ ! -e "$CODESTYLE_SOURCE" ]; then
+        pushd "$REPOS_DIR/mobile"
+        git submodule update --recursive --init
+    fi
+
+    if [ ! -e "$ANDROID_STUDIO_CODESTYLES_PATH"/KhanAcademyAndroid.xml ]; then
+        update "Linking Khan Academy codestyle files..."
+        ln -s "$CODESTYLE_SOURCE" "$ANDROID_STUDIO_CODESTYLES_PATH"
     fi
 }
 

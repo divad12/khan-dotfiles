@@ -277,25 +277,26 @@ update_git() {
 
 install_node() {
     if ! which node >/dev/null 2>&1; then
-        # Install node 10: webapp doesn't (yet!) work with node 12.
-        # (Node 10 is LTS.)
-        brew install node@10
+        # Install node 12: It's LTS and the latest version supported on
+        # appengine standard.
+        brew install node@12
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force --overwrite node@10
+        brew link --force --overwrite node@12
     fi
-    # We don't want to force usage of node v10, but we want to make clear we don't support it
-    if ! node --version | grep "v10" >/dev/null ; then 
-        notice "Your version of node is $(node --version). We currently only support v10."
-        if brew ls --versions node@10 >/dev/null ; then
-            notice "You do however have node 10 installed."
+    # We don't want to force usage of node v12, but we want to make clear we
+    # don't support anything else.
+    if ! node --version | grep "v12" >/dev/null ; then
+        notice "Your version of node is $(node --version). We currently only support v12."
+        if brew ls --versions node@12 >/dev/null ; then
+            notice "You do however have node 12 installed."
             notice "Consider running:"
         else
             notice "Consider running:"
-            notice "\t${tty_bold}brew install node@10${tty_normal}"
+            notice "\t${tty_bold}brew install node@12${tty_normal}"
         fi
-        notice "\t${tty_bold}brew link --force --overwrite node@10${tty_normal}"
+        notice "\t${tty_bold}brew link --force --overwrite node@12${tty_normal}"
         read -p "Press enter to continue..."
     fi
     if ! which yarn >/dev/null 2>&1; then

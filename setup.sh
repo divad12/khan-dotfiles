@@ -62,7 +62,7 @@ check_dependencies() {
     # You need to have run the setup to install binaries: node, npm/etc.
     if ! npm --version >/dev/null; then
         echo "You must install binaries before running $0.  See"
-        echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU"
+        echo "   https://khanacademy.atlassian.net/wiki/x/VgKiC"
         exit 1
     fi
 }
@@ -243,7 +243,7 @@ install_deps() {
 
     # Install virtualenv.
     # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    sudo pip install -q virtualenv==v16.7.9
+    sudo pip install -q virtualenv==20.0.23
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 
@@ -429,6 +429,6 @@ echo "*** IMPORTANT: Please restart this terminal (and any ***"
 echo "***   others you have open) to pick up the changes.  ***"
 echo
 echo "Then, to finish your setup, head back to the setup docs:"
-echo "   https://docs.google.com/document/d/1aD1K0t8BhJABMug14zFZE_Ea73am0EiU2szjcsILkiU/edit#heading=h.z23mgzycm3j2"
+echo "   https://khanacademy.atlassian.net/wiki/x/VgKiC"
 
 trap - EXIT
