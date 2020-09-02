@@ -158,6 +158,15 @@ EOF
     # need too.
     sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
+    # We need npm 6 or greater to support node12.  That's the default
+    # for nodejs, but we may have overridden it before in a way that
+    # makes it impossible to upgrade, so we reinstall nodejs if our
+    # npm version is 5.x.x.
+    if expr "`npm --version`" : 5 >/dev/null 2>&1; then
+        sudo apt-get purge -y nodejs
+        sudo apt-get install -y "nodejs=12*"
+    fi
+
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
     # it to be `node`.
     if ! [ -f /usr/bin/node ] && [ -f /usr/bin/nodejs ]; then
