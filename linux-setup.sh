@@ -150,7 +150,8 @@ EOF
         nodejs=12* \
         nginx \
         redis-server \
-        curl
+        curl \
+        jq
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try

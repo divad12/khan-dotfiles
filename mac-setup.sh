@@ -458,6 +458,16 @@ install_openssl() {
     done
 }
 
+install_jq() {
+    info "Checking for jq\n"
+    if ! which jq  >/dev/null 2>&1; then
+        info "Installing jq\n"
+        brew install jq
+    else
+        success "jq already installed"
+    fi
+}
+
 install_protoc() {
     # If the user has a homebrew version of protobuf installed, uninstall it so
     # we can manually install our own version in /usr/local.
@@ -577,6 +587,7 @@ install_gcc
 install_homebrew
 install_wget
 install_openssl
+install_jq
 install_slack
 update_git
 install_node
