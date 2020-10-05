@@ -51,4 +51,4 @@ install_homebrew_libraries
 install_react_native_dependencies
 
 update "Done! Complete setup instructions at \
-https://docs.google.com/document/d/15FxEYI7l_p4mMv3SYFSIM6cxiOz6I4pxEvzDLFle-eE"
+https://khanacademy.atlassian.net/wiki/spaces/MG/pages/49284528/iOS+Environment+Setup"
