@@ -132,4 +132,4 @@ install_homebrew_libraries
 install_react_native_dependencies
 
 update "Done! Complete setup instructions at \
-https://docs.google.com/document/d/1QMMgvycznCezczZojEdAk8WHm6oTDFwi6bEutYQJ40o"
+https://khanacademy.atlassian.net/wiki/spaces/MG/pages/49317506/Android+Environment+Setup"
