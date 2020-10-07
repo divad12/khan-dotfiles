@@ -7,8 +7,14 @@ set -e -o pipefail
 install_homebrew_libraries() {
     update "Installing Homebrew dependencies..."
     # The mobile project requires these Homebrew packages
-    brew install pkg-config cairo libpng jpeg giflib pango zopfli \
-        getsentry/tools/sentry-cli
+    brew install pkg-config cairo libpng jpeg giflib pango zopfli
+
+    if ! brew tap | grep "getsentry/tools";
+    then
+        brew tap getsentry/tools
+    fi
+
+    brew install getsentry/tools/sentry-cli
 }
 
 # Ensure the Mobile Github repo is cloned.
