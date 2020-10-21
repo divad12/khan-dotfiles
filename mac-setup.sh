@@ -183,7 +183,7 @@ install_gcc() {
             # xcode command line tools install
             if [ -s /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg ]; then
                 # This command isn't guaranteed to work. If it fails, just warn
-                # the user there may be problems and advise they contact 
+                # the user there may be problems and advise they contact
                 # @dev-support if so.
                 if sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target / ; then
                     success "macOS_SDK_headers_for_macOS_10.14 installed"
@@ -206,17 +206,6 @@ install_gcc() {
     fi
 }
 
-install_slack() {
-    info "Checking for Slack..."
-    if ! open -R -g -a Slack > /dev/null; then
-        success "Didn't find Slack."
-        info "Installing Slack to ~/Applications\n"
-        brew cask install slack
-    else
-        success "Great! Slack already installed!"
-    fi
-}
-
 install_homebrew() {
     info "Checking for mac homebrew"
     # If homebrew is already installed, don't do it again.
@@ -235,6 +224,9 @@ install_homebrew() {
     # Likely need an alternate versions of Casks in order to install chrome-canary
     # Required to install chrome-canary
     brew tap homebrew/cask-versions
+
+    # This is where we store our own formula, including a python@2 backport
+    brew tap khan/repo git@github.com:Khan/homebrew-repo.git
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
@@ -268,11 +260,22 @@ update_git() {
             if ! brew ls --versions git | grep -q -e 'git 2\.[2-9][0-9]\.' ; then
                 echo "Error installing git via brew; download and install manually via http://git-scm.com/download/mac. "
                 read -p "Press enter to continue..."
-            else 
+            else
                 echo "Git has been updated correctly, but will require restarting your terminal to take effect."
             fi
         fi
     fi
+}
+
+install_python2() {
+    # We only do this if python2 == /usr/bin/python2, which means it's system python
+    if [ "$(which python2)" != "/usr/bin/python2" ]; then
+      success "Already running a non-system python2."
+      return
+    fi
+
+    info "Installing python2 from khan/repo. This may take a few minutes."
+    brew install khan/repo/python@2
 }
 
 install_node() {
@@ -517,6 +520,8 @@ install_mac_apps() {
     dropbox google-drive-file-stream iterm2 virtualbox zoomus
     # Text Editors
     macvim sublime-text textmate atom
+    # Chat
+    slack
   )
 
   mac_apps_str="${mac_apps[@]}"
@@ -588,8 +593,8 @@ install_homebrew
 install_wget
 install_openssl
 install_jq
-install_slack
 update_git
+install_python2
 install_node
 install_go
 install_postgresql

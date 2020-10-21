@@ -236,14 +236,14 @@ clone_repos() {
 # Must have cloned the repos first.
 install_deps() {
     echo "Installing virtualenv and any global dependencies"
-    # pip is a nicer installer/package manager than easy-install.
-    if ! pip --version >/dev/null 2>&1 ; then
-        sudo easy_install --quiet pip
-    fi
 
     # Install virtualenv.
     # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    sudo pip install -q virtualenv==20.0.23
+    pip2 install -q virtualenv==20.0.23
+
+    # Used by various infra projects for managing python3 environment
+    echo "Installing pipenv"
+    pip3 install -q pipenv
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 
@@ -252,6 +252,8 @@ install_deps() {
     # In general, need to pin npm to V6.4.1
     # Also, need to install yarn first before run `make install_deps`
     # in webapp.
+    # TODO(avidal): Is this still necessary? That's an ancient version of npm
+    # and you can get yarn via brew or via your distribution.
     if ! which yarn >/dev/null; then
         echo "Installing yarn"
         sudo npm install -g npm@6.4.1
@@ -265,10 +267,6 @@ install_deps() {
         # This checks for gcloud, so we do it after install_and_setup_gcloud.
         ( cd "$REPOS_DIR/webapp" && make install_deps )
     fi
-
-    # Used by various infra projects for managing python3 environment
-    echo "Installing pipenv"
-    pip install -q pipenv
 }
 
 install_and_setup_gcloud() {

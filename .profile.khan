@@ -22,6 +22,17 @@ export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
 # rid of khan-linter.
 export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
 
+# A lot of tools place binaries into ~/.local/bin, including pip if you use
+# --user (or have an unwritable default site-packages)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Add the unversioned binaries from our backported homebrew python@2 formula,
+# if they have brew and have our python@2 formula installed
+# See: https://github.com/Khan/homebrew-repo/blob/master/Formula/python%402.rb
+if brew --prefix khan/repo/python@2 >/dev/null 2>&1; then
+    export PATH="$(brew --prefix khan/repo/python@2)/libexec/bin:$PATH"
+fi
+
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
 : ${EDITOR:=vim}
 
@@ -29,7 +40,6 @@ export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
 # The default on OS X is 256; we increase it to 1024--the default value of
 # `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
 ulimit -S -n 1024
-
 
 # Mac-specific stuff.
 if [ `uname -s` = Darwin ]; then
@@ -68,11 +78,3 @@ fi
 # TODO(benkraft): If in the future we move to pipenv everywhere, we can
 # dispense with the auto-activated virtualenvs, and get rid of this.
 export PIPENV_IGNORE_VIRTUALENVS=1
-
-# Make sure git (and other apps) prefer 'vim' to 'vi'.
-: ${EDITOR:=vim}
-
-# Set a high limit for open file descriptors per shell.
-# The default on OS X is 256; we increase it to 1024--the default value of
-# `sysctl kern.maxfilesperproc`, which `ulimit -n` must not exceed.
-ulimit -S -n 1024

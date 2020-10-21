@@ -159,7 +159,7 @@ has_recent_go() {
 #   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
 create_and_activate_virtualenv() {
     if [ ! -d "$1" ]; then
-        virtualenv -q --python="$(which python)" --always-copy "$1"
+        virtualenv -q --python="$(which python2)" --always-copy "$1"
     fi
 
     # Activate the virtualenv.
