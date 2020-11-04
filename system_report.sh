@@ -67,23 +67,26 @@ kv "CPPFLAGS" "$CPPFLAGS"
 kv "CFLAGS" "$CFLAGS"
 
 # Brew, another pain point on Mac
-if [ "${uname_os}" = "Darwin" ]; then
-    header "OSX - Brew"
-    tool_version brew --version
-    if which brew >/dev/null ; then
-        kv_multiline "Brew Installs" "$(brew list -l)"
+header "Brew"
+tool_version brew --version
+if which brew >/dev/null ; then
+        kv_multiline "Brew Installs" "$(brew list --formula -l)"
         kv_multiline "Brew Services"  "$(brew services list)"
         kv_multiline "Brew Doctor Output" "$(brew doctor 2>&1)"
     fi
-fi
 
 # TODO(dbraley): (m) check wget
 
 header "Node/JS"
 tool_version node --version
+tool_version npm --version
+tool_version yarn --version
 
 header "Go"
 tool_version go version
+
+header "Rust"
+tool_version cargo --version
 
 header "PostgreSQL"
 tool_version postgres --version
