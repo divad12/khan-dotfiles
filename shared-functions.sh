@@ -171,8 +171,11 @@ create_and_activate_virtualenv() {
     # This must be done after installing the virtualenv.
     if [ "`uname -s`" == "Darwin" ] && sw_vers -productVersion | grep -q -e '^10\.15\.'; then
         echo "On OSX 10.15 - Installing readline 6.2.0"
-        if [ -z $(pip --disable-pip-version-check freeze | grep readline) ] ; then
-            pip install https://pypi.python.org/packages/source/r/readline/readline-6.2.0.tar.gz
+        if [ -z "$(pip --disable-pip-version-check freeze | grep readline)" ] ; then
+            # Long deprecated library - clang generates many warnings which
+            # cause build to fail. We add a -w here to disable *all* warnings.
+            # It is the only way found to get the install to work.
+            CFLAGS='-w' pip install https://pypi.python.org/packages/source/r/readline/readline-6.2.0.tar.gz
         fi
     fi
 }
