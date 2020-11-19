@@ -1,5 +1,7 @@
 #!/bin/sh -eux
 
+# You probably want xargs -r in case the grep is empty?
+
 echo "remove linux-headers"
 dpkg --list \
   | awk '{ print $2 }' \
