@@ -1,5 +1,12 @@
 #!/bin/sh -eux
 
+# This behavior comes from upstream (bento project)
+# It changes /etc/ssh/sshd_config by setting
+#    UseDNS no
+#    GSSAPIAuthentication no
+#
+# TODO(ericbrown): Is this necessary?
+
 SSHD_CONFIG="/etc/ssh/sshd_config"
 
 # ensure that there is a trailing newline before attempting to concatenate

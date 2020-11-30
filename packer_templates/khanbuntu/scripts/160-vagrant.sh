@@ -1,5 +1,8 @@
 #!/bin/bash -eux
 
+# This behavior comes from upstream (bento project)
+# TODO(ericbrown): Harmless, but not sure what it helps
+
 pubkey_url="https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub";
 mkdir -p $HOME_DIR/.ssh;
 if command -v wget >/dev/null 2>&1; then
