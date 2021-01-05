@@ -254,16 +254,9 @@ install_deps() {
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 
-    # Inspiration from this slack discussion
-    # https://khanacademy.slack.com/archives/C0918TZ5G/p1560899833202100
-    # In general, need to pin npm to V6.4.1
-    # Also, need to install yarn first before run `make install_deps`
+    # Need to install yarn first before run `make install_deps`
     # in webapp.
-    # TODO(avidal): Is this still necessary? That's an ancient version of npm
-    # and you can get yarn via brew or via your distribution.
-    if ! which yarn >/dev/null; then
-        echo "Installing yarn"
-        sudo npm install -g npm@6.4.1
+    if ! which yarn >/dev/null 2>&1; then
         sudo npm install -g yarn
     fi
 

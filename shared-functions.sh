@@ -152,8 +152,7 @@ has_recent_go() {
 
 # Creates a webapp virtualenv in $1, if none exists, then activates it.
 #
-# Assumes pip and virtualenv are already installed.  Note this also
-# pre-installs the correct readline on OS X -- see comments below.
+# Assumes pip and virtualenv are already installed.
 #
 # Arguments:
 #   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
@@ -164,20 +163,6 @@ create_and_activate_virtualenv() {
 
     # Activate the virtualenv.
     . "$1/bin/activate"
-
-    # On OSX 10.15, we need to install an older version of readline
-    #  so that when pip will not install the latest, which results
-    #  in a library error trying to load readline/libreadline.a
-    # This must be done after installing the virtualenv.
-    if [ "`uname -s`" == "Darwin" ] && sw_vers -productVersion | grep -q -e '^10\.15\.'; then
-        echo "On OSX 10.15 - Installing readline 6.2.0"
-        if [ -z "$(pip --disable-pip-version-check freeze | grep readline)" ] ; then
-            # Long deprecated library - clang generates many warnings which
-            # cause build to fail. We add a -w here to disable *all* warnings.
-            # It is the only way found to get the install to work.
-            CFLAGS='-w' pip install https://pypi.python.org/packages/source/r/readline/readline-6.2.0.tar.gz
-        fi
-    fi
 }
 
 # If we exit unexpectedly, log this warning.

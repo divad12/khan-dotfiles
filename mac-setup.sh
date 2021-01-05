@@ -302,11 +302,6 @@ install_node() {
         notice "\t${tty_bold}brew link --force --overwrite node@12${tty_normal}"
         read -p "Press enter to continue..."
     fi
-    if ! which yarn >/dev/null 2>&1; then
-        # Using brew to install node 10 seems to prevent npm from
-        # correctly installing yarn. Use brew instead
-        brew install yarn
-    fi
 }
 
 install_go() {
@@ -342,9 +337,9 @@ install_postgresql() {
     if [ "$pg11_brewname" = "NONE" ] ; then
         info "Installing postgresql\n"
         brew install postgresql@11
-        # swtich icu4c to 64.2
-        # if default verison is 63.x and v64.2 was installed by postgres@11
-        if [ "$(brew ls icu4c --versions |grep "icu4c 63")" ] && \
+        # switch icu4c to 64.2
+        # if default version is 63.x and v64.2 was installed by postgres@11
+        if [ "$(brew ls icu4c --versions | grep "icu4c 63")" ] && \
            [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
            brew switch icu4c 64.2
         fi
