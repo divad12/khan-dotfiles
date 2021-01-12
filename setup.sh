@@ -167,6 +167,12 @@ edit_system_config() {
     fi
     # cleanup from previous versions: remove ~/.gitignore.khan symlink if exists
     rm -f ~/.gitignore.khan
+
+    # Apple is very picky on permsions of files zsh loads
+    ZSHSHARE="/usr/local/share/zsh"
+    if [[ -d "${ZSHSHARE}" ]]; then
+      chmod -R 755 "${ZSHSHARE}"
+    fi
 }
 
 # clone a repository without any special sauce. should only be used in order to
