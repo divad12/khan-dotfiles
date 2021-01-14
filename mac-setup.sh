@@ -321,57 +321,8 @@ install_go() {
     fi
 }
 
-# Gets the name brew uses to refer to postgresql 11, or NONE if not isntalled
-recent_postgresql_brewname() {
-    if brew ls postgresql@11 >/dev/null 2>&1 ; then
-        echo "postgresql@11"
-    elif brew ls postgresql --versions >/dev/null 2>&1 | grep "\s11\.\d" ; then
-        echo "postgresql"
-    else
-        echo "NONE"
-    fi
-}
-
 install_postgresql() {
-    pg11_brewname="$(recent_postgresql_brewname)"
-    if [ "$pg11_brewname" = "NONE" ] ; then
-        info "Installing postgresql\n"
-        brew install postgresql@11
-        # switch icu4c to 64.2
-        # if default version is 63.x and v64.2 was installed by postgres@11
-        if [ "$(brew ls icu4c --versions | grep "icu4c 63")" ] && \
-           [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
-           brew switch icu4c 64.2
-        fi
-
-        # Brew doesn't link non-latest versions on install. This command fixes that
-        # allowing postgresql and commads like psql to be found
-        brew link --force --overwrite postgresql@11
-        pg11_brewname="postgresql@11"
-    else
-        success "postgresql already installed"
-    fi
-
-    # Make sure that postgres is started, so that we can create the user below,
-    # if necessary and so later steps in setup_webapp can connect to the db.
-    if ! brew services list | grep "$pg11_brewname" | grep -q started; then
-        info "Starting postgreql service\n"
-        brew services start "$pg11_brewname" 2>&1
-        # Give postgres a chance to start up before we connect to it on the next line
-        sleep 5
-    else
-        success "postgresql service already started"
-    fi
-
-    # We create a postgres user locally that we use in test and dev.
-    if ! psql \
-      -tc "SELECT rolname from pg_catalog.pg_roles"  postgres \
-      | grep -c 'postgres' > /dev/null 2>&1 ; then
-        info "Creating postgres user for dev\n"
-        psql --quiet -c "CREATE ROLE postgres LOGIN SUPERUSER;" postgres;
-    else
-        success "postgres user already created"
-    fi
+    "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 }
 
 install_nginx() {
