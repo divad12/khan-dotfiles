@@ -17,6 +17,7 @@ export PATH="$KA_DEVROOT/our-lovely-cli/bin:$PATH"
 export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
+export PATH="$KA_DEVROOT/khan-dotfiles/bin:$PATH"
 
 export MANPATH="$KA_DEVROOT/our-lovely-cli/man:$MANPATH"
 
