@@ -6,8 +6,50 @@
 # Bail on any errors
 set -e
 
+SCRIPT=$(basename $0)
+
+usage() {
+    cat << EOF
+usage: $SCRIPT [options]
+  --root <dir> Use specified directory as root (instead of HOME).
+  --all        Install all user apps.
+  --none       Install no user apps.
+EOF
+}
+
+# Install in $HOME by default, but can set an alternate destination via $1.
+ROOT="${ROOT:-$HOME}"
+
+APPS=
+
+# Process command line arguments
+while [[ "$1" != "" ]]; do
+    case $1 in
+        -r | --root)
+            shift
+            ROOT=$1
+            ;;
+        -a | --all)
+            APPS="-a"
+            ;;
+        -n | --none)
+            APPS="-n"
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+echo foobar
+
 # The directory to which all repositories will be cloned.
-ROOT=${1-$HOME}
 REPOS_DIR="$ROOT/khan"
 
 # Derived path location constants
@@ -37,7 +79,19 @@ install_protoc() {
 echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
+# Add github to known_hosts (one less prompt when QAing script)
+mkdir -p ~/.ssh
+grep -q github.com ~/.ssh/known_hosts 2>/dev/null || \
+    echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" \
+        >> ~/.ssh/known_hosts
+
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-homebrew.py
+
+# Other brew related installers that require sudo
+
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-mkcert.py
+
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/edit-system-config.sh
 
 # It used to be we needed to install xcode-tools, now homebrew does this for us
 #"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-gcc.sh
@@ -48,4 +102,4 @@ install_protoc
 # (as well as in khan-linter for linting those jobs)
 install_mac_java
 
-"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-apps.sh
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-apps.sh "$APPS"

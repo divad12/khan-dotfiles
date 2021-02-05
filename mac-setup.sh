@@ -3,11 +3,45 @@
 # Bail on any errors
 set -e
 
-# TODO(ericbrown): Support --quiet command line argument
-# TODO(ericbrown): Use python??
+SCRIPT=$(basename $0)
+
+usage() {
+    cat << EOF
+usage: $SCRIPT [options]
+  --root <dir> Use specified directory as root (instead of HOME).
+  --all        Install all user apps.
+  --none       Install no user apps.
+EOF
+}
+
+# Install in $HOME by default, but can set an alternate destination via $1.
+ROOT="${ROOT:-$HOME}"
+
+# Process command line arguments
+while [[ "$1" != "" ]]; do
+    case $1 in
+        -r | --root)
+            shift
+            ROOT=$1
+            ;;
+        -a | --all)
+            APPS="-a"
+            ;;
+        -n | --none)
+            APPS="-n"
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage
+            exit 1
+    esac
+    shift
+done
 
 # The directory to which all repositories will be cloned.
-ROOT=${1-$HOME}
 REPOS_DIR="$ROOT/khan"
 
 # Derived path location constants
@@ -43,7 +77,7 @@ read -p "Press enter to continue..."
 # Note that ensure parsing arguments (above) doesn't hide anything
 
 # Run setup that requires sudo access
-"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-elevated.sh
+"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-elevated.sh "$APPS"
 
 # Run setup that does NOT require sudo access
 "$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-normal.sh

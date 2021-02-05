@@ -5,3 +5,6 @@
 if [ -s ~/.profile.khan ]; then
     . ~/.profile.khan
 fi
+if [ -s ~/.cargo/env ]; then
+    . ~/.cargo/env
+fi

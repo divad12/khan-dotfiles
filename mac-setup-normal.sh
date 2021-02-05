@@ -372,6 +372,7 @@ update_git
 install_node
 install_go
 
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-rust.py
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 
 install_nginx

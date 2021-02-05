@@ -323,4 +323,6 @@ install_postgresql
 # TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
 # https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/edit-system-config.sh
+
 trap - EXIT

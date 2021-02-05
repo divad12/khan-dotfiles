@@ -35,6 +35,9 @@ DIR=$(dirname "$0")
 # should we install webapp? (disable for mobile devs or to make testing faster)
 WEBAPP="${WEBAPP:-true}"
 
+# Will contain a string on a mac and be empty on linux
+IS_MAC=$(which sw_vers || echo "")
+
 trap exit_warning EXIT   # from shared-functions.sh
 
 warnings=""
@@ -138,43 +141,6 @@ install_dotfiles() {
     . ~/.profile
 }
 
-edit_system_config() {
-    echo "Modifying system configs"
-
-    # This command avoids the spew when you deploy the Khan Academy
-    # appengine app:
-    #   Cannot guess mime-type for XXX.  Using application/octet-stream
-    line="application/octet-stream  less eot ttf woff otf as fla sjs flash tmpl"
-    if [ -s /usr/local/etc/mime.types ]; then
-        # Replace any existing line with 'less' and 'eot' with the new line.
-        grep -v 'less eot' /usr/local/etc/mime.types | \
-            sudo sh -c "cat; echo '$line' > /usr/local/etc/mime.types"
-    else
-        sudo sh -c 'echo "$line" > /usr/local/etc/mime.types'
-    fi
-    sudo chmod a+r /usr/local/etc/mime.types
-
-    # If there is no ssh key, make one.
-    mkdir -p "$ROOT/.ssh"
-    if [ ! -e "$ROOT/.ssh/id_rsa" -a ! -e "$ROOT/.ssh/id_dsa" ]; then
-        ssh-keygen -q -N "" -t rsa -f "$ROOT/.ssh/id_rsa"
-    fi
-
-    # if the user does not have a global gitignore file configured, reference
-    # ours (or whatever is in the default location
-    if ! git config --global core.excludesfile > /dev/null; then
-      git config --global core.excludesfile ~/.gitignore
-    fi
-    # cleanup from previous versions: remove ~/.gitignore.khan symlink if exists
-    rm -f ~/.gitignore.khan
-
-    # Apple is very picky on permsions of files zsh loads
-    ZSHSHARE="/usr/local/share/zsh"
-    if [[ -d "${ZSHSHARE}" ]]; then
-      chmod -R 755 "${ZSHSHARE}"
-    fi
-}
-
 # clone a repository without any special sauce. should only be used in order to
 # bootstrap ka-clone, or if you are certain you don't want a khanified repo.
 # $1: url of the repository to clone.  $2: directory to put repo
@@ -256,8 +222,15 @@ install_deps() {
 
     # Need to install yarn first before run `make install_deps`
     # in webapp.
+    echo "Installing yarn"
     if ! which yarn >/dev/null 2>&1; then
-        sudo npm install -g yarn
+        if [[ -n "${IS_MAC}" ]]; then
+            # Mac does not require root - npm is in /usr/local via brew
+            npm install -g yarn
+        else
+            # Linux requires sudo permissions
+            sudo npm install -g yarn
+        fi
     fi
 
     # Install all the requirements for khan
@@ -347,14 +320,9 @@ setup_arc() {
 
 check_dependencies
 
-# Run sudo once at the beginning to get the necessary permissions.
-echo "This setup script needs your password to install things as root."
-sudo sh -c 'echo Thanks'
-
 # the order of these individually doesn't matter but they should come first
 update_userinfo
 install_dotfiles
-edit_system_config
 # the order for these is (mostly!) important, beware
 clone_repos
 install_and_setup_gcloud
