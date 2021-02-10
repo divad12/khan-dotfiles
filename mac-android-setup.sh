@@ -30,7 +30,7 @@ install_android_studio() {
         # If Android Studio is not installed, ask the user before installing it.
         if [ "$(get_yn_input "Install Android Studio?" "y")" = "y" ]; then
             update "Installing or updating Android Studio..."
-            brew cask install android-studio
+            brew install android-studio
         fi
     else
         update "Android Studio already installed"
