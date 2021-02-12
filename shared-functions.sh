@@ -163,6 +163,12 @@ create_and_activate_virtualenv() {
 
     # Activate the virtualenv.
     . "$1/bin/activate"
+
+    # pip20+ stopped supporting python2.7, so we need to make sure
+    # we are using an older pip.
+    if ! pip --version | grep -q "pip 1[0-9]"; then
+        pip install -U "pip<20" setuptools
+    fi
 }
 
 # If we exit unexpectedly, log this warning.
