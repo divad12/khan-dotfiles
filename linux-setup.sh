@@ -113,12 +113,12 @@ EOF
     sudo apt-get install -y python-is-python2 || true
 
     # Install pip manually.
-    curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+    curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py
     sudo python2 get-pip.py
     # Delete get-pip.py after we're finish running it.
     rm -f get-pip.py
     # Match webapp's version version.
-    sudo pip install pip==20.1.1
+    sudo pip install pip==19.3.1
 
     # Install virtualenv and pychecker manually; ubuntu
     # dropped support for them in ubuntu >=20 (since they're python2)
