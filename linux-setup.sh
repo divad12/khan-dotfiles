@@ -151,6 +151,7 @@ EOF
         nginx \
         redis-server \
         curl \
+       unzip \
         jq
 
     # There are two different php packages, depending on if you're on Ubuntu
@@ -185,26 +186,6 @@ EOF
     # We need npm 6 or greater to support node12. This is a particular npm6
     # version known to work.
     sudo npm install -g npm@6.14.4
-
-    # Get the latest slack deb file and install it.
-    if ! which slack >/dev/null 2>&1 ; then
-        case `uname -m` in
-            *86) arch=i386;;
-            x86_64) arch=amd64;;
-            *) echo "WARNING: Cannot install slack: no client for `uname -m`";;
-        esac
-        if [ -n "$arch" ]; then
-            sudo apt-get install -y gconf2 gconf-service libgtk2.0-0 libappindicator1
-            rm -rf /tmp/slack.deb
-            deb_url="$(wget -O- https://slack.com/downloads/instructions/ubuntu | grep -o 'https.*\.deb' | head -n1)"
-            if [ -n "$deb_url" ]; then
-                wget -O/tmp/slack.deb "$deb_url" || echo "WARNING: Cannot install slack: couldn't download $deb_url"
-                sudo dpkg -i /tmp/slack.deb
-            else
-                echo "WARNING: Cannot install slack: couldn't find .deb URL"
-            fi
-        fi
-    fi
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
