@@ -8,7 +8,7 @@
 # Bail on any errors
 set -e
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )/.."
 KHAN_DIR="$SCRIPT_DIR/../.."
 
 venv_exit_warning() {
