@@ -47,8 +47,6 @@ while [[ "$1" != "" ]]; do
     shift
 done
 
-echo foobar
-
 # The directory to which all repositories will be cloned.
 REPOS_DIR="$ROOT/khan"
 
@@ -66,7 +64,7 @@ install_protoc() {
         brew uninstall protobuf
     fi
 
-    brew install wget
+    brew install -q wget
 
     # The mac and linux installation process is the same from here on out aside
     # from the platform-dependent zip archive.
