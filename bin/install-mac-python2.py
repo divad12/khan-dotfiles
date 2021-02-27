@@ -31,7 +31,7 @@ if pip2_version_str:
 
 if pip2_version and pip2_version > "19":
     print("Reverting pip2 from version: " + pip2_version_str.stdout.strip())
-    subprocess.run(['pip2', 'install', 'pip2<20', '-U'], check=True)
+    subprocess.run(['pip2', 'install', 'pip<20', '-U'], check=True)
 
 # Simple diagnostics
 subprocess.run(['pip2', '--version'])

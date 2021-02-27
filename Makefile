@@ -2,6 +2,16 @@ install:
 	./git_sync.sh
 	$(MAKE) os-install
 	$(MAKE) common-install
+	@echo "***  YOU MUST REBOOT **IF** this was   ***"
+	@echo "***  the first time you've setup       ***"
+	@echo "***  khan-dotfiles (i.e. if you are    ***"
+	@echo "***  onboarding)                       ***"
+	@echo "***  (Reboot is required for browser   ***"
+	@echo "***  to pickup CA for khanacademy.dev) ***"
+	@echo ""
+	@echo "To finish your setup, head back to the"
+	@echo "setup docs:"
+	@echo "  https://khanacademy.atlassian.net/wiki/x/VgKiC"
 
 os-install:
 	if [ `uname -s` = Linux ]; then ./linux-setup.sh; fi

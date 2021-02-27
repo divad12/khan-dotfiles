@@ -344,11 +344,4 @@ else
     echo "DONE!"
 fi
 
-echo
-echo "*** IMPORTANT: Please restart this terminal (and any ***"
-echo "***   others you have open) to pick up the changes.  ***"
-echo
-echo "Then, to finish your setup, head back to the setup docs:"
-echo "   https://khanacademy.atlassian.net/wiki/x/VgKiC"
-
 trap - EXIT
