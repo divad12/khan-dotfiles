@@ -31,7 +31,7 @@ os-install:
 
 common-install:
 	@echo "$(shell date): Running setup.sh" >> $(MAKE_LOGFILE)
-	./setup.sh 2>&1 | tee -a $(MAKE_LOGFILE)
+	./setup.sh
 
 virtualenv:
 	@echo "$(shell date): Running rebuild_virtualenv.sh" >> $(MAKE_LOGFILE)
