@@ -382,4 +382,6 @@ install_helpful_tools
 install_watchman
 install_python_tools
 
+"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-k8s.py
+
 trap - EXIT
