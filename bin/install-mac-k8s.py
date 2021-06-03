@@ -9,6 +9,7 @@ Install various tooling such as:
 See https://khanacademy.atlassian.net/wiki/spaces/INFRA/pages/1446085102/Hotel%2BSkaffold%2BBeta%2BInstructions
 """
 
+import time
 import sys
 import subprocess
 import json
@@ -48,6 +49,37 @@ def install_brew_packages(dry_run=False):
             subprocess.run(['brew', 'install', '-q', 'skaffold'], check=True)
 
 
+def wait_for_setting_file(dry_run=False):
+    """Create docker process to setup the setting files.
+
+    From testing we discover that setting file only exists first time we
+    start the docker service.  So let's create that!
+    https://khanacademy.slack.com/archives/C021LFM76UA/p1622668658023800?thread_ts=1622664454.016800&cid=C021LFM76UA
+    """
+    if os.path.exists(DOCKER_SETTINGS):
+        print("Setting file already exist!")
+        return
+
+    print(
+        "Starting docker services to wait for '{}'...".format(DOCKER_SETTINGS)
+    )
+    docker_proc = subprocess.Popen(['open', '/Applications/Docker.app'])
+    # wait for 3 mins
+    for _ in range(6*3):
+        if os.path.exists(DOCKER_SETTINGS):
+            break
+        print("No settings file found. Retrying...")
+        time.sleep(10)
+    # Note: this wont actually terminate docker, but that's okay as in the
+    # end we will prompt for restart anyway.
+    docker_proc.terminate()
+    if not os.path.exists(DOCKER_SETTINGS):
+        raise RuntimeError(
+            "Cannot find setting file: {}. ".format(DOCKER_SETTINGS) +
+            "You might need to manually start/restart docker and rerun script."
+        )
+
+
 def update_docker_settings(dry_run=False):
     with open(DOCKER_SETTINGS, 'r') as f:
         json_data = json.load(f)
@@ -64,9 +96,8 @@ def update_docker_settings(dry_run=False):
     }
     value_updated = False
     for key, target_value in settings_update.items():
-        value_now = json_data.get(key)
-        assert value_now is not None, \
-            "No value {} found in {}".format(key, DOCKER_SETTINGS)
+        # Note: some keys might be missing (e.g. kubernetesEnabled)
+        value_now = json_data.get(key, 0)
         # HACK: int cast to make it works for bool
         if value_now < int(target_value):
             print("Updating {} from {} to {}".format(
@@ -98,4 +129,5 @@ if __name__ == "__main__":
         print("Running dry run...")
         dry_run = True
     install_brew_packages(dry_run)
+    wait_for_setting_file(dry_run)
     update_docker_settings(dry_run)
