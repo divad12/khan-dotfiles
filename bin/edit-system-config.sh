@@ -11,20 +11,22 @@ set -e
 ROOT=${1-$HOME}
 mkdir -p "$ROOT"
 
+MIMETYPES="$(brew --prefix)/etc/mime.types"
+
 echo "Modifying system configs"
 
 # This command avoids the spew when you deploy the Khan Academy
 # appengine app:
 #   Cannot guess mime-type for XXX.  Using application/octet-stream
 line="application/octet-stream  less eot ttf woff otf as fla sjs flash tmpl"
-if [ -s /usr/local/etc/mime.types ]; then
+if [ -s $MIMETYPES ]; then
     # Replace any existing line with 'less' and 'eot' with the new line.
-    grep -v 'less eot' /usr/local/etc/mime.types | \
-        sudo sh -c "cat; echo '$line' > /usr/local/etc/mime.types"
+    grep -v 'less eot' $MIMETYPES | \
+        sudo sh -c "cat; echo '$line' > $MIMETYPES"
 else
-    sudo sh -c 'echo "$line" > /usr/local/etc/mime.types'
+    sudo sh -c 'echo "$line" > '"$MIMETYPES"
 fi
-sudo chmod a+r /usr/local/etc/mime.types
+sudo chmod a+r $MIMETYPES
 
 # If there is no ssh key, make one.
 mkdir -p "$ROOT/.ssh"

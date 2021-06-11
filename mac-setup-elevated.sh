@@ -77,6 +77,15 @@ install_protoc() {
 echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
+if [[ $(uname -m) = "arm64" ]]; then
+    # install rosetta on M1 (required for openjdk, python2 and other things)
+    # This will work here, but it requires input and I'd rather just have it in docs
+    #sudo softwareupdate --install-rosetta
+
+    # Add homebrew to path on M1 macs
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 # Add github to known_hosts (one less prompt when QAing script)
 mkdir -p ~/.ssh
 grep -q github.com ~/.ssh/known_hosts 2>/dev/null || \
