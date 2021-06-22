@@ -6,6 +6,11 @@
 # Bail on any errors
 set -e
 
+if [[ $(uname -m) = "arm64" ]]; then
+    # Add homebrew to path on M1 macs
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 tty_bold=`tput bold`
 tty_normal=`tput sgr0`
 
@@ -306,7 +311,7 @@ install_openssl() {
         success "openssl already installed"
     fi
     for source in $(brew --prefix openssl)/lib/*.dylib ; do
-        dest="/usr/local/lib/$(basename $source)"
+        dest="$(brew --prefix)/lib/$(basename $source)"
         # if dest is already a symlink pointing to the correct source, skip it
         if [ -h "$dest" -a "$(readlink "$dest")" = "$source" ]; then
             :

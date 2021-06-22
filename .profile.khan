@@ -5,6 +5,11 @@
 # is called for all sh-compatible shells.  So we put non-bashisms here
 # and bashisms in .bash_profile.
 
+# Add homebrew to path on M1 macs
+if [[ $(uname -m) = "arm64" ]]; then
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 # Add frankenserver bins to PATH
 export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
 
