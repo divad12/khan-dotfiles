@@ -181,7 +181,7 @@ kv "WEBAPP_ROOT" "$WEBAPP_ROOT"
 if [ -d "$WEBAPP_ROOT" ]; then
     kv_multiline "make check_setup" "$( (cd "$WEBAPP_ROOT" && make check_setup) )"
     kv "Current Branch Trails Master by" "$(git --git-dir "$WEBAPP_ROOT"/.git rev-list --left-only --count origin/master...HEAD) commits"
-    kv "Diverged from master at" "$(git --git-dir "$WEBAPP_ROOT"/.git HEAD origin/master| git --git-dir "$WEBAPP_ROOT"/.git show --pretty='%h %cs' -q)"
+    kv "Diverged from master at" "$(git --git-dir "$WEBAPP_ROOT"/.git show --pretty='https://github.com/Khan/webapp/commit/%h %cs' -q "$(git --git-dir "$WEBAPP_ROOT"/.git merge-base HEAD origin/master)")"
 else
     kv "!!! WARNING !!!" "$WEBAPP_ROOT could not be found!"
 fi
