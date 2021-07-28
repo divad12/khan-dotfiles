@@ -232,6 +232,8 @@ install_deps() {
             sudo npm install -g yarn
         fi
     fi
+    # By default, third party Go tools are install to this directory
+    mkdir -p "$ROOT"/go/bin
 
     # Install all the requirements for khan
     # This also installs npm deps.
