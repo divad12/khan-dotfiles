@@ -109,19 +109,19 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_12.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_12.x
+       ! grep -q node_16.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_16.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 12.x, otherwise apt will update newer Ubuntu versions
+        # Pin nodejs to 16.x, otherwise apt might update it in newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 12.*
+Pin: version 16.*
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
@@ -147,23 +147,42 @@ EOF
         sudo apt-get update -qq -y || true
     fi
 
-    # This is needed for ubuntu >=20, but not prior ones.
+    # Python is needed for development. First try the Ubuntu 22.04+ packages, then
+    # the Ubuntu <22.04 packages if that fails.
+    sudo apt-get install -y python2-dev python-setuptools || sudo apt-get install -y python-dev python-mode python-setuptools
+
+    # This is needed for Ubuntu >=20, but not prior ones. It no longer exists
+    # as of Ubuntu 22.04.
     sudo apt-get install -y python-is-python2 || true
+
+    # If we're on Ubuntu 22.04+, installing python-is-python2 didn't do anything, so
+    # we create the symlink ourselves.
+    if ! [ -f /usr/bin/python ]; then
+        sudo ln -s /usr/bin/python2 /usr/bin/python
+    fi
+
+    # Install curl for setup script usage
+    sudo apt-get install -y curl
 
     # Install pip manually.
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-    sudo python2 get-pip.py
+    # Match webapp's version.
+    sudo python2 get-pip.py pip==19.3.1
     # Delete get-pip.py after we're finish running it.
     rm -f get-pip.py
-    # Match webapp's version version.
-    sudo pip install pip==19.3.1
 
     # Install virtualenv and pychecker manually; ubuntu
     # dropped support for them in ubuntu >=20 (since they're python2)
     sudo pip install virtualenv==20.0.23
     sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
 
-    # Needed to develop at Khan: git, python, node (js).
+    # get-pip.py will remove the system pip3 binary if it previously existed,
+    # but it won't remove the package, so installing the package again won't
+    # restore it. Here we remove the package if it exists, so that the next
+    # apt-get command will install it properly.
+    sudo apt-get remove -y python3-pip || true
+
+    # Needed to develop at Khan: git, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # imagemagick is needed for image resizing and other operations
@@ -172,27 +191,23 @@ EOF
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
     # nodejs is used for various frontendy stuff in webapp, as well as our js
-    #   services. We standardize on version 12 (the latest version suppported
-    #   on appengine standard).
+    #   services. We standardize on version 16.
     # redis is needed to run memorystore on dev
     # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
     # TODO(benkraft): Pull the version we want from webapp somehow.
-    # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
-        python-dev \
-        python-mode python-setuptools \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         imagemagick \
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=12* \
+        nodejs \
         nginx \
         redis-server \
-        curl \
         unzip \
         jq \
-        libnss3-tools
+        libnss3-tools \
+        python3-pip
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
@@ -200,13 +215,13 @@ EOF
     # need too.
     sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
-    # We need npm 6 or greater to support node12.  That's the default
+    # We need npm 8 or greater to support node16.  That's the default
     # for nodejs, but we may have overridden it before in a way that
     # makes it impossible to upgrade, so we reinstall nodejs if our
-    # npm version is 5.x.x.
-    if expr "`npm --version`" : 5 >/dev/null 2>&1; then
+    # npm version is 5.x.x, 6.x.x, or 7.x.x.
+    if expr "`npm --version`" : '5\|6\|7' >/dev/null 2>&1; then
         sudo apt-get purge -y nodejs
-        sudo apt-get install -y "nodejs=12*"
+        sudo apt-get install -y "nodejs"
     fi
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
@@ -223,15 +238,15 @@ EOF
     fi
     # Make sure we have the preferred version of npm
     # TODO(benkraft): Pull this version number from webapp somehow.
-    # We need npm 6 or greater to support node12. This is a particular npm6
+    # We need npm 8 or greater to support node16. This is a particular npm8
     # version known to work.
-    sudo npm install -g npm@6.14.4
+    sudo npm install -g npm@8.11.0
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
 
     # Not needed for Khan, but useful things to have.
-    sudo apt-get install -y ntp abiword curl diffstat expect gimp \
+    sudo apt-get install -y ntp abiword diffstat expect gimp \
         mplayer netcat netpbm screen w3m vim emacs google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
@@ -263,13 +278,21 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
+
+        # First try installing via apt package, which exists in the repositories
+        # as of Ubuntu 20.04.
+        sudo apt-get install -y watchman || true
+    fi
+
+    if ! which watchman ; then
+        # If installing the package didn't work, then install from source.
         builddir=$(mktemp -d -t watchman.XXXXX)
         git clone https://github.com/facebook/watchman.git "$builddir"
 
         (
             # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
             cd "$builddir"
-            sudo apt-get install -y autoconf automake build-essential python-dev libtool libssl-dev
+            sudo apt-get install -y autoconf automake build-essential libtool libssl-dev
             git checkout tags/v4.9.0
             ./autogen.sh
             # --enable-lenient is required for newer versions of GCC, which is
@@ -280,20 +303,22 @@ install_watchman() {
         )
 
         # cleanup temporary build directory
-        rm -rf "$builddir"
+        sudo rm -rf "$builddir"
     fi
 }
 
 install_postgresql() {
     # Instructions taken from
     # https://pgdash.io/blog/postgres-11-getting-started.html
+    # and
+    # https://wiki.postgresql.org/wiki/Apt
     # Postgres 11 is not available in 18.04, so we need to add the pg apt repository.
-    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc \
-        | sudo apt-key add -
+    curl https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
 
     sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
     sudo apt-get update
-    sudo apt-get install -y postgresql-11 postgresql-contrib libpq-dev
+    sudo apt-get install -y postgresql-11
 
     # Set up authentication to allow connections from the postgres user with no
     # password. This matches the authentication setup that homebrew installs on
@@ -301,6 +326,19 @@ install_postgresql() {
     sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/11/main/pg_hba.conf"
     sudo chown postgres.postgres "/etc/postgresql/11/main/pg_hba.conf"
     sudo service postgresql restart
+}
+
+install_rust() {
+    builddir=$(mktemp -d -t rustup.XXXXX) 
+
+    (
+        cd "$builddir"
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output rustup-init.sh
+        bash rustup-init.sh -y --profile default --no-modify-path
+    )
+
+    # cleanup temporary build directory
+    sudo rm -rf "$builddir"
 }
 
 setup_clock() {
@@ -345,6 +383,7 @@ install_watchman
 setup_clock
 config_inotify
 install_postgresql
+install_rust
 # TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
 # https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 

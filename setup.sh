@@ -210,9 +210,9 @@ clone_repos() {
     kaclone_repair_self
 }
 
-# Must have cloned the repos first.
-install_deps() {
-    echo "Installing virtualenv and any global dependencies"
+# Sets up virtualenv and pipenv
+setup_python() {
+    echo "Installing virtualenv"
 
     # Install virtualenv.
     # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
@@ -223,6 +223,15 @@ install_deps() {
     pip3 install -q pipenv
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
+    # Force gcloud to use Python 2.7, since our version of the SDK doesn't
+    # work with Python 3.10+.
+    # TODO: Remove this when we upgrade the gcloud SDK to at least 377.0.0.
+    export CLOUDSDK_PYTHON=~/.virtualenv/khan27/bin/python
+}
+
+# Must have cloned the repos first.
+install_deps() {
+    echo "Installing global dependencies"
 
     # Need to install yarn first before run `make install_deps`
     # in webapp.
@@ -313,11 +322,12 @@ update_userinfo
 
 # the order for these is (mostly!) important, beware
 clone_repos
-install_and_setup_gcloud
-install_deps        # pre-reqs: clone_repos, install_and_setup_gcloud
-install_hooks       # pre-req: clone_repos
-download_db_dump    # pre-req: install_deps
-create_pg_databases # pre-req: install_deps
+setup_python
+install_and_setup_gcloud # pre-req: setup_python
+install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud
+install_hooks            # pre-req: clone_repos
+download_db_dump         # pre-req: install_deps
+create_pg_databases      # pre-req: install_deps
 
 
 echo
