@@ -12,22 +12,22 @@ SCRIPT=$(basename $0)
 # This script is only for comparison with python version
 echo "$SCRIPT: This script is deprecated: Try mac-setup-postgres.py"
 
-if brew ls postgresql@11 >/dev/null 2>&1 ; then
-  pg11_brewname="postgresql@11"
+if brew ls postgresql@14 >/dev/null 2>&1 ; then
+  pg_brewname="postgresql@14"
 elif brew ls postgresql --versions >/dev/null 2>&1 | grep "\s11\.\d" ; then
   # TODO(ericbrown): Why do we allow this?
-  pg11_brewname="postgresql"
+  pg_brewname="postgresql"
 else
   # We do not have pg11 installed
-  pg11_brewname="NONE"
+  pg_brewname="NONE"
 fi
 
 echo "$SCRIPT: Ensure postgres (usually 11) is installed and running"
 
-if [ "$pg11_brewname" = "NONE" ] ; then
-  pg11_brewname="postgresql@11"
-  echo "$SCRIPT: Installing ${pg11_brewname}"
-  brew install ${pg11_brewname}
+if [ "$pg_brewname" = "NONE" ] ; then
+  pg_brewname="postgresql@14"
+  echo "$SCRIPT: Installing ${pg_brewname}"
+  brew install ${pg_brewname}
   # swtich icu4c to 64.2
   # if default verison is 63.x and v64.2 was installed by postgres@11
   if [ "$(brew ls icu4c --versions |grep "icu4c 63")" ] && [ "$(brew ls icu4c | grep 64.2 >/dev/null 2>&1)" ]; then
@@ -37,19 +37,19 @@ if [ "$pg11_brewname" = "NONE" ] ; then
 
   # Brew doesn't link non-latest versions on install. This command fixes that
   # allowing postgresql and commads like psql to be found
-  brew link --force --overwrite ${pg11_brewname}
+  brew link --force --overwrite ${pg_brewname}
 else
-  echo "$SCRIPT: ${pg11_brewname} already installed"
+  echo "$SCRIPT: ${pg_brewname} already installed"
 fi
 
 # Sometimes postgresql does not link (or gets unlinked for some reason)
-which psql || brew link ${pg11_brewname}
+which psql || brew link ${pg_brewname}
 
 # Make sure that postgres is started, so that we can create the user below,
 # if necessary and so later steps in setup_webapp can connect to the db.
-if ! brew services list | grep "$pg11_brewname" | grep -q started; then
+if ! brew services list | grep "$pg_brewname" | grep -q started; then
   echo "$SCRIPT: Starting postgreql service"
-  brew services start "$pg11_brewname" 2>&1
+  brew services start "$pg_brewname" 2>&1
   # Give postgres a chance to start up before we connect to it on the next line
   sleep 5
 else

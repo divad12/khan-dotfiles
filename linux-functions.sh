@@ -263,7 +263,7 @@ install_postgresql() {
     #sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
     #sudo apt-get update
 
-    POSTGRESQL_VERSION=12
+    POSTGRESQL_VERSION=14
     echo "Installing postgresql-${POSTGRESQL_VERSION}"
     sudo apt-get install -y postgresql-${POSTGRESQL_VERSION} postgresql-contrib libpq-dev
 

@@ -22,15 +22,15 @@ import subprocess
 import time
 
 SCRIPT = os.path.basename(__file__)
-POSTGRES11_FORMULA = 'postgresql@11'
+POSTGRES_FORMULA = 'postgresql@14'
 
 
 def get_brewname():
     """Return the brew formula name currently installed or None."""
-    result = subprocess.run(['brew', 'ls', POSTGRES11_FORMULA],
+    result = subprocess.run(['brew', 'ls', POSTGRES_FORMULA],
                             capture_output=True)
     if result.returncode == 0:
-        return POSTGRES11_FORMULA
+        return POSTGRES_FORMULA
 
     # TODO(ericbrown): Remove when sure this is no longer needed
     # I believe this code is from when postgresql 11 was the current version
@@ -108,7 +108,7 @@ def setup_postgres() -> None:
     print(f'{SCRIPT}: Ensuring postgres (usually 11) is installed and running')
     brewname = get_brewname()
     if not brewname:
-        brewname = POSTGRES11_FORMULA
+        brewname = POSTGRES_FORMULA
         install_postgres(brewname)
     else:
         # Sometimes postgresql gets unlinked if dev is tweaking their env

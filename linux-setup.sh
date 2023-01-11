@@ -310,13 +310,13 @@ install_postgresql() {
 
     sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
     sudo apt-get update
-    sudo apt-get install -y postgresql-11
+    sudo apt-get install -y postgresql-14
 
     # Set up authentication to allow connections from the postgres user with no
     # password. This matches the authentication setup that homebrew installs on
     # a mac. Unlike a mac, we do not need to create a postgres user manually.
-    sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/11/main/pg_hba.conf"
-    sudo chown postgres.postgres "/etc/postgresql/11/main/pg_hba.conf"
+    sudo cp -av postgresql/pg_hba.conf "/etc/postgresql/14/main/pg_hba.conf"
+    sudo chown postgres.postgres "/etc/postgresql/14/main/pg_hba.conf"
     sudo service postgresql restart
 }
 
